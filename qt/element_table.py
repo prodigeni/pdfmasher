@@ -7,6 +7,7 @@
 # http://www.hardcoded.net/licenses/bsd_license
 
 from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QTableView
 
 from qtlib.column import Column
 from qtlib.table import Table
@@ -25,4 +26,18 @@ class ElementTable(Table):
     def __init__(self, app, view):
         model = ElementTableModel(view=self, app=app)
         Table.__init__(self, model, view)
+        self.setColumnsWidth(None) # set default widths
+    
+class ElementTableView(QTableView):
+    def setupUi(self):
+        self.setSelectionMode(QTableView.ExtendedSelection)
+        self.setSelectionBehavior(QTableView.SelectRows)
+        self.setSortingEnabled(True)
+        h = self.verticalHeader()
+        h.setVisible(False)
+        h.setDefaultSectionSize(18)
+        h = self.horizontalHeader()
+        h.setHighlightSections(False)
+        h.setStretchLastSection(False)
+        h.setDefaultAlignment(Qt.AlignLeft)
     

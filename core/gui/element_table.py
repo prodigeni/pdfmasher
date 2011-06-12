@@ -16,9 +16,12 @@ class ElementRow(Row):
     def __init__(self, table, element):
         Row.__init__(self, table)
         self._element = element
-        # simply take all attributes of the element and set them in the row
-        for attr, value in element.__dict__.items():
-            setattr(self, attr, value)
+        self.page = element.page
+        self.x0 = int(element.x0)
+        self.y0 = int(element.y0)
+        self.x1 = int(element.x1)
+        self.y1 = int(element.y1)
+        self.text = element.text
     
 
 class ElementTable(GUIObject, GUITable):
