@@ -1,0 +1,7 @@
+syntax: glob
+
+__pycache__
+.DS_Store
+run.py
+build
+dist
