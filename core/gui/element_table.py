@@ -15,13 +15,14 @@ from .base import GUIObject
 class ElementRow(Row):
     def __init__(self, table, element):
         Row.__init__(self, table)
-        self._element = element
+        self.element = element
         self.page = element.page
         self.x0 = int(element.x0)
         self.y0 = int(element.y0)
         self.x1 = int(element.x1)
         self.y1 = int(element.y1)
         self.text = element.text
+        self.state = element.state
     
 
 class ElementTable(GUIObject, GUITable):
@@ -33,6 +34,11 @@ class ElementTable(GUIObject, GUITable):
     def _fill(self):
         for element in self.app.elements:
             self.append(ElementRow(self, element))
+    
+    def _update_selection(self):
+        # Takes the table's selection and does appropriates updates on the Document's side.
+        elements = [row.element for row in self.selected_rows]
+        self.app.select_elements(elements)
     
     #--- Event Handlers
     def elements_changed(self):

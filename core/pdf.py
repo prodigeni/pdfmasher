@@ -11,6 +11,10 @@ from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.layout import LAParams, LTContainer, LTText
 from pdfminer.converter import PDFPageAggregator
 
+class ElementState:
+    Normal = 'normal'
+    Ignored = 'ignored'
+
 class TextElement:
     def __init__(self, page, layout_elem):
         self.page = page
@@ -19,9 +23,10 @@ class TextElement:
         self.x1 = layout_elem.x1
         self.y1 = layout_elem.y1
         self.text = layout_elem.get_text()
+        self.state = ElementState.Normal
     
     def __repr__(self):
-        return '<TextElement {page} {x0}-{y0}-{x1}-{y1} "{text}"'.format(**self.__dict__)
+        return '<TextElement {page} {x0}-{y0}-{x1}-{y1} {state} "{text}">'.format(**self.__dict__)
     
 
 def extract_text_elements(path):

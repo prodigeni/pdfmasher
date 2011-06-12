@@ -9,13 +9,27 @@
 from hscommon.notify import Broadcaster
 
 from .pdf import extract_text_elements
+from .html import generate_html
 
 class App(Broadcaster):
     def __init__(self):
         Broadcaster.__init__(self)
+        self._selected_elements = []
         self.elements = []
+    
+    def build_html(self):
+        with open('foo.html', 'wt', encoding='utf-8') as fp:
+            fp.write(generate_html(self.elements))
+    
+    def change_state_of_selected(self, newstate):
+        for element in self._selected_elements:
+            element.state = newstate
+        self.notify('elements_changed')
     
     def open_file(self, path):
         self.elements = extract_text_elements(path)
         self.notify('elements_changed')
+    
+    def select_elements(self, elements):
+        self._selected_elements = elements
     

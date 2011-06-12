@@ -16,10 +16,11 @@ from core.gui.element_table import ElementTable as ElementTableModel
 class ElementTable(Table):
     COLUMNS = [
         Column('page', "Page", 50),
-        Column('x0', "x0", 50),
-        Column('y0', "y0", 50),
-        Column('x1', "x1", 50),
-        Column('y1', "y1", 50),
+        Column('x0', "X0", 50),
+        Column('y0', "Y0", 50),
+        Column('x1', "X1", 50),
+        Column('y1', "Y1", 50),
+        Column('state', "State", 75),
         Column('text', "Text", 300),
     ]
     
