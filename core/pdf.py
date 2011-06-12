@@ -30,8 +30,10 @@ def extract_text_elements(path):
             return [obj]
         elif isinstance(obj, LTContainer):
             return sum((gettext(sub) for sub in obj), [])
+        else:
+            return []
     
-    fp = open(path, 'rt', encoding='ascii')
+    fp = open(path, 'rb')
     doc = PDFDocument(caching=True)
     parser = PDFParser(fp)
     parser.set_document(doc)
