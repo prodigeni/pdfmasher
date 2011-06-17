@@ -15,13 +15,13 @@ from core.gui.element_table import ElementTable as ElementTableModel
 
 class ElementTable(Table):
     COLUMNS = [
+        Column('id', "ID", 50),
         Column('page', "Page", 50),
-        Column('x0', "X0", 50),
-        Column('y0', "Y0", 50),
-        Column('x1', "X1", 50),
-        Column('y1', "Y1", 50),
+        Column('x', "X", 50),
+        Column('y', "Y", 50),
+        Column('font_height', "Font Height", 75),
         Column('state', "State", 75),
-        Column('text', "Text", 300),
+        Column('text', "Text", 250),
     ]
     
     def __init__(self, app, view):

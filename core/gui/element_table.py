@@ -6,8 +6,6 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/bsd_license
 
-from operator import attrgetter
-
 from hscommon.gui.table import GUITable, Row
 
 from .base import GUIObject
@@ -16,13 +14,21 @@ class ElementRow(Row):
     def __init__(self, table, element):
         Row.__init__(self, table)
         self.element = element
-        self.page = element.page
-        self.x0 = int(element.x0)
-        self.y0 = int(element.y0)
-        self.x1 = int(element.x1)
-        self.y1 = int(element.y1)
+        self._id = element.id
+        self._page = element.page
+        self._x = element.x0
+        self._y = element.y0
+        self._font_height = element.avgheight
         self.text = element.text
         self.state = element.state
+        
+        # Format
+        self.id = "{:d}".format(self._id)
+        self.page = "{:d}".format(self._page)
+        self.x = "{:.0f}".format(self._x)
+        self.y = "{:.0f}".format(self._y)
+        self.font_height = "{:0.1f}".format(self._font_height)
+        
     
 
 class ElementTable(GUIObject, GUITable):

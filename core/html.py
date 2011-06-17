@@ -12,7 +12,10 @@ def generate_html(elements):
     elements = [e for e in elements if e.state != ElementState.Ignored]
     paragraphs = []
     for e in elements:
-        s = "<p>{}</p>".format(e.text)
+        if e.state == ElementState.Title:
+            s = "<h1>{}</h1>".format(e.text)
+        else:
+            s = "<p>{}</p>".format(e.text)
         paragraphs.append(s)
     s = '\n'.join(paragraphs)
-    return "<html>\n{}\n</html>".format(s)
+    return "<html><body>\n{}\n</body></html>".format(s)

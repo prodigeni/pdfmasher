@@ -14,8 +14,9 @@ class MainWindow(QMainWindow):
         self.elementTable.model.connect()
         
         self.openButton.clicked.connect(self.openButtonClicked)
-        self.ignoreButton.clicked.connect(self.ignoreButtonClicked)
         self.normalButton.clicked.connect(self.normalButtonClicked)
+        self.titleButton.clicked.connect(self.titleButtonClicked)
+        self.ignoreButton.clicked.connect(self.ignoreButtonClicked)
         self.buildButton.clicked.connect(self.buildButtonClicked)
     
     def _setupUi(self):
@@ -29,10 +30,12 @@ class MainWindow(QMainWindow):
         self.elementTableView.setupUi()
         self.verticalLayout.addWidget(self.elementTableView)
         self.buttonLayout = QHBoxLayout()
-        self.ignoreButton = QPushButton("Ignore", self.mainWidget)
-        self.buttonLayout.addWidget(self.ignoreButton)
         self.normalButton = QPushButton("Normal", self.mainWidget)
         self.buttonLayout.addWidget(self.normalButton)
+        self.titleButton = QPushButton("Title", self.mainWidget)
+        self.buttonLayout.addWidget(self.titleButton)
+        self.ignoreButton = QPushButton("Ignore", self.mainWidget)
+        self.buttonLayout.addWidget(self.ignoreButton)
         self.buildButton = QPushButton("Build", self.mainWidget)
         self.buttonLayout.addWidget(self.buildButton)
         self.verticalLayout.addLayout(self.buttonLayout)
@@ -46,11 +49,14 @@ class MainWindow(QMainWindow):
         if destination:
             self.app.open_file(destination)
     
-    def ignoreButtonClicked(self):
-        self.app.change_state_of_selected(ElementState.Ignored)
-    
     def normalButtonClicked(self):
         self.app.change_state_of_selected(ElementState.Normal)
+    
+    def titleButtonClicked(self):
+        self.app.change_state_of_selected(ElementState.Title)
+    
+    def ignoreButtonClicked(self):
+        self.app.change_state_of_selected(ElementState.Ignored)
     
     def buildButtonClicked(self):
         self.app.build_html()
