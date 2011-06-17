@@ -1,3 +1,13 @@
+# Created By: Virgil Dupras
+# Created On: 2011-06-12
+# Copyright 2011 Hardcoded Software (http://www.hardcoded.net)
+# 
+# This software is licensed under the "BSD" License as described in the "LICENSE" file, 
+# which should be included with this package. The terms are also available at 
+# http://www.hardcoded.net/licenses/bsd_license
+
+from functools import partial
+
 from PyQt4.QtCore import QCoreApplication
 from PyQt4.QtGui import (QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QFileDialog)
 
@@ -14,9 +24,10 @@ class MainWindow(QMainWindow):
         self.elementTable.model.connect()
         
         self.openButton.clicked.connect(self.openButtonClicked)
-        self.normalButton.clicked.connect(self.normalButtonClicked)
-        self.titleButton.clicked.connect(self.titleButtonClicked)
-        self.ignoreButton.clicked.connect(self.ignoreButtonClicked)
+        self.normalButton.clicked.connect(partial(self.app.change_state_of_selected, ElementState.Normal))
+        self.titleButton.clicked.connect(partial(self.app.change_state_of_selected, ElementState.Title))
+        self.footnoteButton.clicked.connect(partial(self.app.change_state_of_selected, ElementState.Footnote))
+        self.ignoreButton.clicked.connect(partial(self.app.change_state_of_selected, ElementState.Ignored))
         self.buildButton.clicked.connect(self.buildButtonClicked)
     
     def _setupUi(self):
@@ -34,6 +45,8 @@ class MainWindow(QMainWindow):
         self.buttonLayout.addWidget(self.normalButton)
         self.titleButton = QPushButton("Title", self.mainWidget)
         self.buttonLayout.addWidget(self.titleButton)
+        self.footnoteButton = QPushButton("Footnote", self.mainWidget)
+        self.buttonLayout.addWidget(self.footnoteButton)
         self.ignoreButton = QPushButton("Ignore", self.mainWidget)
         self.buttonLayout.addWidget(self.ignoreButton)
         self.buildButton = QPushButton("Build", self.mainWidget)
@@ -48,15 +61,6 @@ class MainWindow(QMainWindow):
         destination = QFileDialog.getOpenFileName(self, title, '', files)
         if destination:
             self.app.open_file(destination)
-    
-    def normalButtonClicked(self):
-        self.app.change_state_of_selected(ElementState.Normal)
-    
-    def titleButtonClicked(self):
-        self.app.change_state_of_selected(ElementState.Title)
-    
-    def ignoreButtonClicked(self):
-        self.app.change_state_of_selected(ElementState.Ignored)
     
     def buildButtonClicked(self):
         self.app.build_html()

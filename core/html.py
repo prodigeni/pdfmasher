@@ -10,6 +10,8 @@ from .pdf import ElementState
 
 def generate_html(elements):
     elements = [e for e in elements if e.state != ElementState.Ignored]
+    keyfunc = lambda e: 0 if e.state != ElementState.Footnote else 1
+    elements.sort(key=keyfunc) # footnotes go last
     paragraphs = []
     for e in elements:
         if e.state == ElementState.Title:

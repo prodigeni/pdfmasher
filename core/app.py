@@ -8,7 +8,7 @@
 
 from hscommon.notify import Broadcaster
 
-from .pdf import extract_text_elements
+from .pdf import extract_text_elements_from_pdf
 from .html import generate_html
 
 class App(Broadcaster):
@@ -27,7 +27,7 @@ class App(Broadcaster):
         self.notify('elements_changed')
     
     def open_file(self, path):
-        self.elements = extract_text_elements(path)
+        self.elements = extract_text_elements_from_pdf(path)
         self.notify('elements_changed')
     
     def select_elements(self, elements):

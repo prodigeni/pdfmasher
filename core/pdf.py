@@ -8,32 +8,48 @@
 
 from pdfminer.pdfparser import PDFParser, PDFDocument
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfminer.layout import LAParams, LTContainer, LTText, LTChar
+from pdfminer.layout import LAParams, LTItem, LTContainer, LTText, LTChar, LTTextLineHorizontal
 from pdfminer.converter import PDFPageAggregator
+
+###### PDF Wisdom (some wisdom gathered about pdf/pdfminer during the development of this unit)
+# 
+#--- Coordinates
+#
+# So there's x0/y0 and x1/y1. x0 is left and y0 is bottom. The point (0, 0) is the bottom left point
+# of the page.
+#
+#--- Footnotes / superscript
+# 
+# At first, I wanted to detect footnotes by detecting which characters were superscript, and I
+# wanted to do that by looking at the height of LTChar instance. But the thing is that the height
+# of all chars, including superscript chars, is the same in a text container. Maybe it's possible
+# to use y-pos compared to others, but then things get real complicated real fast (there can be
+# multiple lines in a text container), so for now I took a more heuristic road, that is to ask the
+# user which elements are footnotes and then look for the leading numbers/symbols of that footnote
+# on the rest of the page.
 
 class ElementState:
     Normal = 'normal'
     Title = 'title'
+    Footnote = 'footnote'
     Ignored = 'ignored'
 
 class TextElement:
-    def __init__(self, id, page, layout_elem):
-        self.id = id
-        self.page = page
-        self.x0 = layout_elem.x0
-        self.y0 = layout_elem.y0
-        self.x1 = layout_elem.x1
-        self.y1 = layout_elem.y1
-        self.avgheight = get_avg_text_height(layout_elem)
-        self.text = layout_elem.get_text()
+    def __init__(self, x, y, fontsize, text):
+        # The X and the Y of a text element should always be its top left corner
+        self.id = None # set later
+        self.page = None # set later
+        self.x = x
+        self.y = y
+        self.fontsize = fontsize
+        self.text = text
         self.state = ElementState.Normal
-        self.layout_elem = layout_elem
     
     def __repr__(self):
-        return '<TextElement {page} {x0}-{y0}-{x1}-{y1} {state} "{text}">'.format(**self.__dict__)
+        return '<TextElement {page} {x}-{y} {state} "{text}">'.format(**self.__dict__)
     
 
-def extract_text_elements(path):
+def extract_text_elements_from_pdf(path):
     """Opens a PDF and extract every element that is text based (LTText).
     """
     def gettext(obj):
@@ -56,33 +72,102 @@ def extract_text_elements(path):
     laparams = LAParams()
     device = PDFPageAggregator(rsrcmgr, laparams=laparams)
     interpreter = PDFPageInterpreter(rsrcmgr, device)
-    current_id = 0
     result = []
     for pageno, page in enumerate(doc.get_pages()):
         interpreter.process_page(page)
         layout = device.get_result()
         layout_elems = gettext(layout)
         for layout_elem in layout_elems: 
-            elem = TextElement(current_id, pageno, layout_elem)
-            current_id += 1
-            result.append(elem)
+            elements = extract_text_elements_from_layout(layout_elem)
+            for elem in elements:
+                elem.page = pageno
+                result.append(elem)
+    for i, elem in enumerate(result):
+        elem.id = i
     return result
 
-def get_avg_text_height(text_container):
+def create_element(layout_elements):
+    # layout elem can either be an LTItem or a list of elems. We have to extract X and Y pos from it.
+    # If we have a list, we use the first item of the list, which should be at the top left corner
+    # of the bunch, normally
+    if isinstance(layout_elements, LTItem):
+        x = layout_elements.x0
+        y = layout_elements.y1 # top left corner in pdfminer is x0/y1
+    else:
+        x = layout_elements[0].x0
+        y = layout_elements[0].y1
+    chars = extract_chars(layout_elements)
+    fontsize = get_avg_text_height(chars)
+    text = get_text(chars)
+    return TextElement(x, y, fontsize, text)
+
+def extract_text_elements_from_layout(layout_element):
+    """Extract text elements from `layout_element`.
+    
+    Most of the time, only one text element per layout element is extracted, but it can happen
+    that a layout element contains more than one paragraph and thus needs to yield more than one
+    text element.
+    """
+    # points to the right of the min x where we consider ourselves 'indented'.
+    # NOTE: When looking for indented lines, we need to be careful to check whether there's not
+    # something to the left of that line. If there's enough space between the comma of the previous
+    # sentence and the first letter of the next, we end up with two horizontal lines next to each
+    # other.
+    X_TRESHOLD = 5
+    # Number of characters in the text element needed for it to be considered a 'real' paragraph(s)
+    # If we're under that, it's probably a (sub)title or something along these lines, so we simply
+    # create one element from it.
+    CHARCOUNT_THRESHOLD = 300
+    if len(layout_element.get_text()) < CHARCOUNT_THRESHOLD:
+        return [create_element(layout_element)]
+    lines = extract_lines(layout_element)
+    # It's important to sort lines here as they're not necessarily in the right order.
+    keyfunc = lambda l: (-l.y1, l.x0)
+    lines.sort(key=keyfunc)
+    minx = min(line.x0 for line in lines)
+    result = []
+    bunch = []
+    for line in lines:
+        sameline = False
+        if bunch and (abs(line.y1 - bunch[-1].y1) < 1):
+            # we're on the same line, don't consider this indented
+            sameline = True
+        if bunch and (not sameline) and (line.x0 - minx > X_TRESHOLD):
+            elem = create_element(bunch)
+            result.append(elem)
+            bunch = []
+        bunch.append(line)
+    elem = create_element(bunch)
+    result.append(elem)
+    return result
+
+def extract_from_elem(elem, lookfor=LTChar):
+    if isinstance(elem, lookfor):
+        return [elem]
+    else:
+        try:
+            return sum((extract_from_elem(subelem, lookfor) for subelem in elem), [])
+        except TypeError:
+            return []
+
+def extract_chars(elem):
+    """Returns a list of chars contained (possibly recursively) in `elem`.
+    """
+    return extract_from_elem(elem, lookfor=LTChar)
+
+def extract_lines(elem):
+    return extract_from_elem(elem, lookfor=LTTextLineHorizontal)
+
+def get_avg_text_height(chars):
     """Returns the average height of LTChar elements contained in `text_container`.
     """
-    def return_chars(elem):
-        # To extract char of a container (which can contain sub containers), we simply iterate
-        # through elements recursively until it's not possible anymore, then we'll have chars.
-        try:
-            return sum((return_chars(subelem) for subelem in elem), [])
-        except TypeError: # we have A LTChar or a LTAnon
-            if isinstance(elem, LTChar):
-                return [elem]
-            else:
-                return []
-    
-    chars = return_chars(text_container)
     count = len(chars)
     totheight = sum(c.height for c in chars)
     return totheight / count
+
+def get_text(chars):
+    return ''.join(c.get_text() for c in chars)
+
+def analyze_lines(elem):
+    for line in elem:
+        print(repr(line))

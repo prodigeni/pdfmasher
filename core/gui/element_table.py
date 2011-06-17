@@ -16,9 +16,9 @@ class ElementRow(Row):
         self.element = element
         self._id = element.id
         self._page = element.page
-        self._x = element.x0
-        self._y = element.y0
-        self._font_height = element.avgheight
+        self._x = element.x
+        self._y = element.y
+        self._fontsize = element.fontsize
         self.text = element.text
         self.state = element.state
         
@@ -27,7 +27,7 @@ class ElementRow(Row):
         self.page = "{:d}".format(self._page)
         self.x = "{:.0f}".format(self._x)
         self.y = "{:.0f}".format(self._y)
-        self.font_height = "{:0.1f}".format(self._font_height)
+        self.fontsize = "{:0.1f}".format(self._fontsize)
         
     
 

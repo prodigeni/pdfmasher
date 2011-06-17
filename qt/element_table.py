@@ -19,7 +19,7 @@ class ElementTable(Table):
         Column('page', "Page", 50),
         Column('x', "X", 50),
         Column('y', "Y", 50),
-        Column('font_height', "Font Height", 75),
+        Column('fontsize', "Font Size", 75),
         Column('state', "State", 75),
         Column('text', "Text", 250),
     ]
