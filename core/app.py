@@ -17,6 +17,7 @@ class App(Broadcaster):
     def __init__(self):
         Broadcaster.__init__(self)
         self.current_path = None
+        self._hide_ignored = False
         self._selected_elements = []
         self.elements = []
     
@@ -41,4 +42,14 @@ class App(Broadcaster):
     
     def select_elements(self, elements):
         self._selected_elements = elements
+    
+    #--- Properties
+    @property
+    def hide_ignored(self):
+        return self._hide_ignored
+    
+    @hide_ignored.setter
+    def hide_ignored(self, value):
+        self._hide_ignored = value
+        self.notify('elements_changed')
     

@@ -8,6 +8,7 @@
 
 from hscommon.gui.table import GUITable, Row
 
+from ..pdf import ElementState
 from .base import GUIObject
 
 class ElementRow(Row):
@@ -38,7 +39,10 @@ class ElementTable(GUIObject, GUITable):
     
     #--- Override
     def _fill(self):
-        for element in self.app.elements:
+        elements = self.app.elements
+        if self.app.hide_ignored:
+            elements = [e for e in elements if e.state != ElementState.Ignored]
+        for element in elements:
             self.append(ElementRow(self, element))
     
     def _update_selection(self):
