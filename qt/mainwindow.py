@@ -15,6 +15,7 @@ from PyQt4.QtGui import (QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushBu
 from core.app import App
 from core.pdf import ElementState
 from .element_table import ElementTable, ElementTableView
+from .opened_file_label import OpenedFileLabel
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -22,7 +23,6 @@ class MainWindow(QMainWindow):
         self.app = App()
         self._setupUi()
         self.elementTable = ElementTable(self.app, self.elementTableView)
-        self.elementTable.model.connect()
         
         self.openButton.clicked.connect(self.openButtonClicked)
     
@@ -31,8 +31,17 @@ class MainWindow(QMainWindow):
         self.resize(700, 600)
         self.mainWidget = QWidget(self)
         self.verticalLayout = QVBoxLayout(self.mainWidget)
+        self.fileLayout = QHBoxLayout()
         self.openButton = QPushButton("Open File")
-        self.verticalLayout.addWidget(self.openButton)
+        # We want to leave the space to the label
+        sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        self.openButton.setSizePolicy(sizePolicy)
+        self.fileLayout.addWidget(self.openButton)
+        self.openedFileLabel = OpenedFileLabel(self.app)
+        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        self.openedFileLabel.setSizePolicy(sizePolicy)
+        self.fileLayout.addWidget(self.openedFileLabel)
+        self.verticalLayout.addLayout(self.fileLayout)
         self.elementTableView = ElementTableView()
         self.verticalLayout.addWidget(self.elementTableView)
         self.tabWidget = QTabWidget()

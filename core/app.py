@@ -16,13 +16,13 @@ from .html import generate_html
 class App(Broadcaster):
     def __init__(self):
         Broadcaster.__init__(self)
-        self._current_path = None
+        self.current_path = None
         self._selected_elements = []
         self.elements = []
     
     def build_html(self):
-        assert self._current_path
-        without_ext, ext = op.splitext(self._current_path)
+        assert self.current_path
+        without_ext, ext = op.splitext(self.current_path)
         dest_path = without_ext + '.htm'
         with open(dest_path, 'wt', encoding='utf-8') as fp:
             fp.write(generate_html(self.elements))
@@ -35,7 +35,8 @@ class App(Broadcaster):
     
     def open_file(self, path):
         self.elements = extract_text_elements_from_pdf(path)
-        self._current_path = path
+        self.current_path = path
+        self.notify('file_opened')
         self.notify('elements_changed')
     
     def select_elements(self, elements):

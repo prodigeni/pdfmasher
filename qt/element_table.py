@@ -28,6 +28,7 @@ class ElementTable(Table):
         model = ElementTableModel(view=self, app=app)
         Table.__init__(self, model, view)
         self.setColumnsWidth(None) # set default widths
+        self.model.connect()
     
 class ElementTableView(QTableView):
     def __init__(self):
