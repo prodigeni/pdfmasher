@@ -6,16 +6,14 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/bsd_license
 
-from functools import partial
-
-from PyQt4.QtCore import Qt, QCoreApplication, QUrl
+from PyQt4.QtCore import QCoreApplication, QUrl
 from PyQt4.QtGui import (QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QFileDialog,
-    QTabWidget, QCheckBox, QSizePolicy, QDesktopServices)
+    QTabWidget, QSizePolicy, QDesktopServices)
 
 from core.app import App
-from core.pdf import ElementState
 from .element_table import ElementTable, ElementTableView
 from .opened_file_label import OpenedFileLabel
+from .edit_pane import EditPane
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -46,11 +44,11 @@ class MainWindow(QMainWindow):
         self.verticalLayout.addWidget(self.elementTableView)
         self.tabWidget = QTabWidget()
         # We want to leave the most screen estate possible to the table.
-        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
         self.tabWidget.setSizePolicy(sizePolicy)
-        self.flagTab = FlagTab(self.app)
-        self.tabWidget.addTab(self.flagTab, "Flag")
-        self.buildTab = BuildTab(self.app)
+        self.editTab = EditPane(self.app)
+        self.tabWidget.addTab(self.editTab, "Edit")
+        self.buildTab = BuildPane(self.app)
         self.tabWidget.addTab(self.buildTab, "Build")
         self.verticalLayout.addWidget(self.tabWidget)
         self.setCentralWidget(self.mainWidget)
@@ -64,42 +62,7 @@ class MainWindow(QMainWindow):
             self.app.open_file(destination)
     
 
-class FlagTab(QWidget):
-    def __init__(self, app):
-        QWidget.__init__(self)
-        self.app = app
-        self._setupUi()
-        
-        self.normalButton.clicked.connect(partial(self.app.change_state_of_selected, ElementState.Normal))
-        self.titleButton.clicked.connect(partial(self.app.change_state_of_selected, ElementState.Title))
-        self.footnoteButton.clicked.connect(partial(self.app.change_state_of_selected, ElementState.Footnote))
-        self.ignoreButton.clicked.connect(partial(self.app.change_state_of_selected, ElementState.Ignored))
-        self.hideIgnoredCheckBox.stateChanged.connect(self.hideIgnoredCheckBoxStateChanged)
-        
-    def _setupUi(self):
-        self.mainLayout = QHBoxLayout(self)
-        self.buttonLayout = QVBoxLayout()
-        self.normalButton = QPushButton("Normal")
-        self.buttonLayout.addWidget(self.normalButton)
-        self.titleButton = QPushButton("Title")
-        self.buttonLayout.addWidget(self.titleButton)
-        self.footnoteButton = QPushButton("Footnote")
-        self.buttonLayout.addWidget(self.footnoteButton)
-        self.ignoreButton = QPushButton("Ignore")
-        self.buttonLayout.addWidget(self.ignoreButton)
-        self.mainLayout.addLayout(self.buttonLayout)
-        
-        self.rightLayout = QVBoxLayout()
-        self.hideIgnoredCheckBox = QCheckBox("Hide Ignored Elements")
-        self.rightLayout.addWidget(self.hideIgnoredCheckBox)
-        self.mainLayout.addLayout(self.rightLayout)
-    
-    #--- Signals
-    def hideIgnoredCheckBoxStateChanged(self, state):
-        self.app.hide_ignored = state == Qt.Checked
-    
-
-class BuildTab(QWidget):
+class BuildPane(QWidget):
     def __init__(self, app):
         QWidget.__init__(self)
         self.app = app

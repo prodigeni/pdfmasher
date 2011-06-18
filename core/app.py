@@ -18,7 +18,7 @@ class App(Broadcaster):
         Broadcaster.__init__(self)
         self.current_path = None
         self._hide_ignored = False
-        self._selected_elements = []
+        self.selected_elements = []
         self.elements = []
     
     def build_html(self):
@@ -30,7 +30,7 @@ class App(Broadcaster):
         return dest_path
     
     def change_state_of_selected(self, newstate):
-        for element in self._selected_elements:
+        for element in self.selected_elements:
             element.state = newstate
         self.notify('elements_changed')
     
@@ -41,7 +41,8 @@ class App(Broadcaster):
         self.notify('elements_changed')
     
     def select_elements(self, elements):
-        self._selected_elements = elements
+        self.selected_elements = elements
+        self.notify('elements_selected')
     
     #--- Properties
     @property

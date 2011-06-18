@@ -7,7 +7,7 @@
 # http://www.hardcoded.net/licenses/bsd_license
 
 from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QTableView
+from PyQt4.QtGui import QTableView, QSizePolicy
 
 from qtlib.column import Column
 from qtlib.table import Table
@@ -36,6 +36,8 @@ class ElementTableView(QTableView):
         self._setupUi()
     
     def _setupUi(self):
+        sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        self.setSizePolicy(sizePolicy)
         self.setSelectionMode(QTableView.ExtendedSelection)
         self.setSelectionBehavior(QTableView.SelectRows)
         self.setSortingEnabled(True)
