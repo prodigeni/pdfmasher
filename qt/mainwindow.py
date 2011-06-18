@@ -8,9 +8,9 @@
 
 from functools import partial
 
-from PyQt4.QtCore import QCoreApplication
+from PyQt4.QtCore import QCoreApplication, QUrl
 from PyQt4.QtGui import (QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QFileDialog,
-    QTabWidget, QSizePolicy)
+    QTabWidget, QSizePolicy, QDesktopServices)
 
 from core.app import App
 from core.pdf import ElementState
@@ -84,14 +84,16 @@ class BuildTab(QWidget):
         self.app = app
         self._setupUi()
         
-        self.buildButton.clicked.connect(self.buildButtonClicked)
+        self.viewHtmlButton.clicked.connect(self.viewHtmlButtonClicked)
     
     def _setupUi(self):
         self.buttonLayout = QHBoxLayout(self)
-        self.buildButton = QPushButton("Build")
-        self.buttonLayout.addWidget(self.buildButton)
+        self.viewHtmlButton = QPushButton("View HTML")
+        self.buttonLayout.addWidget(self.viewHtmlButton)
     
     #--- Signals
-    def buildButtonClicked(self):
-        self.app.build_html()
+    def viewHtmlButtonClicked(self):
+        html_path = self.app.build_html()
+        url = QUrl.fromLocalFile(html_path)
+        QDesktopServices.openUrl(url)
     
