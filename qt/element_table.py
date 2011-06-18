@@ -30,7 +30,11 @@ class ElementTable(Table):
         self.setColumnsWidth(None) # set default widths
     
 class ElementTableView(QTableView):
-    def setupUi(self):
+    def __init__(self):
+        QTableView.__init__(self)
+        self._setupUi()
+    
+    def _setupUi(self):
         self.setSelectionMode(QTableView.ExtendedSelection)
         self.setSelectionBehavior(QTableView.SelectRows)
         self.setSortingEnabled(True)
