@@ -21,6 +21,12 @@ class App(Broadcaster):
         self.selected_elements = []
         self.elements = []
     
+    #--- Public (Internal)
+    def select_elements(self, elements):
+        self.selected_elements = elements
+        self.notify('elements_selected')
+    
+    #--- Public (API)
     def build_html(self):
         assert self.current_path
         without_ext, ext = op.splitext(self.current_path)
@@ -39,10 +45,6 @@ class App(Broadcaster):
         self.current_path = path
         self.notify('file_opened')
         self.notify('elements_changed')
-    
-    def select_elements(self, elements):
-        self.selected_elements = elements
-        self.notify('elements_selected')
     
     #--- Properties
     @property

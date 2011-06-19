@@ -9,6 +9,10 @@
 from .base import GUIObject
 
 class OpenedFileLabel(GUIObject):
+    #--- model -> view calls:
+    # refresh()
+    #
+    
     def __init__(self, view, app):
         GUIObject.__init__(self, view, app)
         self.text = "Working on: Nothing"

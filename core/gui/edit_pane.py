@@ -9,6 +9,10 @@
 from .base import GUIObject
 
 class EditPane(GUIObject):
+    #--- model -> view calls:
+    # refresh_edit_text()
+    #
+    
     def __init__(self, view, app):
         GUIObject.__init__(self, view, app)
         self.edit_text = ''

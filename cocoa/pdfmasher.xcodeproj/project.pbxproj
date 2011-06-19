@@ -1,0 +1,422 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
+		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		CEBA080613AE70C1007DD3E0 /* EditPane.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEBA080413AE70C1007DD3E0 /* EditPane.xib */; };
+		CEBA080A13AE70FF007DD3E0 /* BuildPane.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEBA080813AE70FF007DD3E0 /* BuildPane.xib */; };
+		CEBA081613AE71BB007DD3E0 /* HSGUIController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBA080F13AE71BB007DD3E0 /* HSGUIController.m */; };
+		CEBA081813AE71BB007DD3E0 /* HSTable.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBA081313AE71BB007DD3E0 /* HSTable.m */; };
+		CEBA081913AE71BB007DD3E0 /* HSWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBA081513AE71BB007DD3E0 /* HSWindowController.m */; };
+		CEBA082313AE745B007DD3E0 /* PMEditPane.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBA082213AE745B007DD3E0 /* PMEditPane.m */; };
+		CEBA086713AE808B007DD3E0 /* PMBuildPane.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBA086613AE808B007DD3E0 /* PMBuildPane.m */; };
+		CEBA08A813AE8453007DD3E0 /* PMOpenedFileLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBA08A713AE8453007DD3E0 /* PMOpenedFileLabel.m */; };
+		CEBA08CC13AE87C1007DD3E0 /* HSColumns.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBA08CB13AE87C1007DD3E0 /* HSColumns.m */; };
+		CEBA08D213AE8A37007DD3E0 /* PMElementTable.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBA08D113AE8A37007DD3E0 /* PMElementTable.m */; };
+		CEBA096513AEAB11007DD3E0 /* HSTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBA095F13AEAB11007DD3E0 /* HSTableView.m */; };
+		CEBA096E13AEAB48007DD3E0 /* NSEventAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBA096D13AEAB48007DD3E0 /* NSEventAdditions.m */; };
+		CEBA0B7A13AEAB72007DD3E0 /* pyplugin.plugin in Resources */ = {isa = PBXBuildFile; fileRef = CEBA097813AEAB72007DD3E0 /* pyplugin.plugin */; };
+		CEC7F38213AE556600BA9A74 /* PMMainWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = CEC7F38113AE556600BA9A74 /* PMMainWindow.m */; };
+		CEC7F38613AE558700BA9A74 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEC7F38413AE558700BA9A74 /* MainMenu.xib */; };
+		CEC7F3A613AE55CC00BA9A74 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = CEC7F3A513AE55CC00BA9A74 /* Utils.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
+		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8D1107320486CEB800E47090 /* PdfMasher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PdfMasher.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CEBA080513AE70C1007DD3E0 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/EditPane.xib; sourceTree = "<group>"; };
+		CEBA080913AE70FF007DD3E0 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/BuildPane.xib; sourceTree = "<group>"; };
+		CEBA080E13AE71BB007DD3E0 /* HSGUIController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HSGUIController.h; path = ../cocoalib/controllers/HSGUIController.h; sourceTree = SOURCE_ROOT; };
+		CEBA080F13AE71BB007DD3E0 /* HSGUIController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HSGUIController.m; path = ../cocoalib/controllers/HSGUIController.m; sourceTree = SOURCE_ROOT; };
+		CEBA081213AE71BB007DD3E0 /* HSTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HSTable.h; path = ../cocoalib/controllers/HSTable.h; sourceTree = SOURCE_ROOT; };
+		CEBA081313AE71BB007DD3E0 /* HSTable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HSTable.m; path = ../cocoalib/controllers/HSTable.m; sourceTree = SOURCE_ROOT; };
+		CEBA081413AE71BB007DD3E0 /* HSWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HSWindowController.h; path = ../cocoalib/controllers/HSWindowController.h; sourceTree = SOURCE_ROOT; };
+		CEBA081513AE71BB007DD3E0 /* HSWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HSWindowController.m; path = ../cocoalib/controllers/HSWindowController.m; sourceTree = SOURCE_ROOT; };
+		CEBA082113AE745B007DD3E0 /* PMEditPane.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PMEditPane.h; path = controllers/PMEditPane.h; sourceTree = SOURCE_ROOT; };
+		CEBA082213AE745B007DD3E0 /* PMEditPane.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PMEditPane.m; path = controllers/PMEditPane.m; sourceTree = SOURCE_ROOT; };
+		CEBA086513AE808B007DD3E0 /* PMBuildPane.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PMBuildPane.h; path = controllers/PMBuildPane.h; sourceTree = SOURCE_ROOT; };
+		CEBA086613AE808B007DD3E0 /* PMBuildPane.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PMBuildPane.m; path = controllers/PMBuildPane.m; sourceTree = SOURCE_ROOT; };
+		CEBA08A613AE8453007DD3E0 /* PMOpenedFileLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PMOpenedFileLabel.h; path = controllers/PMOpenedFileLabel.h; sourceTree = SOURCE_ROOT; };
+		CEBA08A713AE8453007DD3E0 /* PMOpenedFileLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PMOpenedFileLabel.m; path = controllers/PMOpenedFileLabel.m; sourceTree = SOURCE_ROOT; };
+		CEBA08C913AE87B4007DD3E0 /* PyColumns.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PyColumns.h; path = ../cocoalib/proxies/PyColumns.h; sourceTree = SOURCE_ROOT; };
+		CEBA08CA13AE87C1007DD3E0 /* HSColumns.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HSColumns.h; path = ../cocoalib/controllers/HSColumns.h; sourceTree = SOURCE_ROOT; };
+		CEBA08CB13AE87C1007DD3E0 /* HSColumns.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HSColumns.m; path = ../cocoalib/controllers/HSColumns.m; sourceTree = SOURCE_ROOT; };
+		CEBA08D013AE8A37007DD3E0 /* PMElementTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PMElementTable.h; path = controllers/PMElementTable.h; sourceTree = SOURCE_ROOT; };
+		CEBA08D113AE8A37007DD3E0 /* PMElementTable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PMElementTable.m; path = controllers/PMElementTable.m; sourceTree = SOURCE_ROOT; };
+		CEBA095E13AEAB11007DD3E0 /* HSTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HSTableView.h; path = ../cocoalib/views/HSTableView.h; sourceTree = SOURCE_ROOT; };
+		CEBA095F13AEAB11007DD3E0 /* HSTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HSTableView.m; path = ../cocoalib/views/HSTableView.m; sourceTree = SOURCE_ROOT; };
+		CEBA096C13AEAB48007DD3E0 /* NSEventAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NSEventAdditions.h; path = ../cocoalib/NSEventAdditions.h; sourceTree = SOURCE_ROOT; };
+		CEBA096D13AEAB48007DD3E0 /* NSEventAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NSEventAdditions.m; path = ../cocoalib/NSEventAdditions.m; sourceTree = SOURCE_ROOT; };
+		CEBA097813AEAB72007DD3E0 /* pyplugin.plugin */ = {isa = PBXFileReference; lastKnownFileType = folder; path = pyplugin.plugin; sourceTree = SOURCE_ROOT; };
+		CEC7F37C13AE555000BA9A74 /* PyApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PyApp.h; path = proxies/PyApp.h; sourceTree = SOURCE_ROOT; };
+		CEC7F37D13AE555000BA9A74 /* PyEditPane.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PyEditPane.h; path = proxies/PyEditPane.h; sourceTree = SOURCE_ROOT; };
+		CEC7F37E13AE555000BA9A74 /* PyElementTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PyElementTable.h; path = proxies/PyElementTable.h; sourceTree = SOURCE_ROOT; };
+		CEC7F37F13AE555000BA9A74 /* PyOpenedFileLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PyOpenedFileLabel.h; path = proxies/PyOpenedFileLabel.h; sourceTree = SOURCE_ROOT; };
+		CEC7F38013AE556600BA9A74 /* PMMainWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PMMainWindow.h; path = controllers/PMMainWindow.h; sourceTree = SOURCE_ROOT; };
+		CEC7F38113AE556600BA9A74 /* PMMainWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PMMainWindow.m; path = controllers/PMMainWindow.m; sourceTree = SOURCE_ROOT; };
+		CEC7F38513AE558700BA9A74 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		CEC7F3A113AE55CC00BA9A74 /* PyGUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PyGUI.h; path = ../cocoalib/proxies/PyGUI.h; sourceTree = SOURCE_ROOT; };
+		CEC7F3A313AE55CC00BA9A74 /* PyTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PyTable.h; path = ../cocoalib/proxies/PyTable.h; sourceTree = SOURCE_ROOT; };
+		CEC7F3A413AE55CC00BA9A74 /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utils.h; path = ../cocoalib/Utils.h; sourceTree = SOURCE_ROOT; };
+		CEC7F3A513AE55CC00BA9A74 /* Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Utils.m; path = ../cocoalib/Utils.m; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8D11072E0486CEB800E47090 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		080E96DDFE201D6D7F000001 /* controllers */ = {
+			isa = PBXGroup;
+			children = (
+				CEC7F38013AE556600BA9A74 /* PMMainWindow.h */,
+				CEC7F38113AE556600BA9A74 /* PMMainWindow.m */,
+				CEBA08A613AE8453007DD3E0 /* PMOpenedFileLabel.h */,
+				CEBA08A713AE8453007DD3E0 /* PMOpenedFileLabel.m */,
+				CEBA08D013AE8A37007DD3E0 /* PMElementTable.h */,
+				CEBA08D113AE8A37007DD3E0 /* PMElementTable.m */,
+				CEBA082113AE745B007DD3E0 /* PMEditPane.h */,
+				CEBA082213AE745B007DD3E0 /* PMEditPane.m */,
+				CEBA086513AE808B007DD3E0 /* PMBuildPane.h */,
+				CEBA086613AE808B007DD3E0 /* PMBuildPane.m */,
+			);
+			name = controllers;
+			sourceTree = "<group>";
+		};
+		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
+			);
+			name = "Linked Frameworks";
+			sourceTree = "<group>";
+		};
+		1058C7A2FEA54F0111CA2CBB /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
+				13E42FB307B3F0F600E4EEF1 /* CoreData.framework */,
+				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		19C28FACFE9D520D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8D1107320486CEB800E47090 /* PdfMasher.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		29B97314FDCFA39411CA2CEA /* PdfMasher */ = {
+			isa = PBXGroup;
+			children = (
+				29B97316FDCFA39411CA2CEA /* main.m */,
+				080E96DDFE201D6D7F000001 /* controllers */,
+				CEC7F37B13AE553E00BA9A74 /* proxies */,
+				CEC7F39F13AE55B400BA9A74 /* cocoalib */,
+				29B97317FDCFA39411CA2CEA /* Resources */,
+				29B97323FDCFA39411CA2CEA /* Frameworks */,
+				19C28FACFE9D520D11CA2CBB /* Products */,
+			);
+			name = PdfMasher;
+			sourceTree = "<group>";
+		};
+		29B97317FDCFA39411CA2CEA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				CEC7F38313AE557C00BA9A74 /* xib */,
+				8D1107310486CEB800E47090 /* Info.plist */,
+				CEBA097813AEAB72007DD3E0 /* pyplugin.plugin */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
+				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		CEBA080D13AE71BB007DD3E0 /* controllers */ = {
+			isa = PBXGroup;
+			children = (
+				CEBA08CA13AE87C1007DD3E0 /* HSColumns.h */,
+				CEBA08CB13AE87C1007DD3E0 /* HSColumns.m */,
+				CEBA080E13AE71BB007DD3E0 /* HSGUIController.h */,
+				CEBA080F13AE71BB007DD3E0 /* HSGUIController.m */,
+				CEBA081213AE71BB007DD3E0 /* HSTable.h */,
+				CEBA081313AE71BB007DD3E0 /* HSTable.m */,
+				CEBA081413AE71BB007DD3E0 /* HSWindowController.h */,
+				CEBA081513AE71BB007DD3E0 /* HSWindowController.m */,
+			);
+			name = controllers;
+			path = ../cocoalib/controllers;
+			sourceTree = SOURCE_ROOT;
+		};
+		CEBA095B13AEAB11007DD3E0 /* views */ = {
+			isa = PBXGroup;
+			children = (
+				CEBA095E13AEAB11007DD3E0 /* HSTableView.h */,
+				CEBA095F13AEAB11007DD3E0 /* HSTableView.m */,
+			);
+			name = views;
+			path = ../cocoalib/views;
+			sourceTree = SOURCE_ROOT;
+		};
+		CEC7F37B13AE553E00BA9A74 /* proxies */ = {
+			isa = PBXGroup;
+			children = (
+				CEC7F37C13AE555000BA9A74 /* PyApp.h */,
+				CEC7F37D13AE555000BA9A74 /* PyEditPane.h */,
+				CEC7F37E13AE555000BA9A74 /* PyElementTable.h */,
+				CEC7F37F13AE555000BA9A74 /* PyOpenedFileLabel.h */,
+			);
+			name = proxies;
+			sourceTree = "<group>";
+		};
+		CEC7F38313AE557C00BA9A74 /* xib */ = {
+			isa = PBXGroup;
+			children = (
+				CEC7F38413AE558700BA9A74 /* MainMenu.xib */,
+				CEBA080413AE70C1007DD3E0 /* EditPane.xib */,
+				CEBA080813AE70FF007DD3E0 /* BuildPane.xib */,
+			);
+			name = xib;
+			sourceTree = "<group>";
+		};
+		CEC7F39F13AE55B400BA9A74 /* cocoalib */ = {
+			isa = PBXGroup;
+			children = (
+				CEBA080D13AE71BB007DD3E0 /* controllers */,
+				CEBA095B13AEAB11007DD3E0 /* views */,
+				CEC7F3A013AE55CC00BA9A74 /* proxies */,
+				CEBA096C13AEAB48007DD3E0 /* NSEventAdditions.h */,
+				CEBA096D13AEAB48007DD3E0 /* NSEventAdditions.m */,
+				CEC7F3A413AE55CC00BA9A74 /* Utils.h */,
+				CEC7F3A513AE55CC00BA9A74 /* Utils.m */,
+			);
+			name = cocoalib;
+			sourceTree = "<group>";
+		};
+		CEC7F3A013AE55CC00BA9A74 /* proxies */ = {
+			isa = PBXGroup;
+			children = (
+				CEBA08C913AE87B4007DD3E0 /* PyColumns.h */,
+				CEC7F3A113AE55CC00BA9A74 /* PyGUI.h */,
+				CEC7F3A313AE55CC00BA9A74 /* PyTable.h */,
+			);
+			name = proxies;
+			path = ../cocoalib/proxies;
+			sourceTree = SOURCE_ROOT;
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8D1107260486CEB800E47090 /* PdfMasher */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "PdfMasher" */;
+			buildPhases = (
+				8D1107290486CEB800E47090 /* Resources */,
+				8D11072C0486CEB800E47090 /* Sources */,
+				8D11072E0486CEB800E47090 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PdfMasher;
+			productInstallPath = "$(HOME)/Applications";
+			productName = PdfMasher;
+			productReference = 8D1107320486CEB800E47090 /* PdfMasher.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		29B97313FDCFA39411CA2CEA /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "pdfmasher" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+				en,
+			);
+			mainGroup = 29B97314FDCFA39411CA2CEA /* PdfMasher */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8D1107260486CEB800E47090 /* PdfMasher */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8D1107290486CEB800E47090 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CEC7F38613AE558700BA9A74 /* MainMenu.xib in Resources */,
+				CEBA080613AE70C1007DD3E0 /* EditPane.xib in Resources */,
+				CEBA080A13AE70FF007DD3E0 /* BuildPane.xib in Resources */,
+				CEBA0B7A13AEAB72007DD3E0 /* pyplugin.plugin in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8D11072C0486CEB800E47090 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D11072D0486CEB800E47090 /* main.m in Sources */,
+				CEC7F38213AE556600BA9A74 /* PMMainWindow.m in Sources */,
+				CEC7F3A613AE55CC00BA9A74 /* Utils.m in Sources */,
+				CEBA081613AE71BB007DD3E0 /* HSGUIController.m in Sources */,
+				CEBA081813AE71BB007DD3E0 /* HSTable.m in Sources */,
+				CEBA081913AE71BB007DD3E0 /* HSWindowController.m in Sources */,
+				CEBA082313AE745B007DD3E0 /* PMEditPane.m in Sources */,
+				CEBA086713AE808B007DD3E0 /* PMBuildPane.m in Sources */,
+				CEBA08A813AE8453007DD3E0 /* PMOpenedFileLabel.m in Sources */,
+				CEBA08CC13AE87C1007DD3E0 /* HSColumns.m in Sources */,
+				CEBA08D213AE8A37007DD3E0 /* PMElementTable.m in Sources */,
+				CEBA096513AEAB11007DD3E0 /* HSTableView.m in Sources */,
+				CEBA096E13AEAB48007DD3E0 /* NSEventAdditions.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		CEBA080413AE70C1007DD3E0 /* EditPane.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CEBA080513AE70C1007DD3E0 /* en */,
+			);
+			name = EditPane.xib;
+			sourceTree = "<group>";
+		};
+		CEBA080813AE70FF007DD3E0 /* BuildPane.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CEBA080913AE70FF007DD3E0 /* en */,
+			);
+			name = BuildPane.xib;
+			sourceTree = "<group>";
+		};
+		CEC7F38413AE558700BA9A74 /* MainMenu.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CEC7F38513AE558700BA9A74 /* en */,
+			);
+			name = MainMenu.xib;
+			sourceTree = SOURCE_ROOT;
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		C01FCF4C08A954540054247B /* release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				PRODUCT_NAME = PdfMasher;
+			};
+			name = release;
+		};
+		C01FCF5008A954540054247B /* release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					x86_64,
+					i386,
+					ppc,
+				);
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				SDKROOT = macosx10.5;
+			};
+			name = release;
+		};
+		CEBA095313AEAA6C007DD3E0 /* dev */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				SDKROOT = macosx10.5;
+			};
+			name = dev;
+		};
+		CEBA095413AEAA6C007DD3E0 /* dev */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				PRODUCT_NAME = PdfMasher;
+			};
+			name = dev;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "PdfMasher" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF4C08A954540054247B /* release */,
+				CEBA095413AEAA6C007DD3E0 /* dev */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = release;
+		};
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "pdfmasher" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C01FCF5008A954540054247B /* release */,
+				CEBA095313AEAA6C007DD3E0 /* dev */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+}

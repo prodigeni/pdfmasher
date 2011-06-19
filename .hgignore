@@ -3,5 +3,10 @@ syntax: glob
 __pycache__
 .DS_Store
 run.py
+conf.json
 build
 dist
+cocoa/Info.plist
+cocoa/pyplugin.plugin
+
+*.pdf

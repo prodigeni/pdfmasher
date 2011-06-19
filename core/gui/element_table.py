@@ -33,6 +33,10 @@ class ElementRow(Row):
     
 
 class ElementTable(GUIObject, GUITable):
+    #--- model -> view calls:
+    # refresh()
+    #
+    
     def __init__(self, view, app):
         GUIObject.__init__(self, view, app)
         GUITable.__init__(self)
