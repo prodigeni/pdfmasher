@@ -14,6 +14,11 @@ class EditPane(GUIObject):
         self.edit_text = ''
         self.edit_enabled = False
     
+    def connect(self):
+        GUIObject.connect(self)
+        self.view.refresh_edit_text()
+    
+    #--- Public
     def save_edits(self):
         elements = self.app.selected_elements
         len(elements) == 1
