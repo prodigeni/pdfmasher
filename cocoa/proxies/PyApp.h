@@ -1,7 +1,7 @@
 #import <Cocoa/Cocoa.h>
 
 @interface PyApp : NSObject {}
-- (void)buildHtml;
+- (NSString *)buildHtml;
 - (void)changeStateOfSelected:(NSString *)newstate;
 - (void)openFile:(NSString *)path;
 - (BOOL)hideIgnored;

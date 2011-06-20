@@ -24,7 +24,8 @@ http://www.hardcoded.net/licenses/bsd_license
         
 - (IBAction)viewHTML:(id)sender
 {
-    [app buildHtml];
+    NSString *path = [app buildHtml];
+    [[NSWorkspace sharedWorkspace] openFile:path];
 }
 
 @end
