@@ -25,7 +25,8 @@ def package_windows(dev):
     if op.exists('dist'):
         shutil.rmtree('dist')
     
-    cmd = 'cxfreeze --base-name Win32GUI --target-name "PdfMasher.exe" --icon images\\main_icon.ico run.py'
+    # Since v4.2.3, cx_freeze started to falsely include tkinter in the package. We exclude it explicitly because of that.
+    cmd = 'cxfreeze --base-name Win32GUI --target-name "PdfMasher.exe" --icon images\\main_icon.ico --exclude-modules tkinter run.py'
     print_and_do(cmd)
     
     if not dev:
