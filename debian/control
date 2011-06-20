@@ -1,0 +1,12 @@
+Source: pdfmasher
+Section: devel
+Priority: extra
+Maintainer: Virgil Dupras <hsoft@hardcoded.net>
+Build-Depends: debhelper (>= 7)
+Standards-Version: 3.8.1
+Homepage: http://www.hardcoded.net
+
+Package: pdfmasher
+Architecture: any
+Depends: python3, libqtgui4
+Description: PdfMasher
