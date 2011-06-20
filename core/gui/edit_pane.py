@@ -27,6 +27,9 @@ class EditPane(GUIObject):
         elements = self.app.selected_elements
         len(elements) == 1
         elements[0].text = self.edit_text
+        # XXX Ok, this is a horrible hack, but I'll straighten this out later
+        # we need to refresh the elements table
+        self.app.notify('elements_changed')
     
     def cancel_edits(self):
         self.elements_selected()
