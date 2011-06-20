@@ -54,14 +54,14 @@ def package_windows(dev):
 
 def package_debian():
     app_version = get_module_version('core')
-    destpath = op.join('build', 'moneyguru-{}'.format(app_version))
+    destpath = op.join('build', 'pdfmasher-{}'.format(app_version))
     if op.exists(destpath):
         shutil.rmtree(destpath)
     srcpath = op.join(destpath, 'src')
     os.makedirs(srcpath)
     shutil.copy('run.py', op.join(srcpath, 'run.py'))
     copy_packages(['qt', 'hscommon', 'core', 'qtlib'], srcpath)
-    import sip, PyQt4, sgmllib
+    import sip, PyQt4
     shutil.copy(sip.__file__, srcpath)
     qtsrcpath = op.dirname(PyQt4.__file__)
     qtdestpath = op.join(srcpath, 'PyQt4')
@@ -70,10 +70,9 @@ def package_debian():
     shutil.copy(op.join(qtsrcpath, 'Qt.so'), qtdestpath)
     shutil.copy(op.join(qtsrcpath, 'QtCore.so'), qtdestpath)
     shutil.copy(op.join(qtsrcpath, 'QtGui.so'), qtdestpath)
-    shutil.copy(sgmllib.__file__, srcpath)
     shutil.copytree('debian', op.join(destpath, 'debian'))
     build_debian_changelog(op.join('help', 'changelog'), op.join(destpath, 'debian', 'changelog'),
-        'moneyguru', from_version='1.8.0')
+        'pdfmasher', from_version='0.1.0')
     shutil.copytree(op.join('build', 'help'), op.join(srcpath, 'help'))
     shutil.copy(op.join('images', 'logo_small.png'), srcpath)
     compileall.compile_dir(srcpath)
