@@ -8,5 +8,8 @@ build
 dist
 cocoa/Info.plist
 cocoa/pyplugin.plugin
+qt/pm_rc.py
 
+*.mode1v3
+*.pbxuser
 *.pdf

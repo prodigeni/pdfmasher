@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		CEA0155E13AF816900C6D985 /* main_icon.icns in Resources */ = {isa = PBXBuildFile; fileRef = CEA0155D13AF816900C6D985 /* main_icon.icns */; };
 		CEBA080613AE70C1007DD3E0 /* EditPane.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEBA080413AE70C1007DD3E0 /* EditPane.xib */; };
 		CEBA080A13AE70FF007DD3E0 /* BuildPane.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEBA080813AE70FF007DD3E0 /* BuildPane.xib */; };
 		CEBA081613AE71BB007DD3E0 /* HSGUIController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBA080F13AE71BB007DD3E0 /* HSGUIController.m */; };
@@ -35,6 +36,7 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* PdfMasher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PdfMasher.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CEA0155D13AF816900C6D985 /* main_icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = main_icon.icns; path = ../images/main_icon.icns; sourceTree = SOURCE_ROOT; };
 		CEBA080513AE70C1007DD3E0 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/EditPane.xib; sourceTree = "<group>"; };
 		CEBA080913AE70FF007DD3E0 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/BuildPane.xib; sourceTree = "<group>"; };
 		CEBA080E13AE71BB007DD3E0 /* HSGUIController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HSGUIController.h; path = ../cocoalib/controllers/HSGUIController.h; sourceTree = SOURCE_ROOT; };
@@ -146,6 +148,7 @@
 			children = (
 				CEC7F38313AE557C00BA9A74 /* xib */,
 				8D1107310486CEB800E47090 /* Info.plist */,
+				CEA0155D13AF816900C6D985 /* main_icon.icns */,
 				CEBA097813AEAB72007DD3E0 /* pyplugin.plugin */,
 			);
 			name = Resources;
@@ -287,6 +290,7 @@
 				CEBA080613AE70C1007DD3E0 /* EditPane.xib in Resources */,
 				CEBA080A13AE70FF007DD3E0 /* BuildPane.xib in Resources */,
 				CEBA0B7A13AEAB72007DD3E0 /* pyplugin.plugin in Resources */,
+				CEA0155E13AF816900C6D985 /* main_icon.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -351,7 +355,6 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "$(HOME)/Applications";
 				PRODUCT_NAME = PdfMasher;
 			};
 			name = release;

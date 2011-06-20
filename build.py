@@ -12,7 +12,7 @@ import os.path as op
 import shutil
 import json
 
-from hscommon.build import copy_packages, get_module_version, filereplace
+from hscommon.build import print_and_do, copy_packages, get_module_version, filereplace
 
 def build_cocoa(dev):
     from pluginbuilder import build_plugin
@@ -62,6 +62,11 @@ def build_cocoa(dev):
     open('run.py', 'wt').write(run_contents)
 
 def build_qt():
+    print("Building resource file")
+    qrc_path = op.join('qt', 'pm.qrc')
+    pyrc_path = op.join('qt', 'pm_rc.py')
+    print_and_do("pyrcc4 -py3 {0} > {1}".format(qrc_path, pyrc_path))
+    print("Creating the run.py file")
     runtemplate_path = op.join('qt', 'runtemplate.py')
     shutil.copy(runtemplate_path, 'run.py')
 
