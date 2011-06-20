@@ -67,7 +67,8 @@ then run::
 ([osx|win|lnx] depends, of course, on your platform). Because Sphinx doesn't support Python 3 yet,
 it's not in the requirements file and you'll have to install it manually. You might have to compile
 PyObjC manually too (see gotchas below). Sparkle and Advanced Installer, having nothing to do with
-Python, are also manual installs.
+Python, are also manual installs. PyQt also needs to be installed manually: the package is on PyPI,
+but there's no download available.
 
 Prerequisite gotchas
 --------------------
