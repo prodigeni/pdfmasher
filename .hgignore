@@ -9,6 +9,7 @@ dist
 cocoa/Info.plist
 cocoa/pyplugin.plugin
 qt/pm_rc.py
+help/*/changelog.rst
 
 *.mode1v3
 *.pbxuser

@@ -11,8 +11,21 @@ import os
 import os.path as op
 import shutil
 import json
+from argparse import ArgumentParser
 
+from hscommon import sphinxgen
 from hscommon.build import print_and_do, copy_packages, get_module_version, filereplace
+
+def parse_args():
+    parser = ArgumentParser()
+    parser.add_argument('--clean', action='store_true', dest='clean',
+        help="Clean build folder before building")
+    parser.add_argument('--doc', action='store_true', dest='doc',
+        help="Build only the help file")
+    parser.add_argument('--loc', action='store_true', dest='loc',
+        help="Build only localization")
+    args = parser.parse_args()
+    return args
 
 def build_cocoa(dev):
     from pluginbuilder import build_plugin
@@ -70,24 +83,47 @@ def build_qt():
     runtemplate_path = op.join('qt', 'runtemplate.py')
     shutil.copy(runtemplate_path, 'run.py')
 
+def build_help():
+    print("Generating Help")
+    platform = 'osx' if sys.platform == 'darwin' else 'win'
+    current_path = op.abspath('.')
+    confpath = op.join(current_path, 'help', 'conf.tmpl')
+    help_basepath = op.join(current_path, 'help', 'en')
+    help_destpath = op.join(current_path, 'build', 'help')
+    changelog_path = op.join(current_path, 'help', 'changelog')
+    tixurl = "http://noneyet/{0}"
+    confrepl = {'platform': platform}
+    sphinxgen.gen(help_basepath, help_destpath, changelog_path, tixurl, confrepl, confpath)
+
+def build_normal(ui, dev):
+    print("Building PdfMasher with UI {}".format(ui))
+    # add_to_pythonpath('.')
+    build_help()
+    # build_localizations(ui)
+    if ui == 'cocoa':
+        build_cocoa(dev)
+    elif ui == 'qt':
+        build_qt()
+
 def main():
+    args = parse_args()
     conf = json.load(open('conf.json'))
     ui = conf['ui']
     dev = conf['dev']
     print("Building PdfMasher with UI {0}".format(ui))
     if dev:
         print("Building in Dev mode")
-    if op.exists('build'):
-        shutil.rmtree('build')
-    os.mkdir('build')
-    # build_help()
-    # if dev:
-    #     print("Generating devdocs")
-    #     print_and_do('sphinx-build devdoc devdoc_html')
-    if ui == 'cocoa':
-        build_cocoa(dev)
-    elif ui == 'qt':
-        build_qt()
+    if args.clean:
+        if op.exists('build'):
+            shutil.rmtree('build')
+    if not op.exists('build'):
+        os.mkdir('build')
+    if args.doc:
+        build_help()
+    # elif args.loc:
+    #     build_localizations(ui)
+    else:
+        build_normal(ui, dev)
 
 if __name__ == '__main__':
     main()
