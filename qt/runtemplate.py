@@ -13,6 +13,7 @@ sip.setapi('QVariant', 1)
 
 from PyQt4.QtGui import QApplication, QIcon, QPixmap
 
+from qtlib.error_report_dialog import install_excepthook
 from hscommon.trans import install_qt_trans
 from core import __appname__, __version__
 import qt.pm_rc
@@ -26,6 +27,7 @@ def main(argv):
     install_qt_trans('en')
     from qt.app import PdfMasher
     pmapp = PdfMasher()
+    install_excepthook()
     return app.exec_()
 
 if __name__ == "__main__":

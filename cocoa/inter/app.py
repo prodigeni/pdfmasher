@@ -6,6 +6,9 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/bsd_license
 
+import logging
+
+from hscommon.cocoa import install_exception_hook
 from hscommon.cocoa.inter import signature, PyFairware
 
 from core import __appname__
@@ -15,6 +18,8 @@ class PyApp(PyFairware):
     def init(self):
         self = super(PyApp, self).init()
         self.py = App()
+        logging.basicConfig(level=logging.WARNING, format='%(levelname)s %(message)s')
+        install_exception_hook()
         return self
     
     def buildHtml(self):

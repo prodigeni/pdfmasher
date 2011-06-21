@@ -39,7 +39,9 @@ def build_cocoa(dev):
     # build_all_cocoa_locs('cocoa')
         
     print("Building py.plugin")
-    if not dev:
+    if dev:
+        copy_packages(['cocoa/inter'], 'build')
+    else:
         copy_packages(['core', 'hscommon', 'cocoa/inter'], 'build')
     shutil.copy('cocoa/pyplugin.py', 'build')
     os.chdir('build')
