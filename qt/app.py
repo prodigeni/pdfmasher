@@ -7,7 +7,10 @@
 # http://www.hardcoded.net/licenses/bsd_license
 
 import sys
+import os
 import os.path as op
+import logging
+
 from PyQt4.QtCore import SIGNAL, QUrl, QCoreApplication, QProcess
 from PyQt4.QtGui import QDesktopServices
 
@@ -26,6 +29,12 @@ class PdfMasher(ApplicationBase):
     LOGO_NAME = 'logo'
     
     def __init__(self):
+        appdata = str(QDesktopServices.storageLocation(QDesktopServices.DataLocation))
+        if not op.exists(appdata):
+            os.makedirs(appdata)
+        # For basicConfig() to work, we have to be sure that no logging has taken place before this call.
+        logging.basicConfig(filename=op.join(appdata, 'debug.log'), level=logging.WARNING,
+            format='%(asctime)s - %(levelname)s - %(message)s')
         ApplicationBase.__init__(self)
         self._setupActions()
         self.prefs = Preferences()
@@ -71,10 +80,10 @@ class PdfMasher(ApplicationBase):
         QProcess.execute('updater.exe', ['/checknow'])
     
     def openDebugLogTriggered(self):
-        #XXX define appdata
-        # debugLogPath = op.join(self.appdata, 'debug.log')
-        # self._open_path(debugLogPath)
-        pass
+        appdata = QDesktopServices.storageLocation(QDesktopServices.DataLocation)
+        debugLogPath = op.join(appdata, 'debug.log')
+        url = QUrl.fromLocalFile(debugLogPath)
+        QDesktopServices.openUrl(url)
     
     def quitTriggered(self):
         self.mainWindow.close()
