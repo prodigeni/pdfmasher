@@ -8,14 +8,16 @@
 
 import os.path as op
 
+from hscommon.reg import RegistrableApplication
 from hscommon.notify import Broadcaster
 
 from .pdf import extract_text_elements_from_pdf
 from .html import generate_html
 
-class App(Broadcaster):
+class App(Broadcaster, RegistrableApplication):
     def __init__(self):
         Broadcaster.__init__(self)
+        RegistrableApplication.__init__(self, appid=6)
         self.current_path = None
         self._hide_ignored = False
         self.selected_elements = []

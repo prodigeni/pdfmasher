@@ -20,13 +20,13 @@ class EditPane(QWidget):
         QWidget.__init__(self)
         self.app = app
         self._setupUi()
-        self.model = EditPaneModel(view=self, app=app)
+        self.model = EditPaneModel(view=self, app=app.model)
         self.model.connect()
         
-        self.normalButton.clicked.connect(partial(self.app.change_state_of_selected, ElementState.Normal))
-        self.titleButton.clicked.connect(partial(self.app.change_state_of_selected, ElementState.Title))
-        self.footnoteButton.clicked.connect(partial(self.app.change_state_of_selected, ElementState.Footnote))
-        self.ignoreButton.clicked.connect(partial(self.app.change_state_of_selected, ElementState.Ignored))
+        self.normalButton.clicked.connect(partial(self.app.model.change_state_of_selected, ElementState.Normal))
+        self.titleButton.clicked.connect(partial(self.app.model.change_state_of_selected, ElementState.Title))
+        self.footnoteButton.clicked.connect(partial(self.app.model.change_state_of_selected, ElementState.Footnote))
+        self.ignoreButton.clicked.connect(partial(self.app.model.change_state_of_selected, ElementState.Ignored))
         self.hideIgnoredCheckBox.stateChanged.connect(self.hideIgnoredCheckBoxStateChanged)
         self.textEdit.textChanged.connect(self.textEditTextChanged)
         self.saveEditsButton.clicked.connect(self.model.save_edits)
@@ -63,7 +63,7 @@ class EditPane(QWidget):
         
     #--- Signals
     def hideIgnoredCheckBoxStateChanged(self, state):
-        self.app.hide_ignored = state == Qt.Checked
+        self.app.model.hide_ignored = state == Qt.Checked
     
     def textEditTextChanged(self):
         self.model.edit_text = self.textEdit.toPlainText()

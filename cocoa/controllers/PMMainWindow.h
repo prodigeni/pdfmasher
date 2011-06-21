@@ -11,13 +11,14 @@ http://www.hardcoded.net/licenses/bsd_license
 #import "PMBuildPane.h"
 #import "PMOpenedFileLabel.h"
 #import "PMElementTable.h"
-#import "PyApp.h"
+#import "PMAppDelegate.h"
 
 @interface PMMainWindow : NSWindowController
 {
     IBOutlet NSTextField *openedFileLabelView;
     IBOutlet NSTableView *elementsTableView;
     IBOutlet NSTabView *tabView;
+    IBOutlet PMAppDelegate *appDelegate;
     
     PyApp *app;
     PMOpenedFileLabel *openedFileLabel;

@@ -1,6 +1,7 @@
 #import <Cocoa/Cocoa.h>
+#import "PyFairware.h"
 
-@interface PyApp : NSObject {}
+@interface PyApp : PyFairware {}
 - (NSString *)buildHtml;
 - (void)changeStateOfSelected:(NSString *)newstate;
 - (void)openFile:(NSString *)path;

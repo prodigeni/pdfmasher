@@ -1,5 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
+    <file alias="en.qm">lang/en.qm</file>
     <file alias="logo_big">../images/logo_big.png</file>
     <file alias="logo_small">../images/logo_small.png</file>
 </qresource>

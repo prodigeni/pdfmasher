@@ -11,7 +11,7 @@ There are already tools to convert PDFs to ebooks like `Calibre`_, but what they
 to guess the role of each piece of text in the PDF. I think that in all but the simplest cases, it's
 a mistake to think that anything short of an AI can do that kind of guessing.
 
-Enter PdfMasher. PdfMasher asks for the user about the role of each piece of text, and does it in
+Enter PdfMasher. PdfMasher asks the user about the role of each piece of text, and does it in
 an efficient manner. Your PDF has a header on each page and you don't want them to litter your text?
 Sort text elements by Y-position (thus grouping them all together), shift select the elements and
 flag them as ignored. They will not appear on your final HTML. Your PDF has footnotes on many pages? 

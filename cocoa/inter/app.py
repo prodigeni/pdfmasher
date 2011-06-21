@@ -6,14 +6,12 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/bsd_license
 
-import objc
-NSObject = objc.lookUpClass('NSObject')
+from hscommon.cocoa.inter import signature, PyFairware
 
-from hscommon.cocoa.inter import signature
-
+from core import __appname__
 from core.app import App
 
-class PyApp(NSObject):
+class PyApp(PyFairware):
     def init(self):
         self = super(PyApp, self).init()
         self.py = App()
@@ -35,4 +33,8 @@ class PyApp(NSObject):
     @signature('v@:c')
     def setHideIgnored_(self, value):
         self.py.hide_ignored = value
+    
+    #---Registration
+    def appName(self):
+        return __appname__
     

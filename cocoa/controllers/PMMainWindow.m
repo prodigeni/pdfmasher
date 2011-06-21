@@ -7,14 +7,12 @@ http://www.hardcoded.net/licenses/bsd_license
 */
 
 #import "PMMainWindow.h"
-#import "Utils.h"
 
 @implementation PMMainWindow
 - (void)awakeFromNib
 {
     [self window];
-    Class PyApp = [Utils classNamed:@"PyApp"];
-    app = [[PyApp alloc] init];
+    app = [appDelegate py];
     openedFileLabel = [[PMOpenedFileLabel alloc] initWithPyParent:app view:openedFileLabelView];
     elementTable = [[PMElementTable alloc] initWithPyParent:app view:elementsTableView];
     editPane = [[PMEditPane alloc] initWithPyParent:app];
@@ -38,7 +36,6 @@ http://www.hardcoded.net/licenses/bsd_license
     [elementTable release];
     [editPane release];
     [buildPane release];
-    [app release];
     [super dealloc];
 }
 

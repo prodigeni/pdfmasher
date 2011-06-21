@@ -8,19 +8,24 @@
 # http://www.hardcoded.net/licenses/bsd_license
 
 import sys
+import sip
+sip.setapi('QVariant', 1)
 
 from PyQt4.QtGui import QApplication, QIcon, QPixmap
 
-from qt.mainwindow import MainWindow
+from hscommon.trans import install_qt_trans
+from core import __appname__, __version__
 import qt.pm_rc
 
 def main(argv):
     app = QApplication(argv)
     app.setWindowIcon(QIcon(QPixmap(":/logo_small")))
     app.setOrganizationName("Hardcoded Software")
-    app.setApplicationName("PdfMasher")
-    mw = MainWindow()
-    mw.show()
+    app.setApplicationName(__appname__)
+    app.setApplicationVersion(__version__)
+    install_qt_trans('en')
+    from qt.app import PdfMasher
+    pmapp = PdfMasher()
     return app.exec_()
 
 if __name__ == "__main__":

@@ -14,7 +14,8 @@ import json
 from argparse import ArgumentParser
 
 from hscommon import sphinxgen
-from hscommon.build import print_and_do, copy_packages, get_module_version, filereplace
+from hscommon.build import (print_and_do, copy_packages, get_module_version, filereplace,
+    build_all_qt_locs)
 
 def parse_args():
     parser = ArgumentParser()
@@ -95,11 +96,16 @@ def build_help():
     confrepl = {'platform': platform}
     sphinxgen.gen(help_basepath, help_destpath, changelog_path, tixurl, confrepl, confpath)
 
+def build_localizations(ui):
+    print("Building localizations")
+    if ui == 'qt':
+        print("Building .ts files")
+        build_all_qt_locs(op.join('qt', 'lang'), extradirs=[op.join('qtlib', 'lang')])
+
 def build_normal(ui, dev):
     print("Building PdfMasher with UI {}".format(ui))
-    # add_to_pythonpath('.')
     build_help()
-    # build_localizations(ui)
+    build_localizations(ui)
     if ui == 'cocoa':
         build_cocoa(dev)
     elif ui == 'qt':
@@ -120,8 +126,8 @@ def main():
         os.mkdir('build')
     if args.doc:
         build_help()
-    # elif args.loc:
-    #     build_localizations(ui)
+    elif args.loc:
+        build_localizations(ui)
     else:
         build_normal(ui, dev)
 

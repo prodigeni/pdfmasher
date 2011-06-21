@@ -6,23 +6,47 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/bsd_license
 
-from PyQt4.QtCore import QCoreApplication, QUrl
+from PyQt4.QtCore import QCoreApplication, QUrl, QRect
 from PyQt4.QtGui import (QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QFileDialog,
-    QTabWidget, QSizePolicy, QDesktopServices)
+    QTabWidget, QSizePolicy, QDesktopServices, QMenuBar, QMenu)
 
-from core.app import App
+from hscommon.trans import tr
+from qtlib.util import moveToScreenCenter
 from .element_table import ElementTable, ElementTableView
 from .opened_file_label import OpenedFileLabel
 from .edit_pane import EditPane
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, app):
         QMainWindow.__init__(self, None)
-        self.app = App()
+        self.app = app
         self._setupUi()
         self.elementTable = ElementTable(self.app, self.elementTableView)
         
         self.openButton.clicked.connect(self.openButtonClicked)
+    
+    def _setupActions(self):
+        # None for now
+        pass
+    
+    def _setupMenu(self):
+        self.menubar = QMenuBar(self)
+        self.menubar.setGeometry(QRect(0, 0, 42, 22))
+        self.menuFile = QMenu(self.menubar)
+        self.menuFile.setTitle(tr("File"))
+        self.menuHelp = QMenu(self.menubar)
+        self.menuHelp.setTitle(tr("Help"))
+        self.setMenuBar(self.menubar)
+        
+        self.menuFile.addAction(self.app.actionQuit)
+        self.menuHelp.addAction(self.app.actionShowHelp)
+        self.menuHelp.addAction(self.app.actionRegister)
+        self.menuHelp.addAction(self.app.actionCheckForUpdate)
+        self.menuHelp.addAction(self.app.actionOpenDebugLog)
+        self.menuHelp.addAction(self.app.actionAbout)
+        
+        self.menubar.addAction(self.menuFile.menuAction())
+        self.menubar.addAction(self.menuHelp.menuAction())
     
     def _setupUi(self):
         self.setWindowTitle(QCoreApplication.instance().applicationName())
@@ -52,6 +76,10 @@ class MainWindow(QMainWindow):
         self.tabWidget.addTab(self.buildTab, "Build")
         self.verticalLayout.addWidget(self.tabWidget)
         self.setCentralWidget(self.mainWidget)
+        
+        self._setupActions()
+        self._setupMenu()
+        moveToScreenCenter(self)
     
     #--- Signals
     def openButtonClicked(self):
@@ -59,7 +87,7 @@ class MainWindow(QMainWindow):
         files = ';;'.join(["PDF file (*.pdf)", "All Files (*.*)"])
         destination = QFileDialog.getOpenFileName(self, title, '', files)
         if destination:
-            self.app.open_file(destination)
+            self.app.model.open_file(destination)
     
 
 class BuildPane(QWidget):
@@ -77,7 +105,7 @@ class BuildPane(QWidget):
     
     #--- Signals
     def viewHtmlButtonClicked(self):
-        html_path = self.app.build_html()
+        html_path = self.app.model.build_html()
         url = QUrl.fromLocalFile(html_path)
         QDesktopServices.openUrl(url)
     

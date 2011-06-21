@@ -26,6 +26,15 @@
 		CEC7F38213AE556600BA9A74 /* PMMainWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = CEC7F38113AE556600BA9A74 /* PMMainWindow.m */; };
 		CEC7F38613AE558700BA9A74 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEC7F38413AE558700BA9A74 /* MainMenu.xib */; };
 		CEC7F3A613AE55CC00BA9A74 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = CEC7F3A513AE55CC00BA9A74 /* Utils.m */; };
+		CEFFF29813B0B8FF00BEA8D5 /* HSAboutBox.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFFF29713B0B8FF00BEA8D5 /* HSAboutBox.m */; };
+		CEFFF2A713B0B96200BEA8D5 /* about.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEFFF29C13B0B96200BEA8D5 /* about.xib */; };
+		CEFFF2A913B0B96200BEA8D5 /* ErrorReportWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEFFF2A013B0B96200BEA8D5 /* ErrorReportWindow.xib */; };
+		CEFFF2AB13B0B96200BEA8D5 /* FairwareReminder.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEFFF2A413B0B96200BEA8D5 /* FairwareReminder.xib */; };
+		CEFFF2C013B0BA9B00BEA8D5 /* HSFairwareReminder.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFFF2BF13B0BA9B00BEA8D5 /* HSFairwareReminder.m */; };
+		CEFFF2C613B0BAB200BEA8D5 /* Dialogs.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFFF2C513B0BAB200BEA8D5 /* Dialogs.m */; };
+		CEFFF2D113B0BD3100BEA8D5 /* BRSingleLineFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFFF2D013B0BD3100BEA8D5 /* BRSingleLineFormatter.m */; };
+		CEFFF2E613B0BFA500BEA8D5 /* PMAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFFF2E513B0BFA500BEA8D5 /* PMAppDelegate.m */; };
+		CEFFF33D13B0C23700BEA8D5 /* help in Resources */ = {isa = PBXBuildFile; fileRef = CEFFF31313B0C23700BEA8D5 /* help */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -72,6 +81,21 @@
 		CEC7F3A313AE55CC00BA9A74 /* PyTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PyTable.h; path = ../cocoalib/proxies/PyTable.h; sourceTree = SOURCE_ROOT; };
 		CEC7F3A413AE55CC00BA9A74 /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utils.h; path = ../cocoalib/Utils.h; sourceTree = SOURCE_ROOT; };
 		CEC7F3A513AE55CC00BA9A74 /* Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Utils.m; path = ../cocoalib/Utils.m; sourceTree = SOURCE_ROOT; };
+		CEFFF29613B0B8FF00BEA8D5 /* HSAboutBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HSAboutBox.h; path = ../cocoalib/HSAboutBox.h; sourceTree = SOURCE_ROOT; };
+		CEFFF29713B0B8FF00BEA8D5 /* HSAboutBox.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HSAboutBox.m; path = ../cocoalib/HSAboutBox.m; sourceTree = SOURCE_ROOT; };
+		CEFFF29D13B0B96200BEA8D5 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = about.xib; sourceTree = "<group>"; };
+		CEFFF2A113B0B96200BEA8D5 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = ErrorReportWindow.xib; sourceTree = "<group>"; };
+		CEFFF2A513B0B96200BEA8D5 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = FairwareReminder.xib; sourceTree = "<group>"; };
+		CEFFF2AC13B0B9E200BEA8D5 /* PyFairware.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PyFairware.h; path = ../cocoalib/PyFairware.h; sourceTree = SOURCE_ROOT; };
+		CEFFF2BE13B0BA9B00BEA8D5 /* HSFairwareReminder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HSFairwareReminder.h; path = ../cocoalib/HSFairwareReminder.h; sourceTree = SOURCE_ROOT; };
+		CEFFF2BF13B0BA9B00BEA8D5 /* HSFairwareReminder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HSFairwareReminder.m; path = ../cocoalib/HSFairwareReminder.m; sourceTree = SOURCE_ROOT; };
+		CEFFF2C413B0BAB200BEA8D5 /* Dialogs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Dialogs.h; path = ../cocoalib/Dialogs.h; sourceTree = SOURCE_ROOT; };
+		CEFFF2C513B0BAB200BEA8D5 /* Dialogs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Dialogs.m; path = ../cocoalib/Dialogs.m; sourceTree = SOURCE_ROOT; };
+		CEFFF2CF13B0BD3100BEA8D5 /* BRSingleLineFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BRSingleLineFormatter.h; path = ../cocoalib/brsinglelineformatter/BRSingleLineFormatter.h; sourceTree = SOURCE_ROOT; };
+		CEFFF2D013B0BD3100BEA8D5 /* BRSingleLineFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BRSingleLineFormatter.m; path = ../cocoalib/brsinglelineformatter/BRSingleLineFormatter.m; sourceTree = SOURCE_ROOT; };
+		CEFFF2E413B0BFA500BEA8D5 /* PMAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PMAppDelegate.h; path = controllers/PMAppDelegate.h; sourceTree = SOURCE_ROOT; };
+		CEFFF2E513B0BFA500BEA8D5 /* PMAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PMAppDelegate.m; path = controllers/PMAppDelegate.m; sourceTree = SOURCE_ROOT; };
+		CEFFF31313B0C23700BEA8D5 /* help */ = {isa = PBXFileReference; lastKnownFileType = folder; name = help; path = ../build/help; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,6 +113,8 @@
 		080E96DDFE201D6D7F000001 /* controllers */ = {
 			isa = PBXGroup;
 			children = (
+				CEFFF2E413B0BFA500BEA8D5 /* PMAppDelegate.h */,
+				CEFFF2E513B0BFA500BEA8D5 /* PMAppDelegate.m */,
 				CEC7F38013AE556600BA9A74 /* PMMainWindow.h */,
 				CEC7F38113AE556600BA9A74 /* PMMainWindow.m */,
 				CEBA08A613AE8453007DD3E0 /* PMOpenedFileLabel.h */,
@@ -150,6 +176,7 @@
 				8D1107310486CEB800E47090 /* Info.plist */,
 				CEA0155D13AF816900C6D985 /* main_icon.icns */,
 				CEBA097813AEAB72007DD3E0 /* pyplugin.plugin */,
+				CEFFF31313B0C23700BEA8D5 /* help */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -216,8 +243,18 @@
 				CEBA080D13AE71BB007DD3E0 /* controllers */,
 				CEBA095B13AEAB11007DD3E0 /* views */,
 				CEC7F3A013AE55CC00BA9A74 /* proxies */,
+				CEFFF29913B0B96200BEA8D5 /* xib */,
+				CEFFF2CF13B0BD3100BEA8D5 /* BRSingleLineFormatter.h */,
+				CEFFF2D013B0BD3100BEA8D5 /* BRSingleLineFormatter.m */,
+				CEFFF2C413B0BAB200BEA8D5 /* Dialogs.h */,
+				CEFFF2C513B0BAB200BEA8D5 /* Dialogs.m */,
+				CEFFF29613B0B8FF00BEA8D5 /* HSAboutBox.h */,
+				CEFFF29713B0B8FF00BEA8D5 /* HSAboutBox.m */,
+				CEFFF2BE13B0BA9B00BEA8D5 /* HSFairwareReminder.h */,
+				CEFFF2BF13B0BA9B00BEA8D5 /* HSFairwareReminder.m */,
 				CEBA096C13AEAB48007DD3E0 /* NSEventAdditions.h */,
 				CEBA096D13AEAB48007DD3E0 /* NSEventAdditions.m */,
+				CEFFF2AC13B0B9E200BEA8D5 /* PyFairware.h */,
 				CEC7F3A413AE55CC00BA9A74 /* Utils.h */,
 				CEC7F3A513AE55CC00BA9A74 /* Utils.m */,
 			);
@@ -233,6 +270,17 @@
 			);
 			name = proxies;
 			path = ../cocoalib/proxies;
+			sourceTree = SOURCE_ROOT;
+		};
+		CEFFF29913B0B96200BEA8D5 /* xib */ = {
+			isa = PBXGroup;
+			children = (
+				CEFFF29C13B0B96200BEA8D5 /* about.xib */,
+				CEFFF2A013B0B96200BEA8D5 /* ErrorReportWindow.xib */,
+				CEFFF2A413B0B96200BEA8D5 /* FairwareReminder.xib */,
+			);
+			name = xib;
+			path = ../cocoalib/en.lproj;
 			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
@@ -291,6 +339,10 @@
 				CEBA080A13AE70FF007DD3E0 /* BuildPane.xib in Resources */,
 				CEBA0B7A13AEAB72007DD3E0 /* pyplugin.plugin in Resources */,
 				CEA0155E13AF816900C6D985 /* main_icon.icns in Resources */,
+				CEFFF2A713B0B96200BEA8D5 /* about.xib in Resources */,
+				CEFFF2A913B0B96200BEA8D5 /* ErrorReportWindow.xib in Resources */,
+				CEFFF2AB13B0B96200BEA8D5 /* FairwareReminder.xib in Resources */,
+				CEFFF33D13B0C23700BEA8D5 /* help in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -314,6 +366,11 @@
 				CEBA08D213AE8A37007DD3E0 /* PMElementTable.m in Sources */,
 				CEBA096513AEAB11007DD3E0 /* HSTableView.m in Sources */,
 				CEBA096E13AEAB48007DD3E0 /* NSEventAdditions.m in Sources */,
+				CEFFF29813B0B8FF00BEA8D5 /* HSAboutBox.m in Sources */,
+				CEFFF2C013B0BA9B00BEA8D5 /* HSFairwareReminder.m in Sources */,
+				CEFFF2C613B0BAB200BEA8D5 /* Dialogs.m in Sources */,
+				CEFFF2D113B0BD3100BEA8D5 /* BRSingleLineFormatter.m in Sources */,
+				CEFFF2E613B0BFA500BEA8D5 /* PMAppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -342,6 +399,33 @@
 				CEC7F38513AE558700BA9A74 /* en */,
 			);
 			name = MainMenu.xib;
+			sourceTree = SOURCE_ROOT;
+		};
+		CEFFF29C13B0B96200BEA8D5 /* about.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CEFFF29D13B0B96200BEA8D5 /* en */,
+			);
+			name = about.xib;
+			path = ../cocoalib/en.lproj;
+			sourceTree = SOURCE_ROOT;
+		};
+		CEFFF2A013B0B96200BEA8D5 /* ErrorReportWindow.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CEFFF2A113B0B96200BEA8D5 /* en */,
+			);
+			name = ErrorReportWindow.xib;
+			path = ../cocoalib/en.lproj;
+			sourceTree = SOURCE_ROOT;
+		};
+		CEFFF2A413B0B96200BEA8D5 /* FairwareReminder.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CEFFF2A513B0B96200BEA8D5 /* en */,
+			);
+			name = FairwareReminder.xib;
+			path = ../cocoalib/en.lproj;
 			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXVariantGroup section */

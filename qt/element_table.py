@@ -25,7 +25,7 @@ class ElementTable(Table):
     ]
     
     def __init__(self, app, view):
-        model = ElementTableModel(view=self, app=app)
+        model = ElementTableModel(view=self, app=app.model)
         Table.__init__(self, model, view)
         self.setColumnsWidth(None) # set default widths
         self.model.connect()
