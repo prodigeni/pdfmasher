@@ -98,7 +98,7 @@ def create_element(layout_elements):
         y = layout_elements[0].y1
     chars = extract_chars(layout_elements)
     fontsize = get_avg_text_height(chars)
-    text = get_text(chars)
+    text = fix_text(get_text(chars))
     return TextElement(x, y, fontsize, text)
 
 def extract_text_elements_from_layout(layout_element):
@@ -168,6 +168,8 @@ def get_avg_text_height(chars):
 def get_text(chars):
     return ''.join(c.get_text() for c in chars)
 
-def analyze_lines(elem):
-    for line in elem:
-        print(repr(line))
+def fix_text(text):
+    # This search/replace function is based on heuristic discoveries from sample pdf I've received.
+    # &dquo; comes from a pdf file with quotes in it. dquo is weird because it looks like an html
+    # escape but it isn't. Anyway, just replace it with quotes.
+    return text.replace('&dquo;', '"')

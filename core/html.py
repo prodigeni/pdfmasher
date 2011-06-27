@@ -7,6 +7,7 @@
 # http://www.hardcoded.net/licenses/bsd_license
 
 import re
+from html import escape as html_escape
 
 from .pdf import ElementState
 
@@ -49,6 +50,9 @@ def link_footnotes(elements):
             # we don't have a link, but we still want to put the footnumber in there
             footnote.text = footnote.text.replace(lookfor, '[{}]'.format(footnumber), 1)
 
+def wrap(text, inside):
+    return "<{1}>{0}</{1}>".format(html_escape(text), inside)
+
 def generate_html(elements):
     elements = [e for e in elements if e.state != ElementState.Ignored]
     link_footnotes(elements)
@@ -57,9 +61,9 @@ def generate_html(elements):
     paragraphs = []
     for e in elements:
         if e.state == ElementState.Title:
-            s = "<h1>{}</h1>".format(e.text)
+            s = wrap(e.text, 'h1')
         else:
-            s = "<p>{}</p>".format(e.text)
+            s = wrap(e.text, 'p')
         paragraphs.append(s)
     s = '\n'.join(paragraphs)
     return "<html><body>\n{}\n</body></html>".format(s)
