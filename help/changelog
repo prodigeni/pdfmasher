@@ -1,3 +1,8 @@
+=== 0.1.1 (2011-06-27)
+
+* Fixed bugs preventing some PDFs to be read.
+* Correctly set the encoding of resulting HTML files.
+
 === 0.1.0 (2011-06-21)
 
 * Initial preview release.
