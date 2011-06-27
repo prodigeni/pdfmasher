@@ -53,7 +53,10 @@ def link_footnotes(elements):
 def wrap(text, inside):
     return "<{1}>{0}</{1}>".format(html_escape(text), inside)
 
-def generate_html(elements):
+def generate_html(elements, encoding='utf-8'):
+    # The 'encoding' argument is only needed for html metadata, generate_html() returns a string,
+    # not encoded bytes.
+    header = "<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset={}\"></head>".format(encoding)
     elements = [e for e in elements if e.state != ElementState.Ignored]
     link_footnotes(elements)
     keyfunc = lambda e: 0 if e.state != ElementState.Footnote else 1
@@ -66,4 +69,4 @@ def generate_html(elements):
             s = wrap(e.text, 'p')
         paragraphs.append(s)
     s = '\n'.join(paragraphs)
-    return "<html><body>\n{}\n</body></html>".format(s)
+    return "<html>{}<body>\n{}\n</body></html>".format(header, s)
