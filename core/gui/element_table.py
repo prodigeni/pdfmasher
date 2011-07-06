@@ -20,7 +20,7 @@ class ElementRow(Row):
         self._x = element.x
         self._y = element.y
         self._fontsize = element.fontsize
-        self.text = element.text
+        self.text = element.text.replace('\n', ' ')
         self.state = element.state
         
         # Format

@@ -98,7 +98,7 @@ def create_element(layout_elements):
         y = layout_elements[0].y1
     chars = extract_chars(layout_elements)
     fontsize = get_avg_text_height(chars)
-    text = fix_text(get_text(chars))
+    text = fix_text(get_text(layout_elements))
     return TextElement(x, y, fontsize, text)
 
 def extract_text_elements_from_layout(layout_element):
@@ -165,8 +165,11 @@ def get_avg_text_height(chars):
     totheight = sum(c.height for c in chars)
     return totheight / count
 
-def get_text(chars):
-    return ''.join(c.get_text() for c in chars)
+def get_text(layout_elements):
+    if isinstance(layout_elements, LTItem):
+        return layout_elements.get_text()
+    else:
+        return ' '.join(elem.get_text() for elem in layout_elements)
 
 def fix_text(text):
     # This search/replace function is based on heuristic discoveries from sample pdf I've received.
