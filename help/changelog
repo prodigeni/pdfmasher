@@ -1,3 +1,9 @@
+=== 0.1.2 (2011-07-07)
+
+* Fixed bugs preventing some PDFs to be read.
+* Fixed a bug where there would sometimes be no space character between words.
+* Added auto-update support with Sparkle. [Mac OS X]
+
 === 0.1.1 (2011-06-27)
 
 * Fixed bugs preventing some PDFs to be read.
