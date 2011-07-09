@@ -8,18 +8,20 @@
 
 import logging
 
-from hscommon.cocoa import install_exception_hook
+from hscommon import cocoa
 from hscommon.cocoa.inter import signature, PyFairware
 
 from core import __appname__
 from core.app import App
+from .app_view import AppView
 
 class PyApp(PyFairware):
     def init(self):
         self = super(PyApp, self).init()
-        self.py = App()
         logging.basicConfig(level=logging.WARNING, format='%(levelname)s %(message)s')
-        install_exception_hook()
+        cocoa.install_exception_hook()
+        self.app_view = AppView()
+        self.py = App(self.app_view)
         return self
     
     def buildHtml(self):
@@ -43,3 +45,23 @@ class PyApp(PyFairware):
     def appName(self):
         return __appname__
     
+    #--- Worker. Mixin classes don't work with NSObject so we can't use them for interfaces
+    def getJobProgress(self):
+        try:
+            return self.app_view.progress.last_progress
+        except AttributeError:
+            # See dupeguru ticket #106
+            return -1
+    
+    def getJobDesc(self):
+        try:
+            return self.app_view.progress.last_desc
+        except AttributeError:
+            # see getJobProgress
+            return ''
+    
+    def cancelJob(self):
+        self.app_view.progress.job_cancelled = True
+    
+    def jobCompleted_(self, jobid):
+        self.py._job_completed(jobid)

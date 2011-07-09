@@ -15,7 +15,7 @@ http://www.hardcoded.net/licenses/bsd_license
 {
     HSColumns *columns;
 }
-- (id)initWithPyParent:(id)aPyParent view:(NSTableView *)aTableView;
+- (id)initWithPyParent:(id)aPyParent tableView:(NSTableView *)aTableView;
 - (void)initializeColumns;
 - (PyElementTable *)py;
 - (HSColumns *)columns;

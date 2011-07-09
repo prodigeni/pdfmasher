@@ -11,6 +11,8 @@ from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.layout import LAParams, LTItem, LTContainer, LTText, LTChar, LTTextLineHorizontal
 from pdfminer.converter import PDFPageAggregator
 
+from jobprogress.job import nulljob
+
 ###### PDF Wisdom (some wisdom gathered about pdf/pdfminer during the development of this unit)
 # 
 #--- Coordinates
@@ -49,7 +51,7 @@ class TextElement:
         return '<TextElement {page} {x}-{y} {state} "{text}">'.format(**self.__dict__)
     
 
-def extract_text_elements_from_pdf(path):
+def extract_text_elements_from_pdf(path, j=nulljob):
     """Opens a PDF and extract every element that is text based (LTText).
     """
     def gettext(obj):
@@ -73,7 +75,9 @@ def extract_text_elements_from_pdf(path):
     device = PDFPageAggregator(rsrcmgr, laparams=laparams)
     interpreter = PDFPageInterpreter(rsrcmgr, device)
     result = []
-    for pageno, page in enumerate(doc.get_pages()):
+    enumerated_pages = list(enumerate(doc.get_pages()))
+    progress_msg = "Reading page %i of %i"
+    for pageno, page in j.iter_with_progress(enumerated_pages, progress_msg):
         interpreter.process_page(page)
         layout = device.get_result()
         layout_elems = gettext(layout)

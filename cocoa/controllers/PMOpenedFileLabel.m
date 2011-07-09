@@ -9,7 +9,7 @@ http://www.hardcoded.net/licenses/bsd_license
 #import "PMOpenedFileLabel.h"
 
 @implementation PMOpenedFileLabel
-- (id)initWithPyParent:(id)aPyParent view:(NSTextField *)aView
+- (id)initWithPyParent:(id)aPyParent textView:(NSTextField *)aView
 {
     self = [super initWithPyClassName:@"PyOpenedFileLabel" pyParent:aPyParent];
     label = aView;

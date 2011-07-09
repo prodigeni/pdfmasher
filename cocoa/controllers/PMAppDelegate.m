@@ -9,6 +9,7 @@ http://www.hardcoded.net/licenses/bsd_license
 #import "PMAppDelegate.h"
 #import "Utils.h"
 #import "HSFairwareReminder.h"
+#import "ProgressController.h"
 
 @implementation PMAppDelegate
 - (void)awakeFromNib
@@ -31,6 +32,7 @@ http://www.hardcoded.net/licenses/bsd_license
     if (py == nil) {
         Class PyApp = [Utils classNamed:@"PyApp"];
         py = [[PyApp alloc] init];
+        [[ProgressController mainProgressController] setWorker:py];
     }
     return py;
 }

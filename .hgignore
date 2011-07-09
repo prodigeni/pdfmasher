@@ -15,3 +15,4 @@ help/*/changelog.rst
 *.mode1v3
 *.pbxuser
 *.pdf
+*.tm_build_errors

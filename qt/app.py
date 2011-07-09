@@ -12,15 +12,17 @@ import os.path as op
 import logging
 
 from PyQt4.QtCore import SIGNAL, QUrl, QCoreApplication, QProcess
-from PyQt4.QtGui import QDesktopServices
+from PyQt4.QtGui import QDesktopServices, QMessageBox
 
 from hscommon.trans import tr
+from jobprogress import job
+from jobprogress.qt import Progress
 from qtlib.about_box import AboutBox
 from qtlib.app import Application as ApplicationBase
 from qtlib.reg import Registration
 from qtlib.util import createActions
 
-from core.app import App
+from core.app import App, JOBID2TITLE
 from .main_window import MainWindow
 from .preferences import Preferences
 from .plat import HELP_PATH
@@ -39,14 +41,16 @@ class PdfMasher(ApplicationBase):
         self._setupActions()
         self.prefs = Preferences()
         self.prefs.load()
-        self.model = App()
+        self.model = App(view=self)
         self.mainWindow = MainWindow(app=self)
         self.aboutBox = AboutBox(self.mainWindow, self)
         self.reg = Registration(self.model)
         self.model.set_registration(self.prefs.registration_code, self.prefs.registration_email)
+        self._progress = Progress(self.mainWindow)
         
         self.connect(self, SIGNAL('applicationFinishedLaunching()'), self.applicationFinishedLaunching)
         self.connect(QCoreApplication.instance(), SIGNAL('aboutToQuit()'), self.applicationWillTerminate)
+        self._progress.finished.connect(self.jobFinished)
     
     #--- Public
     def askForRegCode(self):
@@ -75,6 +79,9 @@ class PdfMasher(ApplicationBase):
     
     def applicationWillTerminate(self):
         self.prefs.save()
+    
+    def jobFinished(self, jobid):
+        self.model._job_completed(jobid)
     
     def checkForUpdateTriggered(self):
         QProcess.execute('updater.exe', ['/checknow'])
@@ -111,4 +118,14 @@ class PdfMasher(ApplicationBase):
         # self.mainWindow.actionRegister.setVisible(False)
         self.aboutBox.registerButton.hide()
         self.aboutBox.registeredEmailLabel.setText(self.prefs.registration_email)
+    
+    def start_job(self, jobid, func, *args):
+        title = JOBID2TITLE[jobid]
+        try:
+            j = self._progress.create_job()
+            args = tuple([j] + list(args))
+            self._progress.run(jobid, title, func, args=args)
+        except job.JobInProgressError:
+            msg = "A previous action is still hanging in there. You can't start a new one yet. Wait a few seconds, then try again."
+            QMessageBox.information(self.mainWindow, "Action in progress", msg)
     

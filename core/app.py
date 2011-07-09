@@ -10,18 +10,42 @@ import os.path as op
 
 from hscommon.reg import RegistrableApplication
 from hscommon.notify import Broadcaster
+from hscommon.trans import tr
 
 from .pdf import extract_text_elements_from_pdf
 from .html import generate_html
 
+class JobType:
+    OpenFile = 'job_open_file'
+
+
+JOBID2TITLE = {
+    JobType.OpenFile: tr("Reading PDF"),
+}
+
+# App view interface
+# start_job(j, *args)
+
 class App(Broadcaster, RegistrableApplication):
-    def __init__(self):
+    def __init__(self, view):
         Broadcaster.__init__(self)
         RegistrableApplication.__init__(self, appid=6)
+        self.view = view
         self.current_path = None
         self._hide_ignored = False
         self.selected_elements = []
         self.elements = []
+    
+    #--- Overrides
+    def _setup_as_registered(self):
+        self.view.setup_as_registered()
+    
+    #--- Protected
+    def _job_completed(self, jobid):
+        # Must be called by subclasses when they detect that an async job is completed.
+        if jobid == JobType.OpenFile:
+            self.notify('file_opened')
+            self.notify('elements_changed')
     
     #--- Public (Internal)
     def select_elements(self, elements):
@@ -43,10 +67,11 @@ class App(Broadcaster, RegistrableApplication):
         self.notify('elements_changed')
     
     def open_file(self, path):
-        self.elements = extract_text_elements_from_pdf(path)
-        self.current_path = path
-        self.notify('file_opened')
-        self.notify('elements_changed')
+        def do(j):
+            self.elements = extract_text_elements_from_pdf(path, j)
+            self.current_path = path
+        
+        self.view.start_job(JobType.OpenFile, do)
     
     #--- Properties
     @property

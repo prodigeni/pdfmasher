@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		CE68745B13C87B2500992AE4 /* ProgressController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE68745A13C87B2500992AE4 /* ProgressController.m */; };
+		CE68745D13C87B3600992AE4 /* progress.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE68745C13C87B3600992AE4 /* progress.xib */; };
 		CE8C6D7C13C4924700D869ED /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE8C6D7B13C4924700D869ED /* Sparkle.framework */; };
 		CE8C6D8913C4928600D869ED /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE8C6D7B13C4924700D869ED /* Sparkle.framework */; };
 		CE8C6D8C13C4938400D869ED /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = CE8C6D8B13C4938400D869ED /* dsa_pub.pem */; };
@@ -62,6 +64,9 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* PdfMasher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PdfMasher.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE68745913C87B2500992AE4 /* ProgressController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ProgressController.h; path = ../cocoalib/ProgressController.h; sourceTree = SOURCE_ROOT; };
+		CE68745A13C87B2500992AE4 /* ProgressController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ProgressController.m; path = ../cocoalib/ProgressController.m; sourceTree = SOURCE_ROOT; };
+		CE68745C13C87B3600992AE4 /* progress.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = progress.xib; path = ../cocoalib/xib/progress.xib; sourceTree = SOURCE_ROOT; };
 		CE8C6D7B13C4924700D869ED /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = /Library/Frameworks/Sparkle.framework; sourceTree = "<absolute>"; };
 		CE8C6D8B13C4938400D869ED /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = SOURCE_ROOT; };
 		CEA0155D13AF816900C6D985 /* main_icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = main_icon.icns; path = ../images/main_icon.icns; sourceTree = SOURCE_ROOT; };
@@ -283,6 +288,8 @@
 				CEFFF2AC13B0B9E200BEA8D5 /* PyFairware.h */,
 				CEC7F3A413AE55CC00BA9A74 /* Utils.h */,
 				CEC7F3A513AE55CC00BA9A74 /* Utils.m */,
+				CE68745913C87B2500992AE4 /* ProgressController.h */,
+				CE68745A13C87B2500992AE4 /* ProgressController.m */,
 			);
 			name = cocoalib;
 			sourceTree = "<group>";
@@ -301,6 +308,7 @@
 		CEFFF29913B0B96200BEA8D5 /* xib */ = {
 			isa = PBXGroup;
 			children = (
+				CE68745C13C87B3600992AE4 /* progress.xib */,
 				CEFFF29C13B0B96200BEA8D5 /* about.xib */,
 				CEFFF2A013B0B96200BEA8D5 /* ErrorReportWindow.xib */,
 				CEFFF2A413B0B96200BEA8D5 /* FairwareReminder.xib */,
@@ -371,6 +379,7 @@
 				CEFFF2AB13B0B96200BEA8D5 /* FairwareReminder.xib in Resources */,
 				CEFFF33D13B0C23700BEA8D5 /* help in Resources */,
 				CE8C6D8C13C4938400D869ED /* dsa_pub.pem in Resources */,
+				CE68745D13C87B3600992AE4 /* progress.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -400,6 +409,7 @@
 				CEFFF2D113B0BD3100BEA8D5 /* BRSingleLineFormatter.m in Sources */,
 				CEFFF2E613B0BFA500BEA8D5 /* PMAppDelegate.m in Sources */,
 				CEFFF36313B0D12400BEA8D5 /* HSErrorReportWindow.m in Sources */,
+				CE68745B13C87B2500992AE4 /* ProgressController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

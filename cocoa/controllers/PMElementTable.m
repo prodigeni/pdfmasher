@@ -9,7 +9,7 @@ http://www.hardcoded.net/licenses/bsd_license
 #import "PMElementTable.h"
 
 @implementation PMElementTable
-- (id)initWithPyParent:(id)aPyParent view:(NSTableView *)aTableView
+- (id)initWithPyParent:(id)aPyParent tableView:(NSTableView *)aTableView
 {
     self = [super initWithPyClassName:@"PyElementTable" pyParent:aPyParent view:aTableView];
     columns = [[HSColumns alloc] initWithPyParent:[self py] tableView:aTableView];
