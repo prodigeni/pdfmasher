@@ -8,6 +8,7 @@
 # http://www.hardcoded.net/licenses/bsd_license
 
 import sys
+import gc
 import sip
 sip.setapi('QVariant', 1)
 
@@ -28,7 +29,11 @@ def main(argv):
     from qt.app import PdfMasher
     pmapp = PdfMasher()
     install_excepthook()
-    return app.exec_()
+    result = app.exec()
+    # Avoid "QObject::startTimer: QTimer can only be used with threads started with QThread" on shutdown
+    del pmapp
+    gc.collect()
+    return result
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))
