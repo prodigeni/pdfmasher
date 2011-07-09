@@ -19,9 +19,10 @@ class ElementTable(Table):
         Column('page', "Page", 50),
         Column('x', "X", 50),
         Column('y', "Y", 50),
-        Column('fontsize', "Font Size", 75),
+        Column('fontsize', "Font Size", 70),
+        Column('text_length', "Text Length", 70),
         Column('state', "State", 75),
-        Column('text', "Text", 250),
+        Column('text', "Text", 150),
     ]
     
     def __init__(self, app, view):

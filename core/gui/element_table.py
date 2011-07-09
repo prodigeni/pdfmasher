@@ -20,6 +20,7 @@ class ElementRow(Row):
         self._x = element.x
         self._y = element.y
         self._fontsize = element.fontsize
+        self._text_length = len(element.text)
         self.text = element.text.replace('\n', ' ')
         self.state = element.state
         
@@ -29,7 +30,7 @@ class ElementRow(Row):
         self.x = "{:.0f}".format(self._x)
         self.y = "{:.0f}".format(self._y)
         self.fontsize = "{:0.1f}".format(self._fontsize)
-        
+        self.text_length = "{:d}".format(self._text_length)
     
 
 class ElementTable(GUIObject, GUITable):

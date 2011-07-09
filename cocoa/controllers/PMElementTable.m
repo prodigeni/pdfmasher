@@ -41,9 +41,10 @@ http://www.hardcoded.net/licenses/bsd_license
         {@"page", @"Page", 50, 20, 0, YES, nil},
         {@"x", @"X", 50, 20, 0, YES, nil},
         {@"y", @"Y", 50, 20, 0, YES, nil},
-        {@"fontsize", @"Font Size", 75, 20, 0, YES, nil},
+        {@"fontsize", @"Font Size", 70, 20, 0, YES, nil},
+        {@"text_length", @"Text Length", 70, 20, 0, YES, nil},
         {@"state", @"State", 75, 20, 0, YES, nil},
-        {@"text", @"Text", 250, 20, 0, YES, nil},
+        {@"text", @"Text", 150, 20, 0, YES, nil},
         nil
     };
     [[self columns] initializeColumns:defs];
