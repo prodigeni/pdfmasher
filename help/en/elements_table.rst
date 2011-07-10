@@ -14,5 +14,6 @@ Edit pane). These are the columns and their meaning:
 * Y: The Y position of the topmost part of the element in the page. The higher the number, the 
   higher is the element.
 * Font size: The average font size of each letter in the element.
+* Text Length: The number of characters in the text.
 * State: Current state of the element (normal, title, footnote, ignored).
 * Text: The text of the element.

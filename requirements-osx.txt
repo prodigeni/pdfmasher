@@ -1,4 +1,5 @@
-pdfminer3k>=1.0.2
+pdfminer3k>=1.0.3
+jobprogress>=1.0.0
 pytest>=2.0.3
 pytest-monkeyplus>=1.0.0
 pyobjc-core>=2.3
