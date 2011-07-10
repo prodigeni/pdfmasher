@@ -6,6 +6,8 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/bsd_license
 
+import re
+
 from pdfminer.pdfparser import PDFParser, PDFDocument
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.layout import LAParams, LTItem, LTContainer, LTText, LTChar, LTTextLineHorizontal
@@ -175,8 +177,16 @@ def get_text(layout_elements):
     else:
         return ' '.join(elem.get_text() for elem in layout_elements)
 
+RE_MULTIPLE_SPACES = re.compile(r' {2,}')
+RE_NEWLINE_AND_SPACE = re.compile(r' \n |\n | \n')
 def fix_text(text):
     # This search/replace function is based on heuristic discoveries from sample pdf I've received.
     # &dquo; comes from a pdf file with quotes in it. dquo is weird because it looks like an html
     # escape but it isn't. Anyway, just replace it with quotes.
-    return text.replace('&dquo;', '"')
+    text = text.replace('&dquo;', '"')
+    
+    # We also want to normalize spaces, that is: remove double spaces and remove spaces after or
+    # before a newline.
+    text = RE_MULTIPLE_SPACES.sub(' ', text)
+    text = RE_NEWLINE_AND_SPACE.sub('\n', text)
+    return text
