@@ -11,21 +11,49 @@ http://www.hardcoded.net/licenses/bsd_license
 @implementation PMBuildPane
 - (id)initWithPyParent:(id)aPyParent
 {
-    self = [super init];
+    self = [super initWithPyClassName:@"PyBuildPane" pyParent:aPyParent];
     [NSBundle loadNibNamed:@"BuildPane" owner:self];
-    app = (PyApp *)aPyParent;
+    [[self py] connect];
     return self;
+}
+
+- (PyBuildPane *)py
+{
+    return (PyBuildPane *)py;
 }
 
 - (NSView *)view
 {
     return wholeView;
 }
-        
-- (IBAction)viewHTML:(id)sender
+
+- (IBAction)generateMarkdown:(id)sender
 {
-    NSString *path = [app buildHtml];
-    [[NSWorkspace sharedWorkspace] openFile:path];
+    [[self py] generateMarkdown];
 }
 
+- (IBAction)editMarkdown:(id)sender
+{
+    [[self py] editMarkdown];
+}
+
+- (IBAction)revealInFinder:(id)sender
+{
+    [[self py] revealMarkdown];
+}
+
+- (IBAction)viewHTML:(id)sender
+{
+    [[self py] viewHTML];
+}
+
+/* model --> view */
+- (void)refresh
+{
+    [lastGenDescLabel setStringValue:[[self py] lastGenDesc]];
+    BOOL enabled = [[self py] postProcessingEnabled];
+    [editMarkdownButton setEnabled:enabled];
+    [revealMarkdownButton setEnabled:enabled];
+    [viewHTMLButton setEnabled:enabled];
+}
 @end

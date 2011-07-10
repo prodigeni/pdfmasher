@@ -94,6 +94,7 @@
 		CEBA096C13AEAB48007DD3E0 /* NSEventAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NSEventAdditions.h; path = ../cocoalib/NSEventAdditions.h; sourceTree = SOURCE_ROOT; };
 		CEBA096D13AEAB48007DD3E0 /* NSEventAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NSEventAdditions.m; path = ../cocoalib/NSEventAdditions.m; sourceTree = SOURCE_ROOT; };
 		CEBA097813AEAB72007DD3E0 /* pyplugin.plugin */ = {isa = PBXFileReference; lastKnownFileType = folder; path = pyplugin.plugin; sourceTree = SOURCE_ROOT; };
+		CEBDB29E13C8E695007FFECF /* PyBuildPane.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PyBuildPane.h; path = proxies/PyBuildPane.h; sourceTree = SOURCE_ROOT; };
 		CEC7F37C13AE555000BA9A74 /* PyApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PyApp.h; path = proxies/PyApp.h; sourceTree = SOURCE_ROOT; };
 		CEC7F37D13AE555000BA9A74 /* PyEditPane.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PyEditPane.h; path = proxies/PyEditPane.h; sourceTree = SOURCE_ROOT; };
 		CEC7F37E13AE555000BA9A74 /* PyElementTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PyElementTable.h; path = proxies/PyElementTable.h; sourceTree = SOURCE_ROOT; };
@@ -250,6 +251,7 @@
 			children = (
 				CEC7F37C13AE555000BA9A74 /* PyApp.h */,
 				CEC7F37D13AE555000BA9A74 /* PyEditPane.h */,
+				CEBDB29E13C8E695007FFECF /* PyBuildPane.h */,
 				CEC7F37E13AE555000BA9A74 /* PyElementTable.h */,
 				CEC7F37F13AE555000BA9A74 /* PyOpenedFileLabel.h */,
 			);

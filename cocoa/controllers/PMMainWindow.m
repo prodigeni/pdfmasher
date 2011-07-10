@@ -45,7 +45,7 @@ http://www.hardcoded.net/licenses/bsd_license
     [super dealloc];
 }
 
-- (IBAction)openFile:(id)sender
+- (IBAction)loadPDF:(id)sender
 {
     NSOpenPanel *op = [NSOpenPanel openPanel];
     [op setCanChooseFiles:YES];
@@ -55,7 +55,7 @@ http://www.hardcoded.net/licenses/bsd_license
     [op setTitle:@"Select a PDF to work with"];
     if ([op runModal] == NSOKButton) {
         NSString *filename = [[op filenames] objectAtIndex:0];
-        [app openFile:filename];
+        [app loadPDF:filename];
     }
 }
 

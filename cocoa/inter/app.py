@@ -30,8 +30,8 @@ class PyApp(PyFairware):
     def changeStateOfSelected_(self, newstate):
         self.py.change_state_of_selected(newstate)
     
-    def openFile_(self, path):
-        self.py.open_file(path)
+    def loadPDF_(self, path):
+        self.py.load_pdf(path)
     
     @signature('c@:')
     def hideIgnored(self):

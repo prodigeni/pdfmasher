@@ -29,10 +29,16 @@ General dependencies
 - pdfminer3k (http://hg.hardcoded.net/pdfminer3k)
 - Sphinx 1.0.7 (http://sphinx.pocoo.org/)
 - pytest 2.0.3, to run unit tests. (http://pytest.org/)
+- Markdown 2.0.3 (http://www.freewisdom.org/projects/python-markdown)
 
 Note: Sphinx doesn't officially support Python 3.x yet, but it doesn't matter because it is invoked
 by the build system through command line, so you can build PdfMasher even if Sphinx is installed in
 your Python 2.x install.
+
+Note 2: I include a copy of markdown in the source tree because at this time, although Markdown
+supports Python 3, the version of PyPI doesn't work and one has to download the source, manually
+apply 2to3 on it, and then install. Until Markdown is easier to install, I'll just put a copy of it
+in here.
 
 OS X prerequisites
 ------------------

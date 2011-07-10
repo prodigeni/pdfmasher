@@ -8,16 +8,24 @@ http://www.hardcoded.net/licenses/bsd_license
 
 #import <Cocoa/Cocoa.h>
 
+#import "HSGUIController.h"
 #import "PyApp.h"
+#import "PyBuildPane.h"
 
-@interface PMBuildPane : NSObject
+@interface PMBuildPane : HSGUIController
 {
     IBOutlet NSView *wholeView;
-    
-    PyApp *app;
+    IBOutlet NSTextField *lastGenDescLabel;
+    IBOutlet NSButton *editMarkdownButton;
+    IBOutlet NSButton *revealMarkdownButton;
+    IBOutlet NSButton *viewHTMLButton;
 }
 - (id)initWithPyParent:(id)aPyParent;
+- (PyBuildPane *)py;
 - (NSView *)view;
 
+- (IBAction)generateMarkdown:(id)sender;
+- (IBAction)editMarkdown:(id)sender;
+- (IBAction)revealInFinder:(id)sender;
 - (IBAction)viewHTML:(id)sender;
 @end

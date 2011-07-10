@@ -8,4 +8,4 @@ http://www.hardcoded.net/licenses/bsd_license
 
 #define JobStarted @"JobStarted"
 #define JobInProgress @"JobInProgress"
-#define JobOpenFile @"job_open_file"
+#define JobLoadPDF @"job_load_pdf"

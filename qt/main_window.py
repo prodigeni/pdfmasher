@@ -6,15 +6,16 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/bsd_license
 
-from PyQt4.QtCore import QCoreApplication, QUrl, QRect
+from PyQt4.QtCore import QCoreApplication, QRect
 from PyQt4.QtGui import (QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QFileDialog,
-    QTabWidget, QSizePolicy, QDesktopServices, QMenuBar, QMenu)
+    QTabWidget, QSizePolicy, QMenuBar, QMenu)
 
 from hscommon.trans import tr
 from qtlib.util import moveToScreenCenter
 from .element_table import ElementTable, ElementTableView
 from .opened_file_label import OpenedFileLabel
 from .edit_pane import EditPane
+from .build_pane import BuildPane
 
 class MainWindow(QMainWindow):
     def __init__(self, app):
@@ -87,25 +88,7 @@ class MainWindow(QMainWindow):
         files = ';;'.join(["PDF file (*.pdf)", "All Files (*.*)"])
         destination = QFileDialog.getOpenFileName(self, title, '', files)
         if destination:
-            self.app.model.open_file(destination)
+            self.app.model.load_pdf(destination)
     
 
-class BuildPane(QWidget):
-    def __init__(self, app):
-        QWidget.__init__(self)
-        self.app = app
-        self._setupUi()
-        
-        self.viewHtmlButton.clicked.connect(self.viewHtmlButtonClicked)
-    
-    def _setupUi(self):
-        self.buttonLayout = QHBoxLayout(self)
-        self.viewHtmlButton = QPushButton("View HTML")
-        self.buttonLayout.addWidget(self.viewHtmlButton)
-    
-    #--- Signals
-    def viewHtmlButtonClicked(self):
-        html_path = self.app.model.build_html()
-        url = QUrl.fromLocalFile(html_path)
-        QDesktopServices.openUrl(url)
     

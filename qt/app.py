@@ -112,6 +112,15 @@ class PdfMasher(ApplicationBase):
     # def set_default(self, key, value):
     #     self.prefs.set_value(key, value)
     # 
+    @staticmethod
+    def open_path(path):
+        url = QUrl.fromLocalFile(path)
+        QDesktopServices.openUrl(url)
+    
+    @staticmethod
+    def reveal_path(path):
+        PdfMasher.open_path(op.dirname(path))
+    
     def setup_as_registered(self):
         self.prefs.registration_code = self.model.registration_code
         self.prefs.registration_email = self.model.registration_email

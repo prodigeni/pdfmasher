@@ -22,6 +22,7 @@ http://www.hardcoded.net/licenses/bsd_license
     
     PyApp *app;
 }
+- (id)initWithPyParent:(id)aPyParent;
 - (PyEditPane *)py;
 - (NSView *)view;
 

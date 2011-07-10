@@ -7,7 +7,7 @@
 # http://www.hardcoded.net/licenses/bsd_license
 
 from hscommon import cocoa
-from hscommon.cocoa.objcmin import NSNotificationCenter
+from hscommon.cocoa.objcmin import NSNotificationCenter, NSWorkspace
 from jobprogress import job
 
 from core.app import JOBID2TITLE
@@ -15,6 +15,14 @@ from core.app import JOBID2TITLE
 class AppView:
     def __init__(self):
         self.progress = cocoa.ThreadedJobPerformer()
+    
+    @staticmethod
+    def open_path(path):
+        NSWorkspace.sharedWorkspace().openFile_(path)
+    
+    @staticmethod
+    def reveal_path(path):
+        NSWorkspace.sharedWorkspace().selectFile_inFileViewerRootedAtPath_(path, '')
     
     def start_job(self, jobid, func, *args):
         try:

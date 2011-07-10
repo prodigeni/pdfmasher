@@ -27,5 +27,5 @@ http://www.hardcoded.net/licenses/bsd_license
     PMBuildPane *buildPane;
 }
 
-- (IBAction)openFile:(id)sender;
+- (IBAction)loadPDF:(id)sender;
 @end

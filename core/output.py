@@ -9,6 +9,8 @@
 import re
 from html import escape as html_escape
 
+import markdown
+
 from .pdf import ElementState
 
 RE_STARTING_NUMBER = re.compile(r'^(\d+)')
@@ -50,13 +52,13 @@ def link_footnotes(elements):
             # we don't have a link, but we still want to put the footnumber in there
             footnote.text = footnote.text.replace(lookfor, '[{}]'.format(footnumber), 1)
 
-def wrap(text, inside):
-    return "<{1}>{0}</{1}>".format(html_escape(text), inside)
-
-def generate_html(elements, encoding='utf-8'):
+def wrap_html(body, encoding='utf-8'):
     # The 'encoding' argument is only needed for html metadata, generate_html() returns a string,
     # not encoded bytes.
     header = "<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset={}\"></head>".format(encoding)
+    return "<html>{}<body>\n{}\n</body></html>".format(header, body)
+
+def generate_markdown(elements):
     elements = [e for e in elements if e.state != ElementState.Ignored]
     link_footnotes(elements)
     keyfunc = lambda e: 0 if e.state != ElementState.Footnote else 1
@@ -64,9 +66,9 @@ def generate_html(elements, encoding='utf-8'):
     paragraphs = []
     for e in elements:
         if e.state == ElementState.Title:
-            s = wrap(e.text, 'h1')
+            s = '{}\n==='.format(e.text)
         else:
-            s = wrap(e.text, 'p')
+            s = e.text.strip()
         paragraphs.append(s)
-    s = '\n'.join(paragraphs)
-    return "<html>{}<body>\n{}\n</body></html>".format(header, s)
+    s = '\n\n'.join(paragraphs)
+    return s

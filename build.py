@@ -105,7 +105,6 @@ def build_localizations(ui):
         build_all_qt_locs(op.join('qt', 'lang'), extradirs=[op.join('qtlib', 'lang')])
 
 def build_normal(ui, dev):
-    print("Building PdfMasher with UI {}".format(ui))
     build_help()
     build_localizations(ui)
     if ui == 'cocoa':
