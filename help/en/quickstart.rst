@@ -16,5 +16,6 @@ your text has footnotes and you'd like them to be at the end of your text.
 5. To identify footnotes, sort the elements by "Text". This way, footnotes, because they start by a
    number, will be grouped together.
 6. Select all footnotes elements and click on "Footnote" in the Edit pane.
-7. Click on "View HTML" from the Build pane. Make sure the result satisfy you.
-8. Convert the HTML to ebook using Calibre or another tool.
+7. Click on "Generate Markdown".
+8. Click on "View HTML" from the Build pane. Make sure the result satisfy you.
+9. Convert the HTML to ebook using Calibre or another tool.
