@@ -1,3 +1,12 @@
+=== 0.2.0 (2011-07-10)
+
+* Made the PDF opening progress smooth (progress bar).
+* Added a Markdown intermediate step in the build process.
+* Added a Text Length column.
+* Made the error message when opening a non-PDF file more friendly.
+* Fixed a bug making the order of some text parts to be mixed up.
+* Fixed bugs preventing some PDFs to be read.
+
 === 0.1.2 (2011-07-07)
 
 * Fixed bugs preventing some PDFs to be read.
