@@ -128,6 +128,9 @@ class PdfMasher(ApplicationBase):
         self.aboutBox.registerButton.hide()
         self.aboutBox.registeredEmailLabel.setText(self.prefs.registration_email)
     
+    def show_msg(self, msg):
+        QMessageBox.information(self.mainWindow, '', msg)
+    
     def start_job(self, jobid, func, *args):
         title = JOBID2TITLE[jobid]
         try:

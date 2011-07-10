@@ -7,7 +7,7 @@
 # http://www.hardcoded.net/licenses/bsd_license
 
 from hscommon import cocoa
-from hscommon.cocoa.objcmin import NSNotificationCenter, NSWorkspace
+from hscommon.cocoa.objcmin import NSNotificationCenter, NSWorkspace, NSAlert
 from jobprogress import job
 
 from core.app import JOBID2TITLE
@@ -34,6 +34,12 @@ class AppView:
         else:
             ud = {'desc': JOBID2TITLE[jobid], 'jobid':jobid}
             NSNotificationCenter.defaultCenter().postNotificationName_object_userInfo_('JobStarted', self, ud)
+    
+    def show_msg(self, msg):
+        dialog = NSAlert.alloc().init()
+        dialog.addButtonWithTitle_("Ok")
+        dialog.setMessageText_(msg)
+        dialog.runModal()
     
     def setup_as_registered(self):
         pass # does nothing on Cocoa

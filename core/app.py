@@ -6,6 +6,8 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/bsd_license
 
+from pdfminer.pdfparser import PDFSyntaxError
+
 from hscommon.reg import RegistrableApplication
 from hscommon.notify import Broadcaster
 from hscommon.trans import tr
@@ -25,6 +27,7 @@ class App(Broadcaster, RegistrableApplication):
     # open_path(path)
     # reveal_path(path)
     # setup_as_registered()
+    # show_msg(msg)
     # start_job(j, *args)
     
     def __init__(self, view):
@@ -35,6 +38,7 @@ class App(Broadcaster, RegistrableApplication):
         self._hide_ignored = False
         self.selected_elements = []
         self.elements = []
+        self.last_file_was_invalid = False
     
     #--- Overrides
     def _setup_as_registered(self):
@@ -44,8 +48,11 @@ class App(Broadcaster, RegistrableApplication):
     def _job_completed(self, jobid):
         # Must be called by subclasses when they detect that an async job is completed.
         if jobid == JobType.LoadPDF:
-            self.notify('file_opened')
-            self.notify('elements_changed')
+            if not self.last_file_was_invalid:
+                self.notify('file_opened')
+                self.notify('elements_changed')
+            else:
+                self.view.show_msg("This file is not a PDF.")
     
     #--- Public (Internal)
     def select_elements(self, elements):
@@ -66,8 +73,12 @@ class App(Broadcaster, RegistrableApplication):
     
     def load_pdf(self, path):
         def do(j):
-            self.elements = extract_text_elements_from_pdf(path, j)
-            self.current_path = path
+            self.last_file_was_invalid = False
+            try:
+                self.elements = extract_text_elements_from_pdf(path, j)
+                self.current_path = path
+            except PDFSyntaxError:
+                self.last_file_was_invalid = True
         
         self.view.start_job(JobType.LoadPDF, do)
     
