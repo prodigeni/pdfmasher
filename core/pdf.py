@@ -127,8 +127,11 @@ def extract_text_elements_from_layout(layout_element):
     if len(layout_element.get_text()) < CHARCOUNT_THRESHOLD:
         return [create_element(layout_element)]
     lines = extract_lines(layout_element)
-    # It's important to sort lines here as they're not necessarily in the right order.
-    keyfunc = lambda l: (-l.y1, l.x0)
+    # It's important to sort lines here as they're not necessarily in the right order. However, we
+    # round coordinates in the sort function because in same cases, a very small (like 0.1)
+    # difference in y-pos makes text which should, according to x-pos, go before another piece
+    # of text go after it instead.
+    keyfunc = lambda l: (-round(l.y1), l.x0)
     lines.sort(key=keyfunc)
     minx = min(line.x0 for line in lines)
     result = []
