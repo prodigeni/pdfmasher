@@ -70,8 +70,6 @@ def extract_text_elements_from_pdf(path, j=nulljob):
     parser.set_document(doc)
     doc.set_parser(parser)
     doc.initialize()
-    if not doc.is_extractable:
-        raise Exception('not extractable')
     rsrcmgr = PDFResourceManager()
     laparams = LAParams()
     device = PDFPageAggregator(rsrcmgr, laparams=laparams)
