@@ -1,3 +1,9 @@
+=== 0.2.1 (2011-07-15)
+
+* Fixed a bug where title elements wouldn't correctly be wrapped. (#3)
+* Fixed a bug where generating markdown for elements with footnotes more than once would make a mess.
+* Fixed bugs preventing some PDFs to be read.
+
 === 0.2.0 (2011-07-10)
 
 * Made the PDF opening progress smooth (progress bar).
