@@ -66,7 +66,9 @@ def generate_markdown(elements):
     paragraphs = []
     for e in elements:
         if e.state == ElementState.Title:
-            s = '{}\n==='.format(e.text)
+            # Titles have to be on a single line
+            s = e.text.replace('\n', ' ').strip()
+            s = '{}\n==='.format(s)
         else:
             s = e.text.strip()
         paragraphs.append(s)
