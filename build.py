@@ -94,7 +94,7 @@ def build_help():
     help_basepath = op.join(current_path, 'help', 'en')
     help_destpath = op.join(current_path, 'build', 'help')
     changelog_path = op.join(current_path, 'help', 'changelog')
-    tixurl = "http://noneyet/{0}"
+    tixurl = "http://bitbucket.org/hsoft/pdfmasher/issue/{0}"
     confrepl = {'platform': platform}
     sphinxgen.gen(help_basepath, help_destpath, changelog_path, tixurl, confrepl, confpath)
 
