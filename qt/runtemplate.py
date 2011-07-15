@@ -19,6 +19,9 @@ from hscommon.trans import install_qt_trans
 from core import __appname__, __version__
 import qt.pm_rc
 
+if sys.platform == 'win32':
+    import qt.cxfreeze_fix
+
 def main(argv):
     app = QApplication(argv)
     app.setWindowIcon(QIcon(QPixmap(":/logo_small")))

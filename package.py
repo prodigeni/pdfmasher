@@ -17,17 +17,29 @@ from hscommon.build import (build_dmg, copy_packages, build_debian_changelog, co
     print_and_do, get_module_version)
 
 def package_windows(dev):
-    if sys.platform != "win32":
-        print("Qt packaging only works under Windows.")
-        return
-    
+    from cx_Freeze import Freezer, Executable
     app_version = get_module_version('core')
     if op.exists('dist'):
         shutil.rmtree('dist')
     
-    # Since v4.2.3, cx_freeze started to falsely include tkinter in the package. We exclude it explicitly because of that.
-    cmd = 'cxfreeze --base-name Win32GUI --target-name "PdfMasher.exe" --icon images\\main_icon.ico --exclude-modules tkinter run.py'
-    print_and_do(cmd)
+    exe = Executable(
+        targetName = 'PdfMasher.exe',
+        script = 'run.py',
+        base = 'Win32GUI',
+        icon = 'images\\main_icon.ico',
+    )
+    freezer = Freezer(
+        [exe],
+        # Since v4.2.3, cx_freeze started to falsely include tkinter in the package. We exclude it explicitly because of that.
+        excludes = ['tkinter'],
+    )
+    freezer.Freeze()
+    
+    # Now we have to copy pdfminder's cmap to our root dist dir (We'll set CMAP_PATH env at runtime)
+    import pdfminer.cmap
+    cmap_src = op.dirname(pdfminer.cmap.__file__)
+    cmap_dest = op.join('dist', 'cmap')
+    shutil.copytree(cmap_src, cmap_dest)
     
     if not dev:
         # Copy qt plugins
