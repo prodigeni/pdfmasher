@@ -7,9 +7,6 @@
 # http://www.hardcoded.net/licenses/bsd_license
 
 import re
-from html import escape as html_escape
-
-import markdown
 
 from .pdf import ElementState
 
@@ -30,7 +27,7 @@ def link_footnotes(elements):
         m = RE_STARTING_NUMBER.match(footnote.text)
         if not m:
             # we can't link that, but we still want to prepend the footnote with footnumber
-            footnote.text = '[{}] {}'.format(footnumber, footnote.text)
+            footnote.modified_text = '[{}] {}'.format(footnumber, footnote.text)
             continue
         [lookfor] = m.groups()
         re_lookfor = re.compile(r'(\D){}(\D|$)'.format(lookfor))
@@ -44,13 +41,13 @@ def link_footnotes(elements):
                 continue
             [prevchar, nextchar] = m.groups()
             link = '<a name="linkback{0}"></a><a href="#footnote{0}">[{0}]</a>'.format(footnumber)
-            e.text = re_lookfor.sub(prevchar+link+nextchar, e.text, count=1)
+            e.modified_text = re_lookfor.sub(prevchar+link+nextchar, e.text, count=1)
             link = '<a name="footnote{0}"></a><a href="#linkback{0}">[{0}]</a>'.format(footnumber)
-            footnote.text = footnote.text.replace(lookfor, link, 1)
+            footnote.modified_text = footnote.text.replace(lookfor, link, 1)
             break
         else:
             # we don't have a link, but we still want to put the footnumber in there
-            footnote.text = footnote.text.replace(lookfor, '[{}]'.format(footnumber), 1)
+            footnote.modified_text = footnote.text.replace(lookfor, '[{}]'.format(footnumber), 1)
 
 def wrap_html(body, encoding='utf-8'):
     # The 'encoding' argument is only needed for html metadata, generate_html() returns a string,
@@ -65,12 +62,13 @@ def generate_markdown(elements):
     elements.sort(key=keyfunc) # footnotes go last
     paragraphs = []
     for e in elements:
+        s = e.modified_text if e.modified_text else e.text
         if e.state == ElementState.Title:
             # Titles have to be on a single line
-            s = e.text.replace('\n', ' ').strip()
+            s = s.replace('\n', ' ').strip()
             s = '{}\n==='.format(s)
         else:
-            s = e.text.strip()
+            s = s.strip()
         paragraphs.append(s)
     s = '\n\n'.join(paragraphs)
     return s

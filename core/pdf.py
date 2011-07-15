@@ -48,6 +48,8 @@ class TextElement:
         self.fontsize = fontsize
         self.text = text
         self.state = ElementState.Normal
+        # This is for footnotes-processed text
+        self.modified_text = None
     
     def __repr__(self):
         return '<TextElement {page} {x}-{y} {state} "{text}">'.format(**self.__dict__)
