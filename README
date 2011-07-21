@@ -44,7 +44,7 @@ in here.
 OS X prerequisites
 ------------------
 
-- XCode 3.1 (http://developer.apple.com/TOOLS/xcode/)
+- XCode 4 (http://developer.apple.com/xcode/)
 - Sparkle (http://sparkle.andymatuschak.org/)
 - PyObjC 2.3 (http://pyobjc.sourceforge.net/)
 - pluginbuilder 1.0.1 (http://bitbucket.org/hsoft/pluginbuilder)

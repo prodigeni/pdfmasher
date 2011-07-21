@@ -16,3 +16,5 @@ help/*/changelog.rst
 *.pbxuser
 *.pdf
 *.tm_build_errors
+*.xcodeproj/xcuserdata
+*.xcodeproj/project.xcworkspace/xcuserdata
