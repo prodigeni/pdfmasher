@@ -10,7 +10,7 @@ import re
 
 from pdfminer.pdfparser import PDFParser, PDFDocument
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfminer.layout import LAParams, LTItem, LTContainer, LTText, LTChar, LTTextLineHorizontal
+from pdfminer.layout import LAParams, LTItem, LTChar, LTTextLineHorizontal, LTTextBox
 from pdfminer.converter import PDFPageAggregator
 
 from jobprogress.job import nulljob
@@ -58,14 +58,6 @@ class TextElement:
 def extract_text_elements_from_pdf(path, j=nulljob):
     """Opens a PDF and extract every element that is text based (LTText).
     """
-    def gettext(obj):
-        if isinstance(obj, LTText):
-            return [obj]
-        elif isinstance(obj, LTContainer):
-            return sum((gettext(sub) for sub in obj), [])
-        else:
-            return []
-    
     fp = open(path, 'rb')
     doc = PDFDocument(caching=True)
     parser = PDFParser(fp)
@@ -73,7 +65,7 @@ def extract_text_elements_from_pdf(path, j=nulljob):
     doc.set_parser(parser)
     doc.initialize()
     rsrcmgr = PDFResourceManager()
-    laparams = LAParams()
+    laparams = LAParams(all_texts=True, paragraph_indent=5)
     device = PDFPageAggregator(rsrcmgr, laparams=laparams)
     interpreter = PDFPageInterpreter(rsrcmgr, device)
     result = []
@@ -82,12 +74,11 @@ def extract_text_elements_from_pdf(path, j=nulljob):
     for pageno, page in j.iter_with_progress(enumerated_pages, progress_msg):
         interpreter.process_page(page)
         layout = device.get_result()
-        layout_elems = gettext(layout)
-        for layout_elem in layout_elems: 
-            elements = extract_text_elements_from_layout(layout_elem)
-            for elem in elements:
-                elem.page = pageno
-                result.append(elem)
+        textboxes = extract_textboxes(layout)
+        for textbox in textboxes: 
+            elem = create_element(textbox)
+            elem.page = pageno
+            result.append(elem)
     for i, elem in enumerate(result):
         elem.id = i
     return result
@@ -107,50 +98,7 @@ def create_element(layout_elements):
     text = fix_text(get_text(layout_elements))
     return TextElement(x, y, fontsize, text)
 
-def extract_text_elements_from_layout(layout_element):
-    """Extract text elements from `layout_element`.
-    
-    Most of the time, only one text element per layout element is extracted, but it can happen
-    that a layout element contains more than one paragraph and thus needs to yield more than one
-    text element.
-    """
-    # points to the right of the min x where we consider ourselves 'indented'.
-    # NOTE: When looking for indented lines, we need to be careful to check whether there's not
-    # something to the left of that line. If there's enough space between the comma of the previous
-    # sentence and the first letter of the next, we end up with two horizontal lines next to each
-    # other.
-    X_TRESHOLD = 5
-    # Number of characters in the text element needed for it to be considered a 'real' paragraph(s)
-    # If we're under that, it's probably a (sub)title or something along these lines, so we simply
-    # create one element from it.
-    CHARCOUNT_THRESHOLD = 300
-    if len(layout_element.get_text()) < CHARCOUNT_THRESHOLD:
-        return [create_element(layout_element)]
-    lines = extract_lines(layout_element)
-    # It's important to sort lines here as they're not necessarily in the right order. However, we
-    # round coordinates in the sort function because in same cases, a very small (like 0.1)
-    # difference in y-pos makes text which should, according to x-pos, go before another piece
-    # of text go after it instead.
-    keyfunc = lambda l: (-round(l.y1), l.x0)
-    lines.sort(key=keyfunc)
-    minx = min(line.x0 for line in lines)
-    result = []
-    bunch = []
-    for line in lines:
-        sameline = False
-        if bunch and (abs(line.y1 - bunch[-1].y1) < 1):
-            # we're on the same line, don't consider this indented
-            sameline = True
-        if bunch and (not sameline) and (line.x0 - minx > X_TRESHOLD):
-            elem = create_element(bunch)
-            result.append(elem)
-            bunch = []
-        bunch.append(line)
-    elem = create_element(bunch)
-    result.append(elem)
-    return result
-
-def extract_from_elem(elem, lookfor=LTChar):
+def extract_from_elem(elem, lookfor):
     if isinstance(elem, lookfor):
         return [elem]
     else:
@@ -166,6 +114,9 @@ def extract_chars(elem):
 
 def extract_lines(elem):
     return extract_from_elem(elem, lookfor=LTTextLineHorizontal)
+
+def extract_textboxes(elem):
+    return extract_from_elem(elem, lookfor=LTTextBox)
 
 def get_avg_text_height(chars):
     """Returns the average height of LTChar elements contained in `text_container`.
