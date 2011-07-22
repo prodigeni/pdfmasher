@@ -55,6 +55,12 @@ class TextElement:
         return '<TextElement {page} {x}-{y} {state} "{text}">'.format(**self.__dict__)
     
 
+class Page:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+    
+    
 def extract_text_elements_from_pdf(path, j=nulljob):
     """Opens a PDF and extract every element that is text based (LTText).
     """
@@ -68,20 +74,22 @@ def extract_text_elements_from_pdf(path, j=nulljob):
     laparams = LAParams(all_texts=True, paragraph_indent=5)
     device = PDFPageAggregator(rsrcmgr, laparams=laparams)
     interpreter = PDFPageInterpreter(rsrcmgr, device)
-    result = []
+    pages = []
+    elements = []
     enumerated_pages = list(enumerate(doc.get_pages()))
     progress_msg = "Reading page %i of %i"
     for pageno, page in j.iter_with_progress(enumerated_pages, progress_msg):
         interpreter.process_page(page)
-        layout = device.get_result()
-        textboxes = extract_textboxes(layout)
+        page_layout = device.get_result()
+        pages.append(Page(page_layout.width, page_layout.height))
+        textboxes = extract_textboxes(page_layout)
         for textbox in textboxes: 
             elem = create_element(textbox)
             elem.page = pageno
-            result.append(elem)
-    for i, elem in enumerate(result):
+            elements.append(elem)
+    for i, elem in enumerate(elements):
         elem.id = i
-    return result
+    return pages, elements
 
 def create_element(layout_elements):
     # layout elem can either be an LTItem or a list of elems. We have to extract X and Y pos from it.

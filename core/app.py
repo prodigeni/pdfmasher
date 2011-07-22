@@ -37,6 +37,7 @@ class App(Broadcaster, RegistrableApplication):
         self.current_path = None
         self._hide_ignored = False
         self.selected_elements = []
+        self.pages = []
         self.elements = []
         self.last_file_was_invalid = False
     
@@ -75,7 +76,7 @@ class App(Broadcaster, RegistrableApplication):
         def do(j):
             self.last_file_was_invalid = False
             try:
-                self.elements = extract_text_elements_from_pdf(path, j)
+                self.pages, self.elements = extract_text_elements_from_pdf(path, j)
                 self.current_path = path
             except PDFSyntaxError:
                 self.last_file_was_invalid = True

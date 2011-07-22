@@ -14,6 +14,7 @@ from qtlib.util import verticalSpacer, horizontalSpacer
 
 from core.pdf import ElementState
 from core.gui.edit_pane import EditPane as EditPaneModel
+from .group_dialog import GroupDialog
 
 class EditPane(QWidget):
     def __init__(self, app):
@@ -27,6 +28,7 @@ class EditPane(QWidget):
         self.titleButton.clicked.connect(partial(self.app.model.change_state_of_selected, ElementState.Title))
         self.footnoteButton.clicked.connect(partial(self.app.model.change_state_of_selected, ElementState.Footnote))
         self.ignoreButton.clicked.connect(partial(self.app.model.change_state_of_selected, ElementState.Ignored))
+        self.testButton.clicked.connect(self.testButtonClicked)
         self.hideIgnoredCheckBox.stateChanged.connect(self.hideIgnoredCheckBoxStateChanged)
         self.textEdit.textChanged.connect(self.textEditTextChanged)
         self.saveEditsButton.clicked.connect(self.model.save_edits)
@@ -43,6 +45,8 @@ class EditPane(QWidget):
         self.buttonLayout.addWidget(self.footnoteButton)
         self.ignoreButton = QPushButton("Ignore")
         self.buttonLayout.addWidget(self.ignoreButton)
+        self.testButton = QPushButton("Test")
+        self.buttonLayout.addWidget(self.testButton)
         self.buttonLayout.addItem(verticalSpacer())
         self.mainLayout.addLayout(self.buttonLayout)
         
@@ -62,6 +66,10 @@ class EditPane(QWidget):
         self.mainLayout.addLayout(self.rightLayout)
         
     #--- Signals
+    def testButtonClicked(self):
+        dlg = GroupDialog(self.app.mainWindow, self.app)
+        dlg.exec()
+    
     def hideIgnoredCheckBoxStateChanged(self, state):
         self.app.model.hide_ignored = state == Qt.Checked
     
