@@ -39,7 +39,7 @@ class ElementState:
     Ignored = 'ignored'
 
 class TextElement:
-    def __init__(self, x, y, fontsize, text):
+    def __init__(self, x, y, fontsize, text, layout_elem):
         # The X and the Y of a text element should always be its top left corner
         self.id = None # set later
         self.page = None # set later
@@ -50,6 +50,7 @@ class TextElement:
         self.state = ElementState.Normal
         # This is for footnotes-processed text
         self.modified_text = None
+        self.layout_elem = layout_elem
     
     def __repr__(self):
         return '<TextElement {page} {x}-{y} {state} "{text}">'.format(**self.__dict__)
@@ -91,20 +92,13 @@ def extract_text_elements_from_pdf(path, j=nulljob):
         elem.id = i
     return pages, elements
 
-def create_element(layout_elements):
-    # layout elem can either be an LTItem or a list of elems. We have to extract X and Y pos from it.
-    # If we have a list, we use the first item of the list, which should be at the top left corner
-    # of the bunch, normally
-    if isinstance(layout_elements, LTItem):
-        x = layout_elements.x0
-        y = layout_elements.y1 # top left corner in pdfminer is x0/y1
-    else:
-        x = layout_elements[0].x0
-        y = layout_elements[0].y1
-    chars = extract_chars(layout_elements)
+def create_element(layout_element):
+    x = layout_element.x0
+    y = layout_element.y1 # top left corner in pdfminer is x0/y1
+    chars = extract_chars(layout_element)
     fontsize = get_avg_text_height(chars)
-    text = fix_text(get_text(layout_elements))
-    return TextElement(x, y, fontsize, text)
+    text = fix_text(get_text(layout_element))
+    return TextElement(x, y, fontsize, text, layout_element)
 
 def extract_from_elem(elem, lookfor):
     if isinstance(elem, lookfor):

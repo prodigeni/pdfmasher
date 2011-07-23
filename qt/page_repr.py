@@ -7,9 +7,15 @@
 # http://www.hardcoded.net/licenses/bsd_license
 
 from PyQt4.QtCore import Qt, QRect
-from PyQt4.QtGui import QWidget, QPainter
+from PyQt4.QtGui import QWidget, QPainter, QPen
 
-from core.gui.page_repr import PageRepresentation as PageRepresentationModel
+from core.gui.page_repr import PageRepresentation as PageRepresentationModel, PageColor
+
+COLORS = {
+    PageColor.PageBg: Qt.white,
+    PageColor.PageBorder: Qt.black,
+    PageColor.ElemNormal: Qt.black,
+}
 
 class PageRepresentation(QWidget):
     def __init__(self):
@@ -41,12 +47,22 @@ class PageRepresentation(QWidget):
     
     def paintEvent(self, event):
         QWidget.paintEvent(self, event)
-        if self.model.page is None:
-            return
-        painter = QPainter(self)
-        self._paintPage(painter)
+        self.current_painter = QPainter(self)
+        self.model.draw(self.width(), self.height())
+        del self.current_painter
     
     #--- model --> view
+    def draw_rectangle(self, x, y, width, height, bgcolor, pencolor):
+        painter = self.current_painter
+        r = QRect(x, y, width, height)
+        if bgcolor is not None:
+            painter.fillRect(r, COLORS[bgcolor])
+        if pencolor is not None:
+            pen = QPen(painter.pen())
+            pen.setColor(COLORS[pencolor])
+            painter.setPen(pen)
+            painter.drawRect(r)
+    
     def refresh(self):
         self.update()
     

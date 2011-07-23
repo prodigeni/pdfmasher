@@ -18,7 +18,8 @@ class GroupDialog:
     #--- Private
     def _update_page(self):
         page = self.app.pages[self.current_pageno]
-        self.page_repr.set_page(page)
+        elems = [e for e in self.app.elements if e.page == self.current_pageno]
+        self.page_repr.set_page(page, elems)
     
     #--- Public
     def prev_page(self):
