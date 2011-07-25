@@ -36,6 +36,7 @@ class ElementState:
     Normal = 'normal'
     Title = 'title'
     Footnote = 'footnote'
+    ToFix = 'tofix'
     Ignored = 'ignored'
 
 class TextElement:

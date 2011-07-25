@@ -13,7 +13,7 @@ http://www.hardcoded.net/licenses/bsd_license
 {
     self = [super initWithPyClassName:@"PyEditPane" pyParent:aPyParent];
     [NSBundle loadNibNamed:@"EditPane" owner:self];
-    app = (PyApp *)aPyParent;
+    app = (PyPdfMasher *)aPyParent;
     [[self py] connect];
     return self;
 }
@@ -43,6 +43,11 @@ http://www.hardcoded.net/licenses/bsd_license
     [app changeStateOfSelected:@"footnote"];
 }
 
+- (IBAction)selectToFix:(id)sender
+{
+    [app changeStateOfSelected:@"tofix"];
+}
+
 - (IBAction)selectIgnored:(id)sender
 {
     [app changeStateOfSelected:@"ignored"];
@@ -56,23 +61,23 @@ http://www.hardcoded.net/licenses/bsd_license
 
 - (IBAction)saveEdits:(id)sender
 {
-    [[self py] setEditText:[editTextField stringValue]];
+    [[self py] setEditText:[editTextView string]];
     [[self py] saveEdits];
 }
 
 - (IBAction)cancelEdits:(id)sender
 {
     [[self py] cancelEdits];
-    [editTextField setStringValue:[[self py] editText]];
+    [editTextView setString:[[self py] editText]];
 }
 
 /* model --> view */
 
 - (void)refreshEditText
 {
-    [editTextField setStringValue:[[self py] editText]];
+    [editTextView setString:[[self py] editText]];
     BOOL enabled = [[self py] editEnabled];
-    [editTextField setEnabled:enabled];
+    [editTextView setEditable:enabled];
     [saveButton setEnabled:enabled];
     [cancelButton setEnabled:enabled];
 }

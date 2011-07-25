@@ -9,18 +9,18 @@ http://www.hardcoded.net/licenses/bsd_license
 #import <Cocoa/Cocoa.h>
 
 #import "HSGUIController.h"
-#import "PyApp.h"
+#import "PyPdfMasher.h"
 #import "PyEditPane.h"
 
 @interface PMEditPane : HSGUIController
 {
     IBOutlet NSView *wholeView;
     IBOutlet NSButton *hideIgnoredButton;
-    IBOutlet NSTextField *editTextField;
+    IBOutlet NSTextView *editTextView;
     IBOutlet NSButton *saveButton;
     IBOutlet NSButton *cancelButton;
     
-    PyApp *app;
+    PyPdfMasher *app;
 }
 - (id)initWithPyParent:(id)aPyParent;
 - (PyEditPane *)py;
@@ -29,6 +29,7 @@ http://www.hardcoded.net/licenses/bsd_license
 - (IBAction)selectNormal:(id)sender;
 - (IBAction)selectTitle:(id)sender;
 - (IBAction)selectFootnote:(id)sender;
+- (IBAction)selectToFix:(id)sender;
 - (IBAction)selectIgnored:(id)sender;
 - (IBAction)toggleHideIgnored:(id)sender;
 - (IBAction)saveEdits:(id)sender;

@@ -15,9 +15,9 @@ from core import __appname__
 from core.app import App
 from .app_view import AppView
 
-class PyApp(PyFairware):
+class PyPdfMasher(PyFairware):
     def init(self):
-        self = super(PyApp, self).init()
+        self = super(PyPdfMasher, self).init()
         logging.basicConfig(level=logging.WARNING, format='%(levelname)s %(message)s')
         cocoa.install_exception_hook()
         self.app_view = AppView()

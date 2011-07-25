@@ -8,15 +8,15 @@ http://www.hardcoded.net/licenses/bsd_license
 
 #import <Cocoa/Cocoa.h>
 #import "HSAboutBox.h"
-#import "PyApp.h"
+#import "PyPdfMasher.h"
 
 @interface PMAppDelegate : NSObject
 {
-    PyApp *py;
+    PyPdfMasher *py;
     HSAboutBox *aboutBox;
 }
 
-- (PyApp *)py;
+- (PyPdfMasher *)py;
 
 - (IBAction)openWebsite:(id)sender;
 - (IBAction)openHelp:(id)sender;

@@ -15,9 +15,9 @@ http://www.hardcoded.net/licenses/bsd_license
 - (void)awakeFromNib
 {
     // py has to be initialized "lazily" because awakeFromNib's order is undefined, so PMAppDelegate
-    // might be awoken after PMMainWindow, and PMMainWindow needs PyApp on its own awakeFromNib.
+    // might be awoken after PMMainWindow, and PMMainWindow needs PyPdfMasher on its own awakeFromNib.
     // However, we cannot initialize it to nil here because we might overwrite an already initialized
-    // PyApp.
+    // PyPdfMasher.
     aboutBox = nil; // Lazily loaded
 }
 
@@ -28,10 +28,10 @@ http://www.hardcoded.net/licenses/bsd_license
     [super dealloc];
 }
 
-- (PyApp *)py {
+- (PyPdfMasher *)py {
     if (py == nil) {
-        Class PyApp = [Utils classNamed:@"PyApp"];
-        py = [[PyApp alloc] init];
+        Class PyPdfMasher = [Utils classNamed:@"PyPdfMasher"];
+        py = [[PyPdfMasher alloc] init];
         [[ProgressController mainProgressController] setWorker:py];
     }
     return py;

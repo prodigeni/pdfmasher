@@ -20,7 +20,7 @@ http://www.hardcoded.net/licenses/bsd_license
     IBOutlet NSTabView *tabView;
     IBOutlet PMAppDelegate *appDelegate;
     
-    PyApp *app;
+    PyPdfMasher *app;
     PMOpenedFileLabel *openedFileLabel;
     PMElementTable *elementTable;
     PMEditPane *editPane;

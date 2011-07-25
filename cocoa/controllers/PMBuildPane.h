@@ -9,7 +9,7 @@ http://www.hardcoded.net/licenses/bsd_license
 #import <Cocoa/Cocoa.h>
 
 #import "HSGUIController.h"
-#import "PyApp.h"
+#import "PyPdfMasher.h"
 #import "PyBuildPane.h"
 
 @interface PMBuildPane : HSGUIController

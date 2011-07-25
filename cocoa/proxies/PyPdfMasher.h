@@ -2,7 +2,7 @@
 #import "PyFairware.h"
 #import "ProgressController.h"
 
-@interface PyApp : PyFairware <Worker> {}
+@interface PyPdfMasher : PyFairware <Worker> {}
 - (void)changeStateOfSelected:(NSString *)newstate;
 - (void)loadPDF:(NSString *)path;
 - (BOOL)hideIgnored;

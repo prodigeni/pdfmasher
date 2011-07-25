@@ -63,7 +63,7 @@ class PageRepresentation:
             adjy = py + (ph - (lelem.y1 * yratio))
             adjw = lelem.width * xratio
             adjh = lelem.height * yratio
-            self.view.draw_rectangle(adjx, adjy, adjw, adjh, PageColor.ElemNormal, None)
+            self.view.draw_rectangle(adjx, adjy, adjw, adjh, None, PageColor.ElemNormal)
     
     def set_page(self, page, elements):
         self.page = page
