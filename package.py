@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # Created By: Virgil Dupras
 # Created On: 2011-06-20
 # Copyright 2011 Hardcoded Software (http://www.hardcoded.net)
