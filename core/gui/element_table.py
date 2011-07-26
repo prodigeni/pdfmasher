@@ -11,6 +11,14 @@ from hscommon.gui.table import GUITable, Row
 from ..pdf import ElementState
 from .base import GUIObject
 
+SHORTCUTKEY2FLAG = {
+    'N': ElementState.Normal,
+    'T': ElementState.Title,
+    'F': ElementState.Footnote,
+    'X': ElementState.ToFix,
+    'I': ElementState.Ignored,
+}
+
 class ElementRow(Row):
     def __init__(self, table, element):
         Row.__init__(self, table)
@@ -54,6 +62,13 @@ class ElementTable(GUIObject, GUITable):
         # Takes the table's selection and does appropriates updates on the Document's side.
         elements = [row.element for row in self.selected_rows]
         self.app.select_elements(elements)
+    
+    #--- Public
+    def press_key(self, key):
+        key = key.upper()
+        assert key in SHORTCUTKEY2FLAG
+        state = SHORTCUTKEY2FLAG[key]
+        self.app.change_state_of_selected(state)
     
     #--- Event Handlers
     def elements_changed(self):

@@ -7,11 +7,11 @@
 # http://www.hardcoded.net/licenses/bsd_license
 
 from PyQt4.QtCore import Qt
-from PyQt4.QtGui import QTableView, QSizePolicy
+from PyQt4.QtGui import QTableView, QSizePolicy, QShortcut, QKeySequence
 
 from qtlib.column import Column
 from qtlib.table import Table
-from core.gui.element_table import ElementTable as ElementTableModel
+from core.gui.element_table import ElementTable as ElementTableModel, SHORTCUTKEY2FLAG
 
 class ElementTable(Table):
     COLUMNS = [
@@ -29,8 +29,25 @@ class ElementTable(Table):
         model = ElementTableModel(view=self, app=app.model)
         Table.__init__(self, model, view)
         self.setColumnsWidth(None) # set default widths
+        self._setupKeyBindings()
         self.model.connect()
     
+    def _setupKeyBindings(self):
+        # we have to keep a reference to the shortcuts for them not to be freed right away
+        self.shortcuts = []
+        for c in SHORTCUTKEY2FLAG:
+            seq = QKeySequence(c)
+            shortcut = QShortcut(seq, self.view, None, None, Qt.WidgetShortcut)
+            shortcut.activated.connect(self.keyActivated)
+            self.shortcuts.append(shortcut)
+    
+    #--- Event Handlers
+    def keyActivated(self):
+        shortcut = self.sender()
+        key = shortcut.key().toString()
+        self.model.press_key(key)
+    
+
 class ElementTableView(QTableView):
     def __init__(self):
         QTableView.__init__(self)

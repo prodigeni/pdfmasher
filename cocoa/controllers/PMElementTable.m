@@ -9,7 +9,7 @@ http://www.hardcoded.net/licenses/bsd_license
 #import "PMElementTable.h"
 
 @implementation PMElementTable
-- (id)initWithPyParent:(id)aPyParent tableView:(NSTableView *)aTableView
+- (id)initWithPyParent:(id)aPyParent tableView:(PMElementTableView *)aTableView
 {
     self = [super initWithPyClassName:@"PyElementTable" pyParent:aPyParent view:aTableView];
     columns = [[HSColumns alloc] initWithPyParent:[self py] tableView:aTableView];
@@ -49,6 +49,13 @@ http://www.hardcoded.net/licenses/bsd_license
     };
     [[self columns] initializeColumns:defs];
     // [[self columns] restoreColumns];
+}
+
+/* Delegate */
+
+- (void)flagShortcutPressed:(NSString *)shortcut
+{
+    [[self py] pressKey:shortcut];
 }
 
 @end

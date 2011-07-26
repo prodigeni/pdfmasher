@@ -12,3 +12,7 @@ from core.gui.element_table import ElementTable
 
 class PyElementTable(PyTable):
     py_class = ElementTable
+    
+    def pressKey_(self, key):
+        self.py.press_key(key)
+    

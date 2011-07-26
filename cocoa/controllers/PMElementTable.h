@@ -10,12 +10,13 @@ http://www.hardcoded.net/licenses/bsd_license
 #import "PyElementTable.h"
 #import "HSTable.h"
 #import "HSColumns.h"
+#import "PMElementTableView.h"
 
 @interface PMElementTable : HSTable
 {
     HSColumns *columns;
 }
-- (id)initWithPyParent:(id)aPyParent tableView:(NSTableView *)aTableView;
+- (id)initWithPyParent:(id)aPyParent tableView:(PMElementTableView *)aTableView;
 - (void)initializeColumns;
 - (PyElementTable *)py;
 - (HSColumns *)columns;
