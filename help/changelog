@@ -1,3 +1,10 @@
+=== 0.3.0 (2011-07-26)
+
+* Added a new flag: "To Fix".
+* Added keyboard shortcuts for quickly flagging elements.
+* Improved text layout detection in PDFs.
+* Fixed bugs preventing some PDFs to be read.
+
 === 0.2.1 (2011-07-15)
 
 * Fixed a bug where title elements wouldn't correctly be wrapped. (#3)
