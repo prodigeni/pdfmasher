@@ -36,7 +36,7 @@ class App(Broadcaster, RegistrableApplication):
         self.view = view
         self.current_path = None
         self._hide_ignored = False
-        self.selected_elements = []
+        self.selected_elements = set()
         self.pages = []
         self.elements = []
         self.last_file_was_invalid = False
@@ -57,6 +57,8 @@ class App(Broadcaster, RegistrableApplication):
     
     #--- Public (Internal)
     def select_elements(self, elements):
+        if elements == self.select_elements:
+            return
         self.selected_elements = elements
         self.notify('elements_selected')
     

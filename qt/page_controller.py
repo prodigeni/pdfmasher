@@ -8,28 +8,23 @@
 
 from PyQt4.QtGui import QWidget, QVBoxLayout, QHBoxLayout, QPushButton
 
-from core.gui.page_controller import PageController as PageControllerModel
 from .page_repr import PageRepresentation
 
 class PageController(QWidget):
     def __init__(self, app):
         QWidget.__init__(self)
         self.app = app
-        self.model = PageControllerModel(app.model)
         self._setupUi()
         
-        self.model.set_children([self.pageReprView.model])
-        self.model.connect()
-        
-        self.previousPageButton.clicked.connect(self.model.prev_page)
-        self.nextPageButton.clicked.connect(self.model.next_page)
+        self.previousPageButton.clicked.connect(self.pageRepr.model.prev_page)
+        self.nextPageButton.clicked.connect(self.pageRepr.model.next_page)
     
     def _setupUi(self):
         self.setWindowTitle("Grouping Dialog")
         self.resize(600, 600)
         self.mainLayout = QVBoxLayout(self)
-        self.pageReprView = PageRepresentation()
-        self.mainLayout.addWidget(self.pageReprView)
+        self.pageRepr = PageRepresentation(self.app)
+        self.mainLayout.addWidget(self.pageRepr)
         self.buttonLayout = QHBoxLayout()
         self.previousPageButton = QPushButton("<<")
         self.buttonLayout.addWidget(self.previousPageButton)

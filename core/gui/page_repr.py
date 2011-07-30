@@ -6,25 +6,77 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/bsd_license
 
+from .base import GUIObject
+
 # The view has the responsibility of determining specific colors, but when we send draw_* messages
 # to our view, we still give a color category. These categories are defined here.
 class PageColor:
     PageBg = 1
     PageBorder = 2
     ElemNormal = 3
+    ElemSelected = 4
+    MouseSelection = 10
 
-class PageRepresentation:
+#XXX use a proper geometry library... planar (http://pygamesf.org/~casey/planar/doc/)?
+
+def rect2pts(r):
+    x, y, w, h = r
+    return x, y, x+w, y+h
+
+def rect_from_corners(pos1, pos2):
+    x1, y1 = pos1
+    x2, y2 = pos2
+    return (min(x1, x2), min(y1, y2), abs(x1-x2), abs(y1-y2))
+
+def rects_intersect(r1, r2):
+    r1x1, r1y1, r1x2, r1y2 = rect2pts(r1)
+    r2x1, r2y1, r2x2, r2y2 = rect2pts(r2)
+    if r1x1 < r2x1:
+        xinter = r1x2 >= r2x1
+    else:
+        xinter = r2x2 >= r1x1
+    if not xinter:
+        return False
+    if r1y1 < r2y1:
+        yinter = r1y2 >= r2y1
+    else:
+        yinter = r2y2 >= r1y1
+    return yinter
+
+class PageRepresentation(GUIObject):
     #--- model -> view calls:
     # refresh()
     # draw_rectangle(x, y, width, height, bgcolor, pencolor)
     #
     
-    def __init__(self, view):
-        self.view = view
+    def __init__(self, view, app):
+        GUIObject.__init__(self, view, app)
+        self.pageno = 0
         self.page = None
         self.elements = None
+        self._last_mouse_down = None
+        self._last_mouse_pos = None
+        self._last_page_boundaries = None
+        self._elem2drawrect = None
     
     #--- Private
+    def _compute_elem_drawrect(self, page_boundaries):
+        if self._last_page_boundaries == page_boundaries:
+            return
+        self._last_page_boundaries = page_boundaries
+        px, py, pw, ph = page_boundaries
+        self._elem2drawrect = {}
+        xratio = pw / self.page.width
+        yratio = ph / self.page.height
+        for elem in self.elements:
+            lelem = elem.layout_elem
+            adjx = px + (lelem.x0 * xratio)
+            # don't forget that ypos in pdfminer are inverted
+            adjy = py + (ph - (lelem.y1 * yratio))
+            adjw = lelem.width * xratio
+            adjh = lelem.height * yratio
+            self._elem2drawrect[elem] = (adjx, adjy, adjw, adjh)
+    
     def _get_page_boundaries(self, view_width, view_height):
         pagewidth = self.page.width
         pageheight = self.page.height
@@ -46,6 +98,25 @@ class PageRepresentation:
             y = (height - adjusted_height) / 2
         return x, y, adjusted_width, adjusted_height
     
+    def _select_elems_in_rect(self, r):
+        toselect = set()
+        for elem in self.elements:
+            elem_rect = self._elem2drawrect[elem]
+            if rects_intersect(r, elem_rect):
+                toselect.add(elem)
+        self.app.select_elements(toselect)
+    
+    def _update_page(self):
+        if self.app.pages:
+            self.page = self.app.pages[self.pageno]
+            self.elements = [e for e in self.app.elements if e.page == self.pageno]
+        else:
+            self.page = None
+            self.elements = None
+        self._last_page_boundaries = None
+        self._elem2drawrect = None
+        self.view.refresh()
+    
     #--- Public
     def draw(self, view_width, view_height):
         if self.page is None:
@@ -54,19 +125,44 @@ class PageRepresentation:
         # draw the page itself
         self.view.draw_rectangle(px, py, pw, ph, PageColor.PageBg, PageColor.PageBorder)
         # now draw the elements
-        xratio = pw / self.page.width
-        yratio = ph / self.page.height
+        self._compute_elem_drawrect((px, py, pw, ph))
         for elem in self.elements:
-            lelem = elem.layout_elem
-            adjx = px + (lelem.x0 * xratio)
-            # don't forget that ypos in pdfminer are inverted
-            adjy = py + (ph - (lelem.y1 * yratio))
-            adjw = lelem.width * xratio
-            adjh = lelem.height * yratio
-            self.view.draw_rectangle(adjx, adjy, adjw, adjh, None, PageColor.ElemNormal)
+            adjx, adjy, adjw, adjh = self._elem2drawrect[elem]
+            color = PageColor.ElemSelected if elem in self.app.selected_elements else PageColor.ElemNormal
+            self.view.draw_rectangle(adjx, adjy, adjw, adjh, None, color)
+        if self._last_mouse_down and self._last_mouse_pos:
+            rx, ry, rw, rh = rect_from_corners(self._last_mouse_down, self._last_mouse_pos)
+            self.view.draw_rectangle(rx, ry, rw, rh, None, PageColor.MouseSelection)
     
-    def set_page(self, page, elements):
-        self.page = page
-        self.elements = elements
+    def mouse_down(self, x, y):
+        self._last_mouse_down = (x, y)
+        self._last_mouse_pos = (x, y)
         self.view.refresh()
+    
+    def mouse_move(self, x, y):
+        # only call when the mouse button is currently down
+        self._last_mouse_pos = (x, y)
+        self.view.refresh()
+    
+    def mouse_up(self):
+        r = rect_from_corners(self._last_mouse_down, self._last_mouse_pos)
+        self._select_elems_in_rect(r)
+        self._last_mouse_down = None
+        self._last_mouse_pos = None
+        self.view.refresh()
+    
+    def prev_page(self):
+        if self.pageno > 0:
+            self.pageno -= 1
+            self._update_page()
+    
+    def next_page(self):
+        if self.pageno < len(self.app.pages)-1:
+            self.pageno += 1
+            self._update_page()
+    
+    #--- Events
+    def file_opened(self):
+        self.pageno = 0
+        self._update_page()
     

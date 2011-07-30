@@ -60,7 +60,7 @@ class ElementTable(GUIObject, GUITable):
     
     def _update_selection(self):
         # Takes the table's selection and does appropriates updates on the Document's side.
-        elements = [row.element for row in self.selected_rows]
+        elements = {row.element for row in self.selected_rows}
         self.app.select_elements(elements)
     
     #--- Public
@@ -73,4 +73,14 @@ class ElementTable(GUIObject, GUITable):
     #--- Event Handlers
     def elements_changed(self):
         self.refresh()
+    
+    def elements_selected(self):
+        selected_elements = self.app.selected_elements
+        selected_indexes = []
+        for index, row in enumerate(self):
+            if row.element in selected_elements:
+                selected_indexes.append(index)
+        if selected_indexes != self.selected_indexes:
+            self.selected_indexes = selected_indexes
+            self.view.refresh()
     

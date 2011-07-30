@@ -15,12 +15,15 @@ COLORS = {
     PageColor.PageBg: Qt.white,
     PageColor.PageBorder: Qt.black,
     PageColor.ElemNormal: Qt.black,
+    PageColor.ElemSelected: Qt.blue,
+    PageColor.MouseSelection: Qt.blue,
 }
 
 class PageRepresentation(QWidget):
-    def __init__(self):
+    def __init__(self, app):
         QWidget.__init__(self)
-        self.model = PageRepresentationModel(view=self)
+        self.model = PageRepresentationModel(view=self, app=app.model)
+        self.model.connect()
     
     def _paintPage(self, painter):
         pagewidth = self.model.page.width
@@ -45,11 +48,21 @@ class PageRepresentation(QWidget):
         painter.fillRect(r, Qt.white)
         painter.drawRect(r)
     
+    #--- Qt Events
     def paintEvent(self, event):
         QWidget.paintEvent(self, event)
         self.current_painter = QPainter(self)
         self.model.draw(self.width(), self.height())
         del self.current_painter
+    
+    def mousePressEvent(self, event):
+        self.model.mouse_down(event.x(), event.y())
+    
+    def mouseMoveEvent(self, event):
+        self.model.mouse_move(event.x(), event.y())
+    
+    def mouseReleaseEvent(self, event):
+        self.model.mouse_up()
     
     #--- model --> view
     def draw_rectangle(self, x, y, width, height, bgcolor, pencolor):

@@ -8,6 +8,8 @@
 
 from .base import GUIObject
 
+from hscommon.util import first
+
 class EditPane(GUIObject):
     #--- model -> view calls:
     # refresh_edit_text()
@@ -41,7 +43,7 @@ class EditPane(GUIObject):
         if not elements:
             self.edit_text = ''
         elif len(elements) == 1:
-            self.edit_text = elements[0].text
+            self.edit_text = first(elements).text
             self.edit_enabled = True
         else:
             self.edit_text = "(Multiple selection)"
