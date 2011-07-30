@@ -6,17 +6,21 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/bsd_license
 
-class GroupDialog:
+from .base import GUIObject
+
+class PageController(GUIObject):
     def __init__(self, app):
+        GUIObject.__init__(self, None, app)
         self.app = app
         self.current_pageno = 0
     
     def set_children(self, children):
         [self.page_repr] = children
-        self._update_page()
     
     #--- Private
     def _update_page(self):
+        if not self.app.pages:
+            return
         page = self.app.pages[self.current_pageno]
         elems = [e for e in self.app.elements if e.page == self.current_pageno]
         self.page_repr.set_page(page, elems)
@@ -32,6 +36,10 @@ class GroupDialog:
             self.current_pageno += 1
             self._update_page()
     
+    #--- Events
+    def file_opened(self):
+        self.current_pageno = 0
+        self._update_page()
 
     
     

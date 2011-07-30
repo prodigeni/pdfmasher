@@ -13,6 +13,7 @@ from PyQt4.QtGui import (QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushBu
 from hscommon.trans import tr
 from qtlib.util import moveToScreenCenter
 from .element_table import ElementTable, ElementTableView
+from .page_controller import PageController
 from .opened_file_label import OpenedFileLabel
 from .edit_pane import EditPane
 from .build_pane import BuildPane
@@ -65,17 +66,21 @@ class MainWindow(QMainWindow):
         self.openedFileLabel.setSizePolicy(sizePolicy)
         self.fileLayout.addWidget(self.openedFileLabel)
         self.verticalLayout.addLayout(self.fileLayout)
+        self.topTabWidget = QTabWidget()
         self.elementTableView = ElementTableView()
-        self.verticalLayout.addWidget(self.elementTableView)
-        self.tabWidget = QTabWidget()
+        self.topTabWidget.addTab(self.elementTableView, "Table")
+        self.pageController = PageController(self.app)
+        self.topTabWidget.addTab(self.pageController, "Page")
+        self.verticalLayout.addWidget(self.topTabWidget)
+        self.bottomTabWidget = QTabWidget()
         # We want to leave the most screen estate possible to the table.
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Maximum)
-        self.tabWidget.setSizePolicy(sizePolicy)
+        self.bottomTabWidget.setSizePolicy(sizePolicy)
         self.editTab = EditPane(self.app)
-        self.tabWidget.addTab(self.editTab, "Edit")
+        self.bottomTabWidget.addTab(self.editTab, "Edit")
         self.buildTab = BuildPane(self.app)
-        self.tabWidget.addTab(self.buildTab, "Build")
-        self.verticalLayout.addWidget(self.tabWidget)
+        self.bottomTabWidget.addTab(self.buildTab, "Build")
+        self.verticalLayout.addWidget(self.bottomTabWidget)
         self.setCentralWidget(self.mainWidget)
         
         self._setupActions()

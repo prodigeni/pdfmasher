@@ -6,19 +6,20 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/bsd_license
 
-from PyQt4.QtGui import QDialog, QVBoxLayout, QHBoxLayout, QPushButton
+from PyQt4.QtGui import QWidget, QVBoxLayout, QHBoxLayout, QPushButton
 
-from core.gui.group_dialog import GroupDialog as GroupDialogModel
+from core.gui.page_controller import PageController as PageControllerModel
 from .page_repr import PageRepresentation
 
-class GroupDialog(QDialog):
-    def __init__(self, parent, app):
-        QDialog.__init__(self, parent)
+class PageController(QWidget):
+    def __init__(self, app):
+        QWidget.__init__(self)
         self.app = app
-        self.model = GroupDialogModel(app.model)
+        self.model = PageControllerModel(app.model)
         self._setupUi()
         
         self.model.set_children([self.pageReprView.model])
+        self.model.connect()
         
         self.previousPageButton.clicked.connect(self.model.prev_page)
         self.nextPageButton.clicked.connect(self.model.next_page)
