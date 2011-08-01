@@ -91,14 +91,14 @@ class PageRepresentation(GUIObject):
         if width * ratio > height:
             # Our constraint is height, adjust according to it
             adjusted_width = height / ratio
-            adjusted_height = height
+            adjusted_height = height - 2 # give some room for page boundaries line width
             x = (width - adjusted_width) / 2
-            y = 0
+            y = 1
         else:
             # Our constraint is width, adjust according to it
-            adjusted_width = width
+            adjusted_width = width - 2
             adjusted_height = width * ratio
-            x = 0
+            x = 1
             y = (height - adjusted_height) / 2
         return x, y, adjusted_width, adjusted_height
     

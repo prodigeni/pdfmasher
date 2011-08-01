@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		CE249D8F13E731EF0018C7F6 /* PMPageRepr.m in Sources */ = {isa = PBXBuildFile; fileRef = CE249D8E13E731EF0018C7F6 /* PMPageRepr.m */; };
 		CE68745B13C87B2500992AE4 /* ProgressController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE68745A13C87B2500992AE4 /* ProgressController.m */; };
 		CE68745D13C87B3600992AE4 /* progress.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE68745C13C87B3600992AE4 /* progress.xib */; };
 		CE8C6D7C13C4924700D869ED /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE8C6D7B13C4924700D869ED /* Sparkle.framework */; };
@@ -65,6 +66,9 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* PdfMasher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PdfMasher.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE249D8C13E731E50018C7F6 /* PyPageRepr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PyPageRepr.h; path = proxies/PyPageRepr.h; sourceTree = "<group>"; };
+		CE249D8D13E731EF0018C7F6 /* PMPageRepr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PMPageRepr.h; path = views/PMPageRepr.h; sourceTree = "<group>"; };
+		CE249D8E13E731EF0018C7F6 /* PMPageRepr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PMPageRepr.m; path = views/PMPageRepr.m; sourceTree = "<group>"; };
 		CE68745913C87B2500992AE4 /* ProgressController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ProgressController.h; path = ../cocoalib/ProgressController.h; sourceTree = SOURCE_ROOT; };
 		CE68745A13C87B2500992AE4 /* ProgressController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ProgressController.m; path = ../cocoalib/ProgressController.m; sourceTree = SOURCE_ROOT; };
 		CE68745C13C87B3600992AE4 /* progress.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = progress.xib; path = ../cocoalib/xib/progress.xib; sourceTree = SOURCE_ROOT; };
@@ -253,6 +257,7 @@
 		CEC7F37B13AE553E00BA9A74 /* proxies */ = {
 			isa = PBXGroup;
 			children = (
+				CE249D8C13E731E50018C7F6 /* PyPageRepr.h */,
 				CED493F113DE07BC00E45D33 /* PyPdfMasher.h */,
 				CEC7F37D13AE555000BA9A74 /* PyEditPane.h */,
 				CEBDB29E13C8E695007FFECF /* PyBuildPane.h */,
@@ -314,6 +319,8 @@
 		CECBE28713DF0433007F9E9D /* views */ = {
 			isa = PBXGroup;
 			children = (
+				CE249D8D13E731EF0018C7F6 /* PMPageRepr.h */,
+				CE249D8E13E731EF0018C7F6 /* PMPageRepr.m */,
 				CECBE28913DF044E007F9E9D /* PMElementTableView.h */,
 				CECBE28A13DF044E007F9E9D /* PMElementTableView.m */,
 			);
@@ -429,6 +436,7 @@
 				CEFFF36313B0D12400BEA8D5 /* HSErrorReportWindow.m in Sources */,
 				CE68745B13C87B2500992AE4 /* ProgressController.m in Sources */,
 				CECBE28B13DF044E007F9E9D /* PMElementTableView.m in Sources */,
+				CE249D8F13E731EF0018C7F6 /* PMPageRepr.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

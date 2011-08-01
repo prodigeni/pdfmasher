@@ -9,6 +9,7 @@ http://www.hardcoded.net/licenses/bsd_license
 #import "PMMainWindow.h"
 #import "ProgressController.h"
 #import "Dialogs.h"
+#import "Utils.h"
 #import "PMConst.h"
 
 @implementation PMMainWindow
@@ -18,8 +19,11 @@ http://www.hardcoded.net/licenses/bsd_license
     app = [appDelegate py];
     openedFileLabel = [[PMOpenedFileLabel alloc] initWithPyParent:app textView:openedFileLabelView];
     elementTable = [[PMElementTable alloc] initWithPyParent:app tableView:elementsTableView];
+    pageRepr = [[PMPageRepr alloc] initWithPyParent:app];
     editPane = [[PMEditPane alloc] initWithPyParent:app];
     buildPane = [[PMBuildPane alloc] initWithPyParent:app];
+    
+    replacePlaceholderInView(pageReprPlaceholder, pageRepr);
     
     NSTabViewItem *item = [[NSTabViewItem alloc] initWithIdentifier:@"edit_pane"];
     [item setLabel:@"Edit"];
@@ -57,6 +61,16 @@ http://www.hardcoded.net/licenses/bsd_license
         NSString *filename = [[op filenames] objectAtIndex:0];
         [app loadPDF:filename];
     }
+}
+
+- (IBAction)prevPage:(id)sender
+{
+    [pageRepr prevPage];
+}
+
+- (IBAction)nextPage:(id)sender
+{
+    [pageRepr nextPage];
 }
 
 /* Notifications */
