@@ -6,6 +6,7 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/bsd_license
 
+from ..pdf import ElementState
 from .base import GUIObject
 
 # The view has the responsibility of determining specific colors, but when we send draw_* messages
@@ -13,9 +14,10 @@ from .base import GUIObject
 class PageColor:
     PageBg = 1
     PageBorder = 2
-    ElemNormal = 3
-    ElemSelected = 4
-    MouseSelection = 10
+    ElemNormal = 100
+    ElemSelected = 101
+    ElemIgnored = 102
+    MouseSelection = 200
 
 #XXX use a proper geometry library... planar (http://pygamesf.org/~casey/planar/doc/)?
 
@@ -69,6 +71,8 @@ class PageRepresentation(GUIObject):
         xratio = pw / self.page.width
         yratio = ph / self.page.height
         for elem in self.elements:
+            if elem.state == ElementState.Ignored and self.app.hide_ignored:
+                continue # we don't draw the elem
             lelem = elem.layout_elem
             adjx = px + (lelem.x0 * xratio)
             # don't forget that ypos in pdfminer are inverted
@@ -100,8 +104,7 @@ class PageRepresentation(GUIObject):
     
     def _select_elems_in_rect(self, r):
         toselect = set()
-        for elem in self.elements:
-            elem_rect = self._elem2drawrect[elem]
+        for elem, elem_rect in self._elem2drawrect.items():
             if rects_intersect(r, elem_rect):
                 toselect.add(elem)
         self.app.select_elements(toselect)
@@ -126,9 +129,14 @@ class PageRepresentation(GUIObject):
         self.view.draw_rectangle(px, py, pw, ph, PageColor.PageBg, PageColor.PageBorder)
         # now draw the elements
         self._compute_elem_drawrect((px, py, pw, ph))
-        for elem in self.elements:
+        todraw = (e for e in self.elements if e in self._elem2drawrect)
+        for elem in todraw:
             adjx, adjy, adjw, adjh = self._elem2drawrect[elem]
-            color = PageColor.ElemSelected if elem in self.app.selected_elements else PageColor.ElemNormal
+            color = PageColor.ElemNormal
+            if elem.state == ElementState.Ignored:
+                color = PageColor.ElemIgnored
+            if elem in self.app.selected_elements:
+                color = PageColor.ElemSelected
             self.view.draw_rectangle(adjx, adjy, adjw, adjh, None, color)
         if self._last_mouse_down and self._last_mouse_pos:
             rx, ry, rw, rh = rect_from_corners(self._last_mouse_down, self._last_mouse_pos)
@@ -164,5 +172,8 @@ class PageRepresentation(GUIObject):
     #--- Events
     def file_opened(self):
         self.pageno = 0
+        # elements_changed will be raised right after, calling _update_page()
+    
+    def elements_changed(self):
         self._update_page()
     

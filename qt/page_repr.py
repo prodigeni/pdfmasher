@@ -16,6 +16,7 @@ COLORS = {
     PageColor.PageBorder: Qt.black,
     PageColor.ElemNormal: Qt.black,
     PageColor.ElemSelected: Qt.blue,
+    PageColor.ElemIgnored: Qt.lightGray,
     PageColor.MouseSelection: Qt.blue,
 }
 
