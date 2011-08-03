@@ -23,7 +23,7 @@ class ElementRow(Row):
     def __init__(self, table, element):
         Row.__init__(self, table)
         self.element = element
-        self._id = element.id
+        self._order = element.order
         self._page = element.page
         self._x = element.x
         self._y = element.y
@@ -33,12 +33,18 @@ class ElementRow(Row):
         self.state = element.state
         
         # Format
-        self.id = "{:d}".format(self._id)
+        self.order = "{:d}".format(self._order)
         self.page = "{:d}".format(self._page)
         self.x = "{:.0f}".format(self._x)
         self.y = "{:.0f}".format(self._y)
         self.fontsize = "{:0.1f}".format(self._fontsize)
         self.text_length = "{:d}".format(self._text_length)
+    
+    def sort_key_for_column(self, column_name):
+        if column_name == 'order':
+            return (self._page, self._order)
+        else:
+            return Row.sort_key_for_column(self, column_name)
     
 
 class ElementTable(GUIObject, GUITable):

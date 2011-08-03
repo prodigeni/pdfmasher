@@ -6,6 +6,7 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/bsd_license
 
+from hscommon.util import trailiter
 from ..pdf import ElementState
 
 # The view has the responsibility of determining specific colors, but when we send draw_* messages
@@ -16,7 +17,8 @@ class PageColor:
     ElemNormal = 100
     ElemSelected = 101
     ElemIgnored = 102
-    MouseSelection = 200
+    ElemOrderArrow = 200
+    MouseSelection = 300
 
 #XXX use a proper geometry library... planar (http://pygamesf.org/~casey/planar/doc/)?
 
@@ -44,10 +46,15 @@ def rects_intersect(r1, r2):
         yinter = r2y2 >= r1y1
     return yinter
 
+def rect_center(r):
+    x, y, w, h = r
+    return (x + w/2, y + h/2)
+
 class PageRepresentation:
     #--- model -> view calls:
     # refresh()
     # draw_rectangle(x, y, width, height, bgcolor, pencolor)
+    # draw_arrow(x1, y1, x2, y2, color)
     #
     
     def __init__(self, view, app):
@@ -60,6 +67,7 @@ class PageRepresentation:
         self._last_mouse_pos = None
         self._last_page_boundaries = None
         self._elem2drawrect = None
+        self._show_order = False
     
     #--- Private
     def _compute_elem_drawrect(self, page_boundaries):
@@ -80,6 +88,14 @@ class PageRepresentation:
             adjw = lelem.width * xratio
             adjh = lelem.height * yratio
             self._elem2drawrect[elem] = (adjx, adjy, adjw, adjh)
+    
+    def _draw_order_arrows(self, elems):
+        sort_key = lambda e: e.order
+        ordered_elements = sorted(elems, key=sort_key)
+        for elem1, elem2 in trailiter(ordered_elements, skipfirst=True):
+            x1, y1 = rect_center(self._elem2drawrect[elem1])
+            x2, y2 = rect_center(self._elem2drawrect[elem2])
+            self.view.draw_arrow(x1, y1, x2, y2, PageColor.ElemOrderArrow)
     
     def _get_page_boundaries(self, view_width, view_height):
         pagewidth = self.page.width
@@ -118,7 +134,7 @@ class PageRepresentation:
         self.view.draw_rectangle(px, py, pw, ph, PageColor.PageBg, PageColor.PageBorder)
         # now draw the elements
         self._compute_elem_drawrect((px, py, pw, ph))
-        todraw = (e for e in self.elements if e in self._elem2drawrect)
+        todraw = [e for e in self.elements if e in self._elem2drawrect]
         for elem in todraw:
             adjx, adjy, adjw, adjh = self._elem2drawrect[elem]
             color = PageColor.ElemNormal
@@ -127,6 +143,8 @@ class PageRepresentation:
             if elem in self.app.selected_elements:
                 color = PageColor.ElemSelected
             self.view.draw_rectangle(adjx, adjy, adjw, adjh, None, color)
+        if self._show_order:
+            self._draw_order_arrows(todraw)
         if self._last_mouse_down and self._last_mouse_pos:
             rx, ry, rw, rh = rect_from_corners(self._last_mouse_down, self._last_mouse_pos)
             self.view.draw_rectangle(rx, ry, rw, rh, None, PageColor.MouseSelection)
@@ -159,7 +177,6 @@ class PageRepresentation:
         self._elem2drawrect = None
         self.view.refresh()
     
-    #--- Properties
     @property
     def pageno(self):
         return self._pageno
@@ -170,3 +187,13 @@ class PageRepresentation:
             self._pageno = value
             self.update_page()
     
+    @property
+    def show_order(self):
+        return self._show_order
+    
+    @show_order.setter
+    def show_order(self, value):
+        if value == self._show_order:
+            return
+        self._show_order = value
+        self.view.refresh()

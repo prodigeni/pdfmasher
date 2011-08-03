@@ -6,7 +6,8 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/bsd_license
 
-from PyQt4.QtGui import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
+from PyQt4.QtCore import Qt
+from PyQt4.QtGui import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QCheckBox
 
 from core.gui.page_controller import PageController as PageControllerModel
 from .page_repr import PageRepresentation
@@ -22,6 +23,7 @@ class PageController(QWidget):
         
         self.previousPageButton.clicked.connect(self.model.prev_page)
         self.nextPageButton.clicked.connect(self.model.next_page)
+        self.showElementsOrderCheckBox.stateChanged.connect(self.showElementsOrderCheckBoxStateChanged)
     
     def _setupUi(self):
         self.setWindowTitle("Grouping Dialog")
@@ -36,7 +38,13 @@ class PageController(QWidget):
         self.buttonLayout.addWidget(self.pageLabel)
         self.nextPageButton = QPushButton(">>")
         self.buttonLayout.addWidget(self.nextPageButton)
+        self.showElementsOrderCheckBox = QCheckBox("Show Elements Order")
+        self.buttonLayout.addWidget(self.showElementsOrderCheckBox)
         self.mainLayout.addLayout(self.buttonLayout)
+    
+    #--- Signals
+    def showElementsOrderCheckBoxStateChanged(self, state):
+        self.model.page_repr.show_order = state == Qt.Checked
     
     #--- model --> view
     def refresh_page_label(self):

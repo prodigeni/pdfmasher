@@ -6,8 +6,10 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/bsd_license
 
-from PyQt4.QtCore import Qt, QRect
-from PyQt4.QtGui import QWidget, QPainter, QPen
+from math import pi, sin, cos, radians
+
+from PyQt4.QtCore import Qt, QRect, QLineF, QPointF
+from PyQt4.QtGui import QWidget, QPainter, QPen, QPolygonF
 
 from core.gui.page_repr import PageRepresentation as PageRepresentationModel, PageColor
 
@@ -17,6 +19,7 @@ COLORS = {
     PageColor.ElemNormal: Qt.black,
     PageColor.ElemSelected: Qt.blue,
     PageColor.ElemIgnored: Qt.lightGray,
+    PageColor.ElemOrderArrow: Qt.red,
     PageColor.MouseSelection: Qt.blue,
 }
 
@@ -75,6 +78,27 @@ class PageRepresentation(QWidget):
             pen.setColor(COLORS[pencolor])
             painter.setPen(pen)
             painter.drawRect(r)
+    
+    def draw_arrow(self, x1, y1, x2, y2, color):
+        painter = self.current_painter
+        painter.save()
+        pen = QPen(painter.pen())
+        pen.setColor(COLORS[color])
+        painter.setPen(pen)
+        line = QLineF(x1, y1, x2, y2)
+        painter.drawLine(line)
+        arrowsize = min(10, line.length())
+        lineangle = radians(line.angle())
+        arrowpt1 = line.p2() + QPointF(sin(lineangle - (pi/3)) * arrowsize, cos(lineangle - (pi/3)) * arrowsize)
+        arrowpt2 = line.p2() + QPointF(sin(lineangle - pi + (pi/3)) * arrowsize, cos(lineangle - pi + (pi/3)) * arrowsize)
+        head = QPolygonF([line.p2(), arrowpt1, arrowpt2])
+        painter.setPen(Qt.NoPen)
+        brush = painter.brush()
+        brush.setColor(COLORS[color])
+        brush.setStyle(Qt.SolidPattern)
+        painter.setBrush(brush)
+        painter.drawPolygon(head)
+        painter.restore()
     
     def refresh(self):
         self.update()

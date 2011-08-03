@@ -15,8 +15,8 @@ from core.gui.element_table import ElementTable as ElementTableModel, SHORTCUTKE
 
 class ElementTable(Table):
     COLUMNS = [
-        Column('id', "ID", 50),
         Column('page', "Page", 50),
+        Column('order', "Order", 50),
         Column('x', "X", 50),
         Column('y', "Y", 50),
         Column('fontsize', "Font Size", 70),

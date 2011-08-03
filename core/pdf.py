@@ -42,8 +42,8 @@ class ElementState:
 class TextElement:
     def __init__(self, x, y, fontsize, text, layout_elem):
         # The X and the Y of a text element should always be its top left corner
-        self.id = None # set later
         self.page = None # set later
+        self.order = 0 # set later
         self.x = x
         self.y = y
         self.fontsize = fontsize
@@ -85,12 +85,11 @@ def extract_text_elements_from_pdf(path, j=nulljob):
         page_layout = device.get_result()
         pages.append(Page(page_layout.width, page_layout.height))
         textboxes = extract_textboxes(page_layout)
-        for textbox in textboxes: 
+        for boxno, textbox in enumerate(textboxes):
             elem = create_element(textbox)
             elem.page = pageno
+            elem.order = boxno
             elements.append(elem)
-    for i, elem in enumerate(elements):
-        elem.id = i
     return pages, elements
 
 def create_element(layout_element):
