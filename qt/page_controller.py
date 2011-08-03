@@ -6,8 +6,9 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/bsd_license
 
-from PyQt4.QtGui import QWidget, QVBoxLayout, QHBoxLayout, QPushButton
+from PyQt4.QtGui import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
 
+from core.gui.page_controller import PageController as PageControllerModel
 from .page_repr import PageRepresentation
 
 class PageController(QWidget):
@@ -15,9 +16,12 @@ class PageController(QWidget):
         QWidget.__init__(self)
         self.app = app
         self._setupUi()
+        self.model = PageControllerModel(view=self, app=app.model)
+        self.model.set_children([self.pageRepr.model])
+        self.model.connect()
         
-        self.previousPageButton.clicked.connect(self.pageRepr.model.prev_page)
-        self.nextPageButton.clicked.connect(self.pageRepr.model.next_page)
+        self.previousPageButton.clicked.connect(self.model.prev_page)
+        self.nextPageButton.clicked.connect(self.model.next_page)
     
     def _setupUi(self):
         self.setWindowTitle("Grouping Dialog")
@@ -28,7 +32,13 @@ class PageController(QWidget):
         self.buttonLayout = QHBoxLayout()
         self.previousPageButton = QPushButton("<<")
         self.buttonLayout.addWidget(self.previousPageButton)
+        self.pageLabel = QLabel()
+        self.buttonLayout.addWidget(self.pageLabel)
         self.nextPageButton = QPushButton(">>")
         self.buttonLayout.addWidget(self.nextPageButton)
         self.mainLayout.addLayout(self.buttonLayout)
+    
+    #--- model --> view
+    def refresh_page_label(self):
+        self.pageLabel.setText(self.model.page_label)
     

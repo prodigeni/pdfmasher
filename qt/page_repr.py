@@ -24,7 +24,6 @@ class PageRepresentation(QWidget):
     def __init__(self, app):
         QWidget.__init__(self)
         self.model = PageRepresentationModel(view=self, app=app.model)
-        self.model.connect()
     
     def _paintPage(self, painter):
         pagewidth = self.model.page.width

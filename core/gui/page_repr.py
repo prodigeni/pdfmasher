@@ -7,7 +7,6 @@
 # http://www.hardcoded.net/licenses/bsd_license
 
 from ..pdf import ElementState
-from .base import GUIObject
 
 # The view has the responsibility of determining specific colors, but when we send draw_* messages
 # to our view, we still give a color category. These categories are defined here.
@@ -45,15 +44,16 @@ def rects_intersect(r1, r2):
         yinter = r2y2 >= r1y1
     return yinter
 
-class PageRepresentation(GUIObject):
+class PageRepresentation:
     #--- model -> view calls:
     # refresh()
     # draw_rectangle(x, y, width, height, bgcolor, pencolor)
     #
     
     def __init__(self, view, app):
-        GUIObject.__init__(self, view, app)
-        self.pageno = 0
+        self.app = app
+        self.view = view
+        self._pageno = 0
         self.page = None
         self.elements = None
         self._last_mouse_down = None
@@ -109,17 +109,6 @@ class PageRepresentation(GUIObject):
                 toselect.add(elem)
         self.app.select_elements(toselect)
     
-    def _update_page(self):
-        if self.app.pages:
-            self.page = self.app.pages[self.pageno]
-            self.elements = [e for e in self.app.elements if e.page == self.pageno]
-        else:
-            self.page = None
-            self.elements = None
-        self._last_page_boundaries = None
-        self._elem2drawrect = None
-        self.view.refresh()
-    
     #--- Public
     def draw(self, view_width, view_height):
         if self.page is None:
@@ -159,21 +148,25 @@ class PageRepresentation(GUIObject):
         self._last_mouse_pos = None
         self.view.refresh()
     
-    def prev_page(self):
-        if self.pageno > 0:
-            self.pageno -= 1
-            self._update_page()
+    def update_page(self):
+        if self.app.pages:
+            self.page = self.app.pages[self.pageno]
+            self.elements = [e for e in self.app.elements if e.page == self.pageno]
+        else:
+            self.page = None
+            self.elements = None
+        self._last_page_boundaries = None
+        self._elem2drawrect = None
+        self.view.refresh()
     
-    def next_page(self):
-        if self.pageno < len(self.app.pages)-1:
-            self.pageno += 1
-            self._update_page()
+    #--- Properties
+    @property
+    def pageno(self):
+        return self._pageno
     
-    #--- Events
-    def file_opened(self):
-        self.pageno = 0
-        # elements_changed will be raised right after, calling _update_page()
-    
-    def elements_changed(self):
-        self._update_page()
+    @pageno.setter
+    def pageno(self, value):
+        if 0 <= value < len(self.app.pages):
+            self._pageno = value
+            self.update_page()
     
