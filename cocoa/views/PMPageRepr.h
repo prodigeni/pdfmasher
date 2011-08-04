@@ -15,7 +15,5 @@ http://www.hardcoded.net/licenses/bsd_license
 }
 
 - (id)initWithPyParent:(id)aPyParent;
-
-- (void)prevPage;
-- (void)nextPage;
+- (PyPageRepr *)py;
 @end

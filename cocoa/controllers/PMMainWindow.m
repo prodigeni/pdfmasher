@@ -9,7 +9,6 @@ http://www.hardcoded.net/licenses/bsd_license
 #import "PMMainWindow.h"
 #import "ProgressController.h"
 #import "Dialogs.h"
-#import "Utils.h"
 #import "PMConst.h"
 
 @implementation PMMainWindow
@@ -19,21 +18,24 @@ http://www.hardcoded.net/licenses/bsd_license
     app = [appDelegate py];
     openedFileLabel = [[PMOpenedFileLabel alloc] initWithPyParent:app textView:openedFileLabelView];
     elementTable = [[PMElementTable alloc] initWithPyParent:app tableView:elementsTableView];
-    pageRepr = [[PMPageRepr alloc] initWithPyParent:app];
+    pageController = [[PMPageController alloc] initWithPyParent:app];
     editPane = [[PMEditPane alloc] initWithPyParent:app];
     buildPane = [[PMBuildPane alloc] initWithPyParent:app];
-    
-    replacePlaceholderInView(pageReprPlaceholder, pageRepr);
     
     NSTabViewItem *item = [[NSTabViewItem alloc] initWithIdentifier:@"edit_pane"];
     [item setLabel:@"Edit"];
     [item setView:[editPane view]];
-    [tabView addTabViewItem:item];
+    [bottomTabView addTabViewItem:item];
     [item release];
     item = [[NSTabViewItem alloc] initWithIdentifier:@"build_pane"];
     [item setLabel:@"Build"];
     [item setView:[buildPane view]];
-    [tabView addTabViewItem:item];
+    [bottomTabView addTabViewItem:item];
+    [item release];
+    item = [[NSTabViewItem alloc] initWithIdentifier:@"page_pane"];
+    [item setLabel:@"Page"];
+    [item setView:[pageController view]];
+    [topTabView addTabViewItem:item];
     [item release];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(jobStarted:) name:JobStarted object:nil];
@@ -44,6 +46,7 @@ http://www.hardcoded.net/licenses/bsd_license
 {
     [openedFileLabel release];
     [elementTable release];
+    [pageController release];
     [editPane release];
     [buildPane release];
     [super dealloc];
@@ -61,16 +64,6 @@ http://www.hardcoded.net/licenses/bsd_license
         NSString *filename = [[op filenames] objectAtIndex:0];
         [app loadPDF:filename];
     }
-}
-
-- (IBAction)prevPage:(id)sender
-{
-    [pageRepr prevPage];
-}
-
-- (IBAction)nextPage:(id)sender
-{
-    [pageRepr nextPage];
 }
 
 /* Notifications */

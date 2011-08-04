@@ -37,8 +37,8 @@ http://www.hardcoded.net/licenses/bsd_license
 - (void)initializeColumns
 {
     HSColumnDef defs[] = {
-        {@"id", @"ID", 50, 20, 0, YES, nil},
         {@"page", @"Page", 50, 20, 0, YES, nil},
+        {@"order", @"Order", 50, 20, 0, YES, nil},
         {@"x", @"X", 50, 20, 0, YES, nil},
         {@"y", @"Y", 50, 20, 0, YES, nil},
         {@"fontsize", @"Font Size", 70, 20, 0, YES, nil},

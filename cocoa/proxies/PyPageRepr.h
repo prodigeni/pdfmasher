@@ -6,6 +6,4 @@
 - (void)mouseDownAtX:(CGFloat)x y:(CGFloat)y;
 - (void)mouseMoveAtX:(CGFloat)x y:(CGFloat)y;
 - (void)mouseUp;
-- (void)prevPage;
-- (void)nextPage;
 @end

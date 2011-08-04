@@ -70,6 +70,7 @@ class PageRepresentation(QWidget):
     #--- model --> view
     def draw_rectangle(self, x, y, width, height, bgcolor, pencolor):
         painter = self.current_painter
+        painter.save()
         r = QRect(x, y, width, height)
         if bgcolor is not None:
             painter.fillRect(r, COLORS[bgcolor])
@@ -78,6 +79,7 @@ class PageRepresentation(QWidget):
             pen.setColor(COLORS[pencolor])
             painter.setPen(pen)
             painter.drawRect(r)
+        painter.restore()
     
     def draw_arrow(self, x1, y1, x2, y2, width, color):
         painter = self.current_painter

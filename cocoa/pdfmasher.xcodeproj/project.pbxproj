@@ -10,6 +10,9 @@
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		CE249D8F13E731EF0018C7F6 /* PMPageRepr.m in Sources */ = {isa = PBXBuildFile; fileRef = CE249D8E13E731EF0018C7F6 /* PMPageRepr.m */; };
+		CE3B475513EAF09B00D95FB6 /* PagePane.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE3B475313EAF09B00D95FB6 /* PagePane.xib */; };
+		CE3B475A13EAF0C900D95FB6 /* PMPageController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3B475813EAF0C900D95FB6 /* PMPageController.m */; };
+		CE3B475E13EB14BC00D95FB6 /* HSGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3B475D13EB14BC00D95FB6 /* HSGeometry.m */; };
 		CE68745B13C87B2500992AE4 /* ProgressController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE68745A13C87B2500992AE4 /* ProgressController.m */; };
 		CE68745D13C87B3600992AE4 /* progress.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE68745C13C87B3600992AE4 /* progress.xib */; };
 		CE8C6D7C13C4924700D869ED /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE8C6D7B13C4924700D869ED /* Sparkle.framework */; };
@@ -69,6 +72,13 @@
 		CE249D8C13E731E50018C7F6 /* PyPageRepr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PyPageRepr.h; path = proxies/PyPageRepr.h; sourceTree = "<group>"; };
 		CE249D8D13E731EF0018C7F6 /* PMPageRepr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PMPageRepr.h; path = views/PMPageRepr.h; sourceTree = "<group>"; };
 		CE249D8E13E731EF0018C7F6 /* PMPageRepr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PMPageRepr.m; path = views/PMPageRepr.m; sourceTree = "<group>"; };
+		CE3B475413EAF09B00D95FB6 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/PagePane.xib; sourceTree = "<group>"; };
+		CE3B475713EAF0C900D95FB6 /* PMPageController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PMPageController.h; path = controllers/PMPageController.h; sourceTree = "<group>"; };
+		CE3B475813EAF0C900D95FB6 /* PMPageController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PMPageController.m; path = controllers/PMPageController.m; sourceTree = "<group>"; };
+		CE3B475913EAF0C900D95FB6 /* PMConst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PMConst.h; path = controllers/PMConst.h; sourceTree = "<group>"; };
+		CE3B475B13EAF29100D95FB6 /* PyPageController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PyPageController.h; path = proxies/PyPageController.h; sourceTree = "<group>"; };
+		CE3B475C13EB14BC00D95FB6 /* HSGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HSGeometry.h; path = ../cocoalib/HSGeometry.h; sourceTree = "<group>"; };
+		CE3B475D13EB14BC00D95FB6 /* HSGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HSGeometry.m; path = ../cocoalib/HSGeometry.m; sourceTree = "<group>"; };
 		CE68745913C87B2500992AE4 /* ProgressController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ProgressController.h; path = ../cocoalib/ProgressController.h; sourceTree = SOURCE_ROOT; };
 		CE68745A13C87B2500992AE4 /* ProgressController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ProgressController.m; path = ../cocoalib/ProgressController.m; sourceTree = SOURCE_ROOT; };
 		CE68745C13C87B3600992AE4 /* progress.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = progress.xib; path = ../cocoalib/xib/progress.xib; sourceTree = SOURCE_ROOT; };
@@ -148,6 +158,9 @@
 		080E96DDFE201D6D7F000001 /* controllers */ = {
 			isa = PBXGroup;
 			children = (
+				CE3B475713EAF0C900D95FB6 /* PMPageController.h */,
+				CE3B475813EAF0C900D95FB6 /* PMPageController.m */,
+				CE3B475913EAF0C900D95FB6 /* PMConst.h */,
 				CEFFF2E413B0BFA500BEA8D5 /* PMAppDelegate.h */,
 				CEFFF2E513B0BFA500BEA8D5 /* PMAppDelegate.m */,
 				CEC7F38013AE556600BA9A74 /* PMMainWindow.h */,
@@ -257,6 +270,7 @@
 		CEC7F37B13AE553E00BA9A74 /* proxies */ = {
 			isa = PBXGroup;
 			children = (
+				CE3B475B13EAF29100D95FB6 /* PyPageController.h */,
 				CE249D8C13E731E50018C7F6 /* PyPageRepr.h */,
 				CED493F113DE07BC00E45D33 /* PyPdfMasher.h */,
 				CEC7F37D13AE555000BA9A74 /* PyEditPane.h */,
@@ -273,6 +287,7 @@
 				CEC7F38413AE558700BA9A74 /* MainMenu.xib */,
 				CEBA080413AE70C1007DD3E0 /* EditPane.xib */,
 				CEBA080813AE70FF007DD3E0 /* BuildPane.xib */,
+				CE3B475313EAF09B00D95FB6 /* PagePane.xib */,
 			);
 			name = xib;
 			sourceTree = "<group>";
@@ -280,6 +295,8 @@
 		CEC7F39F13AE55B400BA9A74 /* cocoalib */ = {
 			isa = PBXGroup;
 			children = (
+				CE3B475C13EB14BC00D95FB6 /* HSGeometry.h */,
+				CE3B475D13EB14BC00D95FB6 /* HSGeometry.m */,
 				CEBA080D13AE71BB007DD3E0 /* controllers */,
 				CEBA095B13AEAB11007DD3E0 /* views */,
 				CEC7F3A013AE55CC00BA9A74 /* proxies */,
@@ -405,6 +422,7 @@
 				CEFFF33D13B0C23700BEA8D5 /* help in Resources */,
 				CE8C6D8C13C4938400D869ED /* dsa_pub.pem in Resources */,
 				CE68745D13C87B3600992AE4 /* progress.xib in Resources */,
+				CE3B475513EAF09B00D95FB6 /* PagePane.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -437,12 +455,22 @@
 				CE68745B13C87B2500992AE4 /* ProgressController.m in Sources */,
 				CECBE28B13DF044E007F9E9D /* PMElementTableView.m in Sources */,
 				CE249D8F13E731EF0018C7F6 /* PMPageRepr.m in Sources */,
+				CE3B475A13EAF0C900D95FB6 /* PMPageController.m in Sources */,
+				CE3B475E13EB14BC00D95FB6 /* HSGeometry.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
+		CE3B475313EAF09B00D95FB6 /* PagePane.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				CE3B475413EAF09B00D95FB6 /* en */,
+			);
+			name = PagePane.xib;
+			sourceTree = "<group>";
+		};
 		CEBA080413AE70C1007DD3E0 /* EditPane.xib */ = {
 			isa = PBXVariantGroup;
 			children = (

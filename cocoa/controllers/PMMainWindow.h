@@ -11,26 +11,24 @@ http://www.hardcoded.net/licenses/bsd_license
 #import "PMBuildPane.h"
 #import "PMOpenedFileLabel.h"
 #import "PMElementTable.h"
-#import "PMPageRepr.h"
+#import "PMPageController.h"
 #import "PMAppDelegate.h"
 
 @interface PMMainWindow : NSWindowController
 {
     IBOutlet NSTextField *openedFileLabelView;
     IBOutlet NSTableView *elementsTableView;
-    IBOutlet NSView *pageReprPlaceholder;
-    IBOutlet NSTabView *tabView;
+    IBOutlet NSTabView *topTabView;
+    IBOutlet NSTabView *bottomTabView;
     IBOutlet PMAppDelegate *appDelegate;
     
     PyPdfMasher *app;
     PMOpenedFileLabel *openedFileLabel;
     PMElementTable *elementTable;
-    PMPageRepr *pageRepr;
+    PMPageController *pageController;
     PMEditPane *editPane;
     PMBuildPane *buildPane;
 }
 
 - (IBAction)loadPDF:(id)sender;
-- (IBAction)prevPage:(id)sender;
-- (IBAction)nextPage:(id)sender;
 @end

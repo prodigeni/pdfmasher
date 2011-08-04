@@ -42,3 +42,8 @@ class PyPageRepr(PyGUIObject):
             pencolor = -1
         self.cocoa.drawRectAtX_y_width_height_bgColor_penColor_(
             x, y, width, height, bgcolor, pencolor)
+    
+    def draw_arrow(self, x1, y1, x2, y2, width, color):
+        self.cocoa.drawArrowFromX_y_toX_y_width_color_(
+            x1, y1, x2, y2, width, color)
+    
