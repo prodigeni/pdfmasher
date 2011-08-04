@@ -54,7 +54,7 @@ class PageRepresentation:
     #--- model -> view calls:
     # refresh()
     # draw_rectangle(x, y, width, height, bgcolor, pencolor)
-    # draw_arrow(x1, y1, x2, y2, color)
+    # draw_arrow(x1, y1, x2, y2, width, color)
     #
     
     def __init__(self, view, app):
@@ -95,7 +95,8 @@ class PageRepresentation:
         for elem1, elem2 in trailiter(ordered_elements, skipfirst=True):
             x1, y1 = rect_center(self._elem2drawrect[elem1])
             x2, y2 = rect_center(self._elem2drawrect[elem2])
-            self.view.draw_arrow(x1, y1, x2, y2, PageColor.ElemOrderArrow)
+            linewidth = 1
+            self.view.draw_arrow(x1, y1, x2, y2, linewidth, PageColor.ElemOrderArrow)
     
     def _get_page_boundaries(self, view_width, view_height):
         pagewidth = self.page.width

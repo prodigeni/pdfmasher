@@ -79,14 +79,17 @@ class PageRepresentation(QWidget):
             painter.setPen(pen)
             painter.drawRect(r)
     
-    def draw_arrow(self, x1, y1, x2, y2, color):
+    def draw_arrow(self, x1, y1, x2, y2, width, color):
         painter = self.current_painter
+        color = COLORS[color]
         painter.save()
         pen = QPen(painter.pen())
-        pen.setColor(COLORS[color])
+        pen.setColor(color)
+        pen.setWidthF(width)
         painter.setPen(pen)
         line = QLineF(x1, y1, x2, y2)
         painter.drawLine(line)
+        # If the line is very small, we make our arrowhead smaller
         arrowsize = min(10, line.length())
         lineangle = radians(line.angle())
         arrowpt1 = line.p2() + QPointF(sin(lineangle - (pi/3)) * arrowsize, cos(lineangle - (pi/3)) * arrowsize)
@@ -94,7 +97,7 @@ class PageRepresentation(QWidget):
         head = QPolygonF([line.p2(), arrowpt1, arrowpt2])
         painter.setPen(Qt.NoPen)
         brush = painter.brush()
-        brush.setColor(COLORS[color])
+        brush.setColor(color)
         brush.setStyle(Qt.SolidPattern)
         painter.setBrush(brush)
         painter.drawPolygon(head)
