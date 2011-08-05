@@ -1,6 +1,5 @@
 #import <Cocoa/Cocoa.h>
 #import "Utils.h"
-#import <math.h>
 
 int main(int argc, char *argv[])
 {
