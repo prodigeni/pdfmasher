@@ -26,8 +26,8 @@ class PyPageController(PyGUIObject):
         return self.py.page_label
     
     @signature('v@:c')
-    def setShowOrder_(self, flag):
-        self.py.page_repr.show_order = flag
+    def setReorderMode_(self, flag):
+        self.py.page_repr.reorder_mode = flag
     
     #--- model -> view calls:
     def refresh_page_label(self):

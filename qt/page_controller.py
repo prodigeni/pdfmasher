@@ -23,7 +23,7 @@ class PageController(QWidget):
         
         self.previousPageButton.clicked.connect(self.model.prev_page)
         self.nextPageButton.clicked.connect(self.model.next_page)
-        self.showElementsOrderCheckBox.stateChanged.connect(self.showElementsOrderCheckBoxStateChanged)
+        self.reorderModeCheckBox.stateChanged.connect(self.reorderModeCheckBoxStateChanged)
     
     def _setupUi(self):
         self.setWindowTitle("Grouping Dialog")
@@ -38,13 +38,13 @@ class PageController(QWidget):
         self.buttonLayout.addWidget(self.pageLabel)
         self.nextPageButton = QPushButton(">>")
         self.buttonLayout.addWidget(self.nextPageButton)
-        self.showElementsOrderCheckBox = QCheckBox("Show Elements Order")
-        self.buttonLayout.addWidget(self.showElementsOrderCheckBox)
+        self.reorderModeCheckBox = QCheckBox("Re-order mode")
+        self.buttonLayout.addWidget(self.reorderModeCheckBox)
         self.mainLayout.addLayout(self.buttonLayout)
     
     #--- Signals
-    def showElementsOrderCheckBoxStateChanged(self, state):
-        self.model.page_repr.show_order = state == Qt.Checked
+    def reorderModeCheckBoxStateChanged(self, state):
+        self.model.page_repr.reorder_mode = state == Qt.Checked
     
     #--- model --> view
     def refresh_page_label(self):

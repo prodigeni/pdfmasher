@@ -229,7 +229,7 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
-						<string key="label">showOrderButton</string>
+						<string key="label">reorderModeButton</string>
 						<reference key="source" ref="1001"/>
 						<reference key="destination" ref="636700020"/>
 					</object>
@@ -455,7 +455,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>pageLabelTextField</string>
 							<string>pageReprPlaceholder</string>
-							<string>showOrderButton</string>
+							<string>reorderModeButton</string>
 							<string>wholeView</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
@@ -472,7 +472,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>pageLabelTextField</string>
 							<string>pageReprPlaceholder</string>
-							<string>showOrderButton</string>
+							<string>reorderModeButton</string>
 							<string>wholeView</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
@@ -486,7 +486,7 @@
 								<string key="candidateClassName">NSView</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">showOrderButton</string>
+								<string key="name">reorderModeButton</string>
 								<string key="candidateClassName">NSButton</string>
 							</object>
 							<object class="IBToOneOutletInfo">

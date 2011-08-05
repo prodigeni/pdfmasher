@@ -46,8 +46,8 @@ http://www.hardcoded.net/licenses/bsd_license
 
 - (IBAction)toggleShowOrder:(id)sender
 {
-    BOOL isChecked = [showOrderButton state] == NSOnState;
-    [[self py] setShowOrder:isChecked];
+    BOOL isChecked = [reorderModeButton state] == NSOnState;
+    [[self py] setReorderMode:isChecked];
 }
 
 /* model --> view */

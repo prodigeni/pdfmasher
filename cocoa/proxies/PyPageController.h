@@ -6,5 +6,5 @@
 - (void)prevPage;
 - (void)nextPage;
 - (NSString *)pageLabel;
-- (void)setShowOrder:(BOOL)flag;
+- (void)setReorderMode:(BOOL)flag;
 @end

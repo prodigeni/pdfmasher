@@ -82,6 +82,19 @@ class PageRepresentation(QWidget):
         painter.restore()
     
     def draw_arrow(self, x1, y1, x2, y2, width, color):
+        # compute points
+        line = QLineF(x1, y1, x2, y2)
+        # If the line is very small, we make our arrowhead smaller
+        arrowsize = min(14, line.length())
+        lineangle = radians(line.angle())
+        arrowpt1 = line.p2() + QPointF(sin(lineangle - (pi/3)) * arrowsize, cos(lineangle - (pi/3)) * arrowsize)
+        arrowpt2 = line.p2() + QPointF(sin(lineangle - pi + (pi/3)) * arrowsize, cos(lineangle - pi + (pi/3)) * arrowsize)
+        head = QPolygonF([line.p2(), arrowpt1, arrowpt2])
+        # We have to draw the actual line a little short for the tip of the arrowhead not to be too wide
+        adjustedLine = QLineF(line)
+        adjustedLine.setLength(line.length() - arrowsize/2)
+        
+        # draw line
         painter = self.current_painter
         color = COLORS[color]
         painter.save()
@@ -89,14 +102,9 @@ class PageRepresentation(QWidget):
         pen.setColor(color)
         pen.setWidthF(width)
         painter.setPen(pen)
-        line = QLineF(x1, y1, x2, y2)
-        painter.drawLine(line)
-        # If the line is very small, we make our arrowhead smaller
-        arrowsize = min(10, line.length())
-        lineangle = radians(line.angle())
-        arrowpt1 = line.p2() + QPointF(sin(lineangle - (pi/3)) * arrowsize, cos(lineangle - (pi/3)) * arrowsize)
-        arrowpt2 = line.p2() + QPointF(sin(lineangle - pi + (pi/3)) * arrowsize, cos(lineangle - pi + (pi/3)) * arrowsize)
-        head = QPolygonF([line.p2(), arrowpt1, arrowpt2])
+        painter.drawLine(adjustedLine)
+        
+        # draw arrowhead
         painter.setPen(Qt.NoPen)
         brush = painter.brush()
         brush.setColor(color)

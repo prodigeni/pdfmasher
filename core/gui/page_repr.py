@@ -6,6 +6,7 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/bsd_license
 
+from hscommon.geometry import Point, Rect
 from hscommon.util import trailiter
 from ..pdf import ElementState
 
@@ -19,36 +20,6 @@ class PageColor:
     ElemIgnored = 102
     ElemOrderArrow = 200
     MouseSelection = 300
-
-#XXX use a proper geometry library... planar (http://pygamesf.org/~casey/planar/doc/)?
-
-def rect2pts(r):
-    x, y, w, h = r
-    return x, y, x+w, y+h
-
-def rect_from_corners(pos1, pos2):
-    x1, y1 = pos1
-    x2, y2 = pos2
-    return (min(x1, x2), min(y1, y2), abs(x1-x2), abs(y1-y2))
-
-def rects_intersect(r1, r2):
-    r1x1, r1y1, r1x2, r1y2 = rect2pts(r1)
-    r2x1, r2y1, r2x2, r2y2 = rect2pts(r2)
-    if r1x1 < r2x1:
-        xinter = r1x2 >= r2x1
-    else:
-        xinter = r2x2 >= r1x1
-    if not xinter:
-        return False
-    if r1y1 < r2y1:
-        yinter = r1y2 >= r2y1
-    else:
-        yinter = r2y2 >= r1y1
-    return yinter
-
-def rect_center(r):
-    x, y, w, h = r
-    return (x + w/2, y + h/2)
 
 class PageRepresentation:
     #--- model -> view calls:
@@ -67,7 +38,7 @@ class PageRepresentation:
         self._last_mouse_pos = None
         self._last_page_boundaries = None
         self._elem2drawrect = None
-        self._show_order = False
+        self._reorder_mode = False
     
     #--- Private
     def _compute_elem_drawrect(self, page_boundaries):
@@ -87,14 +58,27 @@ class PageRepresentation:
             adjy = py + (ph - (lelem.y1 * yratio))
             adjw = lelem.width * xratio
             adjh = lelem.height * yratio
-            self._elem2drawrect[elem] = (adjx, adjy, adjw, adjh)
+            self._elem2drawrect[elem] = Rect(adjx, adjy, adjw, adjh)
+    
+    def _draw_mouse_selection(self):
+        if self._last_mouse_down and self._last_mouse_pos:
+            if self._reorder_mode:
+                x1, y1 = self._last_mouse_down
+                x2, y2 = self._last_mouse_pos
+                linewidth = 5
+                self.view.draw_arrow(x1, y1, x2, y2, linewidth, PageColor.MouseSelection)
+            else:
+                rx, ry, rw, rh = Rect.from_corners(self._last_mouse_down, self._last_mouse_pos)
+                self.view.draw_rectangle(rx, ry, rw, rh, None, PageColor.MouseSelection)
     
     def _draw_order_arrows(self, elems):
+        # ignored elemens are not part of the order
+        toorder = (e for e in elems if e.state != ElementState.Ignored)
         sort_key = lambda e: e.order
-        ordered_elements = sorted(elems, key=sort_key)
+        ordered_elements = sorted(toorder, key=sort_key)
         for elem1, elem2 in trailiter(ordered_elements, skipfirst=True):
-            x1, y1 = rect_center(self._elem2drawrect[elem1])
-            x2, y2 = rect_center(self._elem2drawrect[elem2])
+            x1, y1 = self._elem2drawrect[elem1].center()
+            x2, y2 = self._elem2drawrect[elem2].center()
             linewidth = 1
             self.view.draw_arrow(x1, y1, x2, y2, linewidth, PageColor.ElemOrderArrow)
     
@@ -119,10 +103,13 @@ class PageRepresentation:
             y = (height - adjusted_height) / 2
         return x, y, adjusted_width, adjusted_height
     
+    def _reorder_following_line(self, pt1, pt2):
+        pass
+    
     def _select_elems_in_rect(self, r):
         toselect = set()
         for elem, elem_rect in self._elem2drawrect.items():
-            if rects_intersect(r, elem_rect):
+            if r.intersects(elem_rect):
                 toselect.add(elem)
         self.app.select_elements(toselect)
     
@@ -144,25 +131,26 @@ class PageRepresentation:
             if elem in self.app.selected_elements:
                 color = PageColor.ElemSelected
             self.view.draw_rectangle(adjx, adjy, adjw, adjh, None, color)
-        if self._show_order:
+        if self._reorder_mode:
             self._draw_order_arrows(todraw)
-        if self._last_mouse_down and self._last_mouse_pos:
-            rx, ry, rw, rh = rect_from_corners(self._last_mouse_down, self._last_mouse_pos)
-            self.view.draw_rectangle(rx, ry, rw, rh, None, PageColor.MouseSelection)
+        self._draw_mouse_selection()
     
     def mouse_down(self, x, y):
-        self._last_mouse_down = (x, y)
-        self._last_mouse_pos = (x, y)
+        self._last_mouse_down = Point(x, y)
+        self._last_mouse_pos = Point(x, y)
         self.view.refresh()
     
     def mouse_move(self, x, y):
         # only call when the mouse button is currently down
-        self._last_mouse_pos = (x, y)
+        self._last_mouse_pos = Point(x, y)
         self.view.refresh()
     
     def mouse_up(self):
-        r = rect_from_corners(self._last_mouse_down, self._last_mouse_pos)
-        self._select_elems_in_rect(r)
+        if self._reorder_mode:
+            self._reorder_following_line(self._last_mouse_down, self._last_mouse_pos)
+        else:
+            r = Rect.from_corners(self._last_mouse_down, self._last_mouse_pos)
+            self._select_elems_in_rect(r)
         self._last_mouse_down = None
         self._last_mouse_pos = None
         self.view.refresh()
@@ -189,12 +177,12 @@ class PageRepresentation:
             self.update_page()
     
     @property
-    def show_order(self):
-        return self._show_order
+    def reorder_mode(self):
+        return self._reorder_mode
     
-    @show_order.setter
-    def show_order(self, value):
-        if value == self._show_order:
+    @reorder_mode.setter
+    def reorder_mode(self, value):
+        if value == self._reorder_mode:
             return
-        self._show_order = value
+        self._reorder_mode = value
         self.view.refresh()

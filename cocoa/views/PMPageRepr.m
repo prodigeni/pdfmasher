@@ -116,29 +116,35 @@ static NSColor* getColorFromConst(NSInteger c)
 
 - (void)drawArrowFromX:(CGFloat)x1 y:(CGFloat)y1 toX:(CGFloat)x2 y:(CGFloat)y2 width:(CGFloat)width color:(NSInteger)iColor
 {
+    // Define points
+    NSPoint pt1 = NSMakePoint(x1, y1);
+    NSPoint pt2 = NSMakePoint(x2, y2);
+    CGFloat lineAngle = angleFromPoints(pt1, pt2);
+    CGFloat arrowsize = MIN(20, distance(pt1, pt2) / 2);
+    NSPoint arrowPt1 = pointInCircle(pt2, arrowsize, lineAngle + M_PI + (M_PI / 8));
+    NSPoint arrowPt2 = pointInCircle(pt2, arrowsize, lineAngle + M_PI - (M_PI / 8));
+    // The drawn line has to actually be a bit shorter than asked because when the width is larger
+    // than one, the tip of the arrow is larger than expected. So we shorten the line by half the
+    // arrowsize
+    NSPoint adjustedPt2 = pointInCircle(pt2, arrowsize/2, lineAngle + M_PI);
+    
+    // Draw line
     [NSGraphicsContext saveGraphicsState];
     NSColor *color = getColorFromConst(iColor);
     [color setStroke];
     NSBezierPath *p = [NSBezierPath bezierPath];
     [p setLineWidth:width];
-    NSPoint pt1 = NSMakePoint(x1, y1);
-    NSPoint pt2 = NSMakePoint(x2, y2);
     [p moveToPoint:pt1];
-    [p lineToPoint:pt2];
+    [p lineToPoint:adjustedPt2];
     [p stroke];
     
     // arrowhead
     [color setFill];
-    CGFloat lineAngle = angleFromPoints(pt1, pt2);
-    CGFloat arrowsize = MIN(20, distance(pt1, pt2) / 2);
-    NSPoint arrowPt1 = pointInCircle(pt2, arrowsize, lineAngle + M_PI + (M_PI / 8));
-    NSPoint arrowPt2 = pointInCircle(pt2, arrowsize, lineAngle + M_PI - (M_PI / 8));
     p = [NSBezierPath bezierPath];
     [p moveToPoint:pt2];
     [p lineToPoint:arrowPt1];
     [p lineToPoint:arrowPt2];
     [p fill];
-    
     [NSGraphicsContext restoreGraphicsState];
 }
 

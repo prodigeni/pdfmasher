@@ -17,7 +17,7 @@ http://www.hardcoded.net/licenses/bsd_license
     IBOutlet NSView *wholeView;
     IBOutlet NSView *pageReprPlaceholder;
     IBOutlet NSTextField *pageLabelTextField;
-    IBOutlet NSButton *showOrderButton;
+    IBOutlet NSButton *reorderModeButton;
     
     PMPageRepr *pageRepr;
 }
