@@ -82,8 +82,16 @@ class PageRepresentation:
                 rx, ry, rw, rh = Rect.from_corners(self._last_mouse_down, self._last_mouse_pos)
                 self.view.draw_rectangle(rx, ry, rw, rh, None, PageColor.MouseSelection)
     
-    def _draw_order_arrows(self, elems):
-        for elem1, elem2 in trailiter(self._ordered_elems(), skipfirst=True):
+    def _draw_order_arrows(self):
+        elems = list(self._ordered_elems())
+        if not elems:
+            return
+        # mark the starting pos
+        firstelem = elems[0]
+        center = self._elem2drawrect[firstelem].center()
+        rx, ry, rw, rh = Rect.from_center(center, 10, 10)
+        self.view.draw_rectangle(rx, ry, rw, rh, PageColor.ElemOrderArrow, None)
+        for elem1, elem2 in trailiter(elems, skipfirst=True):
             x1, y1 = self._elem2drawrect[elem1].center()
             x2, y2 = self._elem2drawrect[elem2].center()
             linewidth = 1
@@ -171,7 +179,7 @@ class PageRepresentation:
                 color = PageColor.ElemSelected
             self.view.draw_rectangle(adjx, adjy, adjw, adjh, None, color)
         if self._reorder_mode:
-            self._draw_order_arrows(todraw)
+            self._draw_order_arrows()
         self._draw_mouse_selection()
     
     def mouse_down(self, x, y):
