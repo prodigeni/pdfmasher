@@ -12,7 +12,7 @@ from hscommon.reg import RegistrableApplication
 from hscommon.notify import Broadcaster
 from hscommon.trans import tr
 
-from .pdf import extract_text_elements_from_pdf
+from .pdf import extract_text_elements_from_pdf, ElementState
 
 class JobType:
     LoadPDF = 'job_load_pdf'
@@ -71,6 +71,13 @@ class App(Broadcaster, RegistrableApplication):
     
     def change_state_of_selected(self, newstate):
         for element in self.selected_elements:
+            if newstate == ElementState.Title:
+                if element.state == ElementState.Title:
+                    element.title_level += 1
+                    if element.title_level > 6:
+                        element.title_level = 1
+                else:
+                    element.title_level = 1
             element.state = newstate
         self.notify('elements_changed')
     

@@ -65,8 +65,9 @@ def generate_markdown(elements):
         s = e.modified_text if e.modified_text else e.text
         if e.state == ElementState.Title:
             # Titles have to be on a single line
+            title_marker = '#' * e.title_level
             s = s.replace('\n', ' ').strip()
-            s = '{}\n==='.format(s)
+            s = '{} {}'.format(title_marker, s)
         elif e.state == ElementState.ToFix:
             s = '*FIXME* {}'.format(s)
         s = s.strip()

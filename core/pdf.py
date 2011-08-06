@@ -49,6 +49,7 @@ class TextElement:
         self.fontsize = fontsize
         self.text = text
         self.state = ElementState.Normal
+        self.title_level = 1 # 1 to 6
         # This is for footnotes-processed text
         self.modified_text = None
         self.layout_elem = layout_elem

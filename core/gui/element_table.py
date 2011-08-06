@@ -30,7 +30,7 @@ class ElementRow(Row):
         self._fontsize = element.fontsize
         self._text_length = len(element.text)
         self.text = element.text.replace('\n', ' ')
-        self.state = element.state
+        self._state = element.state
         
         # Format
         self.order = "{:d}".format(self._order)
@@ -39,10 +39,20 @@ class ElementRow(Row):
         self.y = "{:.0f}".format(self._y)
         self.fontsize = "{:0.1f}".format(self._fontsize)
         self.text_length = "{:d}".format(self._text_length)
+        statetext = self._state.capitalize()
+        if self._state == ElementState.Title:
+            self.state = "{} ({})".format(statetext, self.element.title_level)
+        else:
+            self.state = statetext
     
     def sort_key_for_column(self, column_name):
         if column_name == 'order':
             return (self._page, self._order)
+        elif column_name == 'state':
+            if self._state == ElementState.Title:
+                return (self._state, self.element.title_level)
+            else:
+                return (self._state, 0)
         else:
             return Row.sort_key_for_column(self, column_name)
     
