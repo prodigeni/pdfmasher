@@ -12,7 +12,7 @@ http://www.hardcoded.net/licenses/bsd_license
 @implementation PMElementTableView
 - (void)keyDown:(NSEvent *)event 
 {
-    [super keyDown:event];
+    BOOL handled = NO;
     id delegate = [self delegate];
     BOOL responds = [delegate respondsToSelector:@selector(flagShortcutPressed:)];
     if ((responds) && ([event modifierKeysFlags] == 0)) { // No modif flag
@@ -20,7 +20,11 @@ http://www.hardcoded.net/licenses/bsd_license
         NSSet *acceptableFlagKeys = [NSSet setWithObjects:@"n", @"t", @"f", @"x", @"i", nil];
         if ([acceptableFlagKeys containsObject:s]) {
             [delegate flagShortcutPressed:s];
+            handled = YES;
         }
+    }
+    if (!handled) {
+        [super keyDown:event];
     }
 }
 @end
