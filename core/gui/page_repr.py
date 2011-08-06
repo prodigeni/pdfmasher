@@ -185,11 +185,12 @@ class PageRepresentation:
         self.view.refresh()
     
     def mouse_up(self):
-        if self._reorder_mode:
-            self._reorder_following_line(Line(self._last_mouse_down, self._last_mouse_pos))
-        else:
-            r = Rect.from_corners(self._last_mouse_down, self._last_mouse_pos)
-            self._select_elems_in_rect(r)
+        if self.page is not None:
+            if self._reorder_mode:
+                self._reorder_following_line(Line(self._last_mouse_down, self._last_mouse_pos))
+            else:
+                r = Rect.from_corners(self._last_mouse_down, self._last_mouse_pos)
+                self._select_elems_in_rect(r)
         self._last_mouse_down = None
         self._last_mouse_pos = None
         self.view.refresh()
