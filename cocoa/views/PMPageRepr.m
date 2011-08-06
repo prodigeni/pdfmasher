@@ -72,6 +72,7 @@ static NSColor* getColorFromConst(NSInteger c)
 
 - (void)mouseDown:(NSEvent *)event
 {
+    [[self window] makeFirstResponder:self];
     NSPoint windowPos = [event locationInWindow];
     NSPoint pos = [self convertPoint:windowPos fromView:nil];
     [py mouseDownAtX:pos.x y:pos.y];
@@ -86,7 +87,17 @@ static NSColor* getColorFromConst(NSInteger c)
 
 - (void)mouseUp:(NSEvent *)event
 {
+    // Just monitoring flagsChanged is not enough because the shift key might have been pressed
+    // before our view was first responder.
+    BOOL isShiftHeld = ([event modifierFlags] & NSShiftKeyMask) > 0;
+    [py setShiftKeyHeld:isShiftHeld];
     [py mouseUp];
+}
+
+- (void)flagsChanged:(NSEvent *)event
+{
+    BOOL isShiftHeld = ([event modifierFlags] & NSShiftKeyMask) > 0;
+    [py setShiftKeyHeld:isShiftHeld];
 }
 
 /* model --> view */

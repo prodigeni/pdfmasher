@@ -6,4 +6,5 @@
 - (void)mouseDownAtX:(CGFloat)x y:(CGFloat)y;
 - (void)mouseMoveAtX:(CGFloat)x y:(CGFloat)y;
 - (void)mouseUp;
+- (void)setShiftKeyHeld:(BOOL)value;
 @end

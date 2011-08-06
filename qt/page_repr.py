@@ -59,13 +59,19 @@ class PageRepresentation(QWidget):
         del self.current_painter
     
     def mousePressEvent(self, event):
+        self.setFocus(Qt.MouseFocusReason) # we need to do this if we want to track shift release
         self.model.mouse_down(event.x(), event.y())
     
     def mouseMoveEvent(self, event):
         self.model.mouse_move(event.x(), event.y())
     
     def mouseReleaseEvent(self, event):
+        self.model.shift_key_held = bool(event.modifiers() & Qt.ShiftModifier)
         self.model.mouse_up()
+    
+    def keyReleaseEvent(self, event):
+        if event.key() == Qt.Key_Shift:
+            self.model.shift_key_held = bool(event.modifiers() & Qt.ShiftModifier)
     
     #--- model --> view
     def draw_rectangle(self, x, y, width, height, bgcolor, pencolor):

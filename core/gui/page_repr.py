@@ -39,6 +39,9 @@ class PageRepresentation:
         self._last_page_boundaries = None
         self._elem2drawrect = None
         self._reorder_mode = False
+        self._shift_key_held = False
+        # The buffer to hold reordering lines when the user holds shift while re-ordering
+        self._reorder_line_buffer = []
     
     #--- Private
     def _active_elems(self):
@@ -91,11 +94,29 @@ class PageRepresentation:
         center = self._elem2drawrect[firstelem].center()
         rx, ry, rw, rh = Rect.from_center(center, 10, 10)
         self.view.draw_rectangle(rx, ry, rw, rh, PageColor.ElemOrderArrow, None)
+        linewidth = 1
         for elem1, elem2 in trailiter(elems, skipfirst=True):
             x1, y1 = self._elem2drawrect[elem1].center()
             x2, y2 = self._elem2drawrect[elem2].center()
-            linewidth = 1
             self.view.draw_arrow(x1, y1, x2, y2, linewidth, PageColor.ElemOrderArrow)
+        linewidth = 5
+        for line in self._reorder_line_buffer:
+            (x1, y1), (x2, y2) = line
+            self.view.draw_arrow(x1, y1, x2, y2, linewidth, PageColor.ElemOrderArrow)
+    
+    def _get_intersections(self, reorder_line):
+        # return a list of elements that intersect with line, in order. The order depends on the
+        # distance of the elem's first intersection with the line's origin
+        intersections = []
+        for elem in self._active_elems():
+            rect = self._elem2drawrect[elem]
+            for line in rect.lines():
+                inter = reorder_line.intersection_point(line)
+                if inter is not None:
+                    dist = inter.distance_to(reorder_line.p1)
+                    intersections.append((dist, elem))
+        intersections.sort(key=lambda tup: tup[0])
+        return dedupe([elem for dist, elem in intersections])
     
     def _get_page_boundaries(self, view_width, view_height):
         pagewidth = self.page.width
@@ -118,35 +139,38 @@ class PageRepresentation:
             y = (height - adjusted_height) / 2
         return x, y, adjusted_width, adjusted_height
     
-    def _reorder_following_line(self, reorder_line):
+    def _handle_drag_completion(self):
+        if self._reorder_mode:
+            reorder_line = Line(self._last_mouse_down, self._last_mouse_pos)
+            if self.shift_key_held:
+                self._reorder_line_buffer.append(reorder_line)
+            else:
+                self._reorder_following_line([reorder_line])
+        else:
+            r = Rect.from_corners(self._last_mouse_down, self._last_mouse_pos)
+            self._select_elems_in_rect(r)
+    
+    def _reorder_following_line(self, reorder_lines):
         # Reordering from a line is a bit more complex than it seems. We have to find intersection
         # points from all lines in all rects (when there's an interestion, of course). Then, for
         # each intersection, we compute the distance of it from the origin of the order arrow.
         # We sort our elements by that distance and we have our new order!
-        intersections = []
-        for elem in self._active_elems():
-            rect = self._elem2drawrect[elem]
-            for line in rect.lines():
-                inter = reorder_line.intersection_point(line)
-                if inter is not None:
-                    dist = inter.distance_to(reorder_line.p1)
-                    intersections.append((dist, elem))
-        if len(intersections) < 2:
+        neworder = []
+        for reorder_line in reorder_lines:
+            neworder += self._get_intersections(reorder_line)
+        neworder = dedupe(neworder)
+        if len(neworder) < 2:
             return # nothing to reorder
-        intersections.sort(key=lambda tup: tup[0])
-        neworder = dedupe([elem for dist, elem in intersections])
         # ok, we have our new order. That was easy huh? Now, what we have to do is to insert that
         # new order in the rest of the elements, which might not all be in our new order. So we have
         # to find our insertion point, divide it into a 'before' and an 'after' list, remove all our
         # newly ordered elems from those lists, and do a before + neworder + after concat.
+        minorder = min(e.order for e in neworder)
         all_elems = list(self._ordered_elems())
-        first = neworder[0]
-        insertion_point = all_elems.index(first)
-        before = all_elems[:insertion_point]
-        after = all_elems[insertion_point:]
         affected_elems = set(neworder)
-        before = [e for e in before if e not in affected_elems]
-        after = [e for e in after if e not in affected_elems]
+        unaffected_elems = [e for e in all_elems if e not in affected_elems]
+        before = [e for e in unaffected_elems if e.order < minorder]
+        after = [e for e in unaffected_elems if e.order > minorder]
         # we also add ignore elems to our big concat so that their order value doesn't conflict
         ignored = list(self._ignored_elems())
         concat = before + neworder + after + ignored
@@ -194,11 +218,7 @@ class PageRepresentation:
     
     def mouse_up(self):
         if self.page is not None:
-            if self._reorder_mode:
-                self._reorder_following_line(Line(self._last_mouse_down, self._last_mouse_pos))
-            else:
-                r = Rect.from_corners(self._last_mouse_down, self._last_mouse_pos)
-                self._select_elems_in_rect(r)
+            self._handle_drag_completion()
         self._last_mouse_down = None
         self._last_mouse_pos = None
         self.view.refresh()
@@ -234,3 +254,22 @@ class PageRepresentation:
             return
         self._reorder_mode = value
         self.view.refresh()
+    
+    # Tracking modifiers key can be glitchy, especially when the user decides to hold more than
+    # one shift key at once. The moment at which shift is pressed is unimportant, as long as we
+    # know during mouse_up() whether shift is held. The moment at which shift is released, however,
+    # is important because it's at this moment that we resolve the arrow buffer. So, in the GUI,
+    # we don't track keyPressEvent for shift, we only check if shift is held on mouse release.
+    # However, we track key release events and set shift_key_held immediately.
+    @property
+    def shift_key_held(self):
+        return self._shift_key_held
+    
+    @shift_key_held.setter
+    def shift_key_held(self, value):
+        self._shift_key_held = value
+        if not value and self._reorder_line_buffer:
+            self._reorder_following_line(self._reorder_line_buffer)
+            self._reorder_line_buffer = []
+            self.view.refresh()
+    

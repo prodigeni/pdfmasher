@@ -34,6 +34,10 @@ class PyPageRepr(PyGUIObject):
     def nextPage(self):
         self.py.next_page()
     
+    @signature('v@:c')
+    def setShiftKeyHeld_(self, value):
+        self.py.shift_key_held = value
+    
     #--- model -> view calls:
     def draw_rectangle(self, x, y, width, height, bgcolor, pencolor):
         if bgcolor is None:
