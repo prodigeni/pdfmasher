@@ -56,10 +56,13 @@ def wrap_html(body, encoding='utf-8'):
     return "<html>{}<body>\n{}\n</body></html>".format(header, body)
 
 def generate_markdown(elements):
+    def keyfunc(e):
+        footnoteorder = 0 if e.state != ElementState.Footnote else 1
+        return (footnoteorder, e.page, e.order)
+    
     elements = [e for e in elements if e.state != ElementState.Ignored]
     link_footnotes(elements)
-    keyfunc = lambda e: 0 if e.state != ElementState.Footnote else 1
-    elements.sort(key=keyfunc) # footnotes go last
+    elements.sort(key=keyfunc)
     paragraphs = []
     for e in elements:
         s = e.modified_text if e.modified_text else e.text
