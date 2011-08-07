@@ -16,10 +16,20 @@ class PageColor:
     PageBg = 1
     PageBorder = 2
     ElemNormal = 100
-    ElemSelected = 101
-    ElemIgnored = 102
+    ElemTitle = 101
+    ElemFootnote = 102
+    ElemIgnored = 103
+    ElemToFix = 104
+    ElemSelected = 105
     ElemOrderArrow = 200
     MouseSelection = 300
+
+STATE2COLOR = {
+    ElementState.Title: PageColor.ElemTitle,
+    ElementState.Footnote: PageColor.ElemFootnote,
+    ElementState.Ignored: PageColor.ElemIgnored,
+    ElementState.ToFix: PageColor.ElemToFix,
+}
 
 class PageRepresentation:
     #--- model -> view calls:
@@ -195,12 +205,13 @@ class PageRepresentation:
         todraw = [e for e in self.elements if e in self._elem2drawrect]
         for elem in todraw:
             elem_rect = self._elem2drawrect[elem]
-            color = PageColor.ElemNormal
-            if elem.state == ElementState.Ignored:
-                color = PageColor.ElemIgnored
+            color = STATE2COLOR.get(elem.state, PageColor.ElemNormal)
             if elem in self.app.selected_elements:
-                color = PageColor.ElemSelected
-            self.view.draw_rectangle(elem_rect, None, color)
+                innerrect = elem_rect.scaled_rect(-2, -2)
+                self.view.draw_rectangle(innerrect, None, color)
+                self.view.draw_rectangle(elem_rect, None, PageColor.ElemSelected)
+            else:
+                self.view.draw_rectangle(elem_rect, None, color)
         if self._reorder_mode:
             self._draw_order_arrows()
         self._draw_mouse_selection()

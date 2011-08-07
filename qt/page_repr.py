@@ -9,7 +9,7 @@
 from math import pi, sin, cos, radians
 
 from PyQt4.QtCore import Qt, QRect, QLineF, QPointF
-from PyQt4.QtGui import QWidget, QPainter, QPen, QPolygonF
+from PyQt4.QtGui import QWidget, QPainter, QPen, QPolygonF, QColor
 
 from core.gui.page_repr import PageRepresentation as PageRepresentationModel, PageColor
 
@@ -17,8 +17,11 @@ COLORS = {
     PageColor.PageBg: Qt.white,
     PageColor.PageBorder: Qt.black,
     PageColor.ElemNormal: Qt.black,
-    PageColor.ElemSelected: Qt.blue,
+    PageColor.ElemTitle: QColor('#ff6400'), # orange
+    PageColor.ElemFootnote: Qt.black,
     PageColor.ElemIgnored: Qt.lightGray,
+    PageColor.ElemToFix: Qt.red,
+    PageColor.ElemSelected: Qt.blue,
     PageColor.ElemOrderArrow: Qt.red,
     PageColor.MouseSelection: Qt.blue,
 }

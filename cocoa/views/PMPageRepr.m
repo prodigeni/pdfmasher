@@ -14,8 +14,11 @@ http://www.hardcoded.net/licenses/bsd_license
 #define PageColorPageBg 1
 #define PageColorPageBorder 2
 #define PageColorElemNormal 100
-#define PageColorElemSelected 101
-#define PageColorElemIgnored 102
+#define PageColorElemTitle 101
+#define PageColorElemFootnote 102
+#define PageColorElemIgnored 103
+#define PageColorElemToFix 104
+#define PageColorElemSelected 105
 #define PageColorElemOrderArrow 200
 #define PageColorMouseSelection 300
 
@@ -30,11 +33,20 @@ static NSColor* getColorFromConst(NSInteger c)
     else if (c == PageColorElemNormal) {
         return [NSColor blackColor];
     }
-    else if (c == PageColorElemSelected) {
-        return [NSColor blueColor];
+    else if (c == PageColorElemTitle) {
+        return [NSColor orangeColor];
+    }
+    else if (c == PageColorElemFootnote) {
+        return [NSColor blackColor];
     }
     else if (c == PageColorElemIgnored) {
         return [NSColor grayColor];
+    }
+    else if (c == PageColorElemToFix) {
+        return [NSColor redColor];
+    }
+    else if (c == PageColorElemSelected) {
+        return [NSColor blueColor];
     }
     else if (c == PageColorElemOrderArrow) {
         return [NSColor redColor];
