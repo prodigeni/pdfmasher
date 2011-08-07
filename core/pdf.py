@@ -10,7 +10,7 @@ import re
 
 from pdfminer.pdfparser import PDFParser, PDFDocument
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfminer.layout import LAParams, LTItem, LTChar, LTTextLineHorizontal, LTTextBox
+from pdfminer.layout import LAParams, LTItem, LTChar, LTTextBoxHorizontal
 from pdfminer.converter import PDFPageAggregator
 
 from jobprogress.job import nulljob
@@ -74,7 +74,7 @@ def extract_text_elements_from_pdf(path, j=nulljob):
     doc.set_parser(parser)
     doc.initialize()
     rsrcmgr = PDFResourceManager()
-    laparams = LAParams(all_texts=True, paragraph_indent=5)
+    laparams = LAParams(all_texts=True, paragraph_indent=5, detect_vertical=True)
     device = PDFPageAggregator(rsrcmgr, laparams=laparams)
     interpreter = PDFPageInterpreter(rsrcmgr, device)
     pages = []
@@ -115,11 +115,8 @@ def extract_chars(elem):
     """
     return extract_from_elem(elem, lookfor=LTChar)
 
-def extract_lines(elem):
-    return extract_from_elem(elem, lookfor=LTTextLineHorizontal)
-
 def extract_textboxes(elem):
-    return extract_from_elem(elem, lookfor=LTTextBox)
+    return extract_from_elem(elem, lookfor=LTTextBoxHorizontal)
 
 def get_avg_text_height(chars):
     """Returns the average height of LTChar elements contained in `text_container`.
