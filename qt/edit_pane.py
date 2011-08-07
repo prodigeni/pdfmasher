@@ -12,7 +12,7 @@ from PyQt4.QtCore import Qt
 from PyQt4.QtGui import (QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QCheckBox, QTextEdit)
 from qtlib.util import verticalSpacer, horizontalSpacer
 
-from core.pdf import ElementState
+from core.const import ElementState
 from core.gui.edit_pane import EditPane as EditPaneModel
 
 class EditPane(QWidget):

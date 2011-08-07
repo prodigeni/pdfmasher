@@ -8,16 +8,8 @@
 
 from hscommon.gui.table import GUITable, Row
 
-from ..pdf import ElementState
+from ..const import ElementState, SHORTCUTKEY2FLAG
 from .base import GUIObject
-
-SHORTCUTKEY2FLAG = {
-    'N': ElementState.Normal,
-    'T': ElementState.Title,
-    'F': ElementState.Footnote,
-    'X': ElementState.ToFix,
-    'I': ElementState.Ignored,
-}
 
 class ElementRow(Row):
     def __init__(self, table, element):
@@ -82,7 +74,8 @@ class ElementTable(GUIObject, GUITable):
     #--- Public
     def press_key(self, key):
         key = key.upper()
-        assert key in SHORTCUTKEY2FLAG
+        if key not in SHORTCUTKEY2FLAG:
+            return
         state = SHORTCUTKEY2FLAG[key]
         self.app.change_state_of_selected(state)
     

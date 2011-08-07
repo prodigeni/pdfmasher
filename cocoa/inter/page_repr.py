@@ -38,6 +38,9 @@ class PyPageRepr(PyGUIObject):
     def setShiftKeyHeld_(self, value):
         self.py.shift_key_held = value
     
+    def pressKey_(self, key):
+        self.py.press_key(key)
+    
     #--- model -> view calls:
     def draw_rectangle(self, rect, bgcolor, pencolor):
         x, y, width, height = rect

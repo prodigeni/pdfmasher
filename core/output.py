@@ -8,7 +8,7 @@
 
 import re
 
-from .pdf import ElementState
+from .const import ElementState
 
 RE_STARTING_NUMBER = re.compile(r'^(\d+)')
 

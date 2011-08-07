@@ -12,7 +12,8 @@ from hscommon.reg import RegistrableApplication
 from hscommon.notify import Broadcaster
 from hscommon.trans import tr
 
-from .pdf import extract_text_elements_from_pdf, ElementState
+from .const import ElementState
+from .pdf import extract_text_elements_from_pdf
 
 class JobType:
     LoadPDF = 'job_load_pdf'

@@ -8,7 +8,8 @@
 
 from hscommon.geometry import Point, Line, Rect
 from hscommon.util import trailiter, dedupe
-from ..pdf import ElementState
+
+from ..const import ElementState, SHORTCUTKEY2FLAG
 
 # The view has the responsibility of determining specific colors, but when we send draw_* messages
 # to our view, we still give a color category. These categories are defined here.
@@ -232,6 +233,13 @@ class PageRepresentation:
         self._last_mouse_down = None
         self._last_mouse_pos = None
         self.view.refresh()
+    
+    def press_key(self, key):
+        key = key.upper()
+        if key not in SHORTCUTKEY2FLAG:
+            return
+        state = SHORTCUTKEY2FLAG[key]
+        self.app.change_state_of_selected(state)
     
     def update_page(self):
         if self.app.pages:

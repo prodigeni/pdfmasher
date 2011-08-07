@@ -7,4 +7,5 @@
 - (void)mouseMoveAtX:(CGFloat)x y:(CGFloat)y;
 - (void)mouseUp;
 - (void)setShiftKeyHeld:(BOOL)value;
+- (void)pressKey:(NSString *)key;
 @end

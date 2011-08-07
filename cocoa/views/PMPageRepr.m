@@ -112,6 +112,17 @@ static NSColor* getColorFromConst(NSInteger c)
     [py setShiftKeyHeld:isShiftHeld];
 }
 
+- (void)keyDown:(NSEvent *)event 
+{
+    if ([event modifierKeysFlags] == 0) { // No modif flag
+        NSString *s = [event characters];
+        NSSet *acceptableFlagKeys = [NSSet setWithObjects:@"n", @"t", @"f", @"x", @"i", nil];
+        if ([acceptableFlagKeys containsObject:s]) {
+            [py pressKey:s];
+        }
+    }
+}
+
 /* model --> view */
 - (void)refresh
 {

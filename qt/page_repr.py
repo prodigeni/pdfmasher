@@ -75,6 +75,8 @@ class PageRepresentation(QWidget):
     def keyReleaseEvent(self, event):
         if event.key() == Qt.Key_Shift:
             self.model.shift_key_held = bool(event.modifiers() & Qt.ShiftModifier)
+        elif len(event.text()) == 1:
+            self.model.press_key(event.text())
     
     #--- model --> view
     def draw_rectangle(self, rect, bgcolor, pencolor):

@@ -15,6 +15,8 @@ from pdfminer.converter import PDFPageAggregator
 
 from jobprogress.job import nulljob
 
+from .const import ElementState
+
 ###### PDF Wisdom (some wisdom gathered about pdf/pdfminer during the development of this unit)
 # 
 #--- Coordinates
@@ -31,13 +33,6 @@ from jobprogress.job import nulljob
 # multiple lines in a text container), so for now I took a more heuristic road, that is to ask the
 # user which elements are footnotes and then look for the leading numbers/symbols of that footnote
 # on the rest of the page.
-
-class ElementState:
-    Normal = 'normal'
-    Title = 'title'
-    Footnote = 'footnote'
-    ToFix = 'tofix'
-    Ignored = 'ignored'
 
 class TextElement:
     def __init__(self, x, y, fontsize, text, layout_elem):
