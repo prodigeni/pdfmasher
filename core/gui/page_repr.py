@@ -24,8 +24,8 @@ class PageColor:
 class PageRepresentation:
     #--- model -> view calls:
     # refresh()
-    # draw_rectangle(x, y, width, height, bgcolor, pencolor)
-    # draw_arrow(x1, y1, x2, y2, width, color)
+    # draw_rectangle(rect, bgcolor, pencolor)
+    # draw_arrow(line, width, color)
     #
     
     def __init__(self, view, app):
@@ -77,13 +77,13 @@ class PageRepresentation:
     def _draw_mouse_selection(self):
         if self._last_mouse_down and self._last_mouse_pos:
             if self._reorder_mode:
-                x1, y1 = self._last_mouse_down
-                x2, y2 = self._last_mouse_pos
+                p1 = self._last_mouse_down
+                p2 = self._last_mouse_pos
                 linewidth = 5
-                self.view.draw_arrow(x1, y1, x2, y2, linewidth, PageColor.MouseSelection)
+                self.view.draw_arrow(Line(p1, p2), linewidth, PageColor.MouseSelection)
             else:
-                rx, ry, rw, rh = Rect.from_corners(self._last_mouse_down, self._last_mouse_pos)
-                self.view.draw_rectangle(rx, ry, rw, rh, None, PageColor.MouseSelection)
+                r = Rect.from_corners(self._last_mouse_down, self._last_mouse_pos)
+                self.view.draw_rectangle(r, None, PageColor.MouseSelection)
     
     def _draw_order_arrows(self):
         elems = list(self._ordered_elems())
@@ -92,17 +92,16 @@ class PageRepresentation:
         # mark the starting pos
         firstelem = elems[0]
         center = self._elem2drawrect[firstelem].center()
-        rx, ry, rw, rh = Rect.from_center(center, 10, 10)
-        self.view.draw_rectangle(rx, ry, rw, rh, PageColor.ElemOrderArrow, None)
+        r = Rect.from_center(center, 10, 10)
+        self.view.draw_rectangle(r, PageColor.ElemOrderArrow, None)
         linewidth = 1
         for elem1, elem2 in trailiter(elems, skipfirst=True):
-            x1, y1 = self._elem2drawrect[elem1].center()
-            x2, y2 = self._elem2drawrect[elem2].center()
-            self.view.draw_arrow(x1, y1, x2, y2, linewidth, PageColor.ElemOrderArrow)
+            p1 = self._elem2drawrect[elem1].center()
+            p2 = self._elem2drawrect[elem2].center()
+            self.view.draw_arrow(Line(p1, p2), linewidth, PageColor.ElemOrderArrow)
         linewidth = 5
         for line in self._reorder_line_buffer:
-            (x1, y1), (x2, y2) = line
-            self.view.draw_arrow(x1, y1, x2, y2, linewidth, PageColor.ElemOrderArrow)
+            self.view.draw_arrow(line, linewidth, PageColor.ElemOrderArrow)
     
     def _get_intersections(self, reorder_line):
         # return a list of elements that intersect with line, in order. The order depends on the
@@ -188,20 +187,20 @@ class PageRepresentation:
     def draw(self, view_width, view_height):
         if self.page is None:
             return
-        px, py, pw, ph = self._get_page_boundaries(view_width, view_height)
+        page_boundaries = self._get_page_boundaries(view_width, view_height)
         # draw the page itself
-        self.view.draw_rectangle(px, py, pw, ph, PageColor.PageBg, PageColor.PageBorder)
+        self.view.draw_rectangle(page_boundaries, PageColor.PageBg, PageColor.PageBorder)
         # now draw the elements
-        self._compute_elem_drawrect((px, py, pw, ph))
+        self._compute_elem_drawrect(page_boundaries)
         todraw = [e for e in self.elements if e in self._elem2drawrect]
         for elem in todraw:
-            adjx, adjy, adjw, adjh = self._elem2drawrect[elem]
+            elem_rect = self._elem2drawrect[elem]
             color = PageColor.ElemNormal
             if elem.state == ElementState.Ignored:
                 color = PageColor.ElemIgnored
             if elem in self.app.selected_elements:
                 color = PageColor.ElemSelected
-            self.view.draw_rectangle(adjx, adjy, adjw, adjh, None, color)
+            self.view.draw_rectangle(elem_rect, None, color)
         if self._reorder_mode:
             self._draw_order_arrows()
         self._draw_mouse_selection()

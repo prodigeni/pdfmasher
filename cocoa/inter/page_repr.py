@@ -39,7 +39,8 @@ class PyPageRepr(PyGUIObject):
         self.py.shift_key_held = value
     
     #--- model -> view calls:
-    def draw_rectangle(self, x, y, width, height, bgcolor, pencolor):
+    def draw_rectangle(self, rect, bgcolor, pencolor):
+        x, y, width, height = rect
         if bgcolor is None:
             bgcolor = -1
         if pencolor is None:
@@ -47,7 +48,8 @@ class PyPageRepr(PyGUIObject):
         self.cocoa.drawRectAtX_y_width_height_bgColor_penColor_(
             x, y, width, height, bgcolor, pencolor)
     
-    def draw_arrow(self, x1, y1, x2, y2, width, color):
+    def draw_arrow(self, line, width, color):
+        (x1, y1), (x2, y2) = line
         self.cocoa.drawArrowFromX_y_toX_y_width_color_(
             x1, y1, x2, y2, width, color)
     

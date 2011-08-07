@@ -74,7 +74,8 @@ class PageRepresentation(QWidget):
             self.model.shift_key_held = bool(event.modifiers() & Qt.ShiftModifier)
     
     #--- model --> view
-    def draw_rectangle(self, x, y, width, height, bgcolor, pencolor):
+    def draw_rectangle(self, rect, bgcolor, pencolor):
+        x, y, width, height = rect
         painter = self.current_painter
         painter.save()
         r = QRect(x, y, width, height)
@@ -87,7 +88,8 @@ class PageRepresentation(QWidget):
             painter.drawRect(r)
         painter.restore()
     
-    def draw_arrow(self, x1, y1, x2, y2, width, color):
+    def draw_arrow(self, line, width, color):
+        (x1, y1), (x2, y2) = line
         # compute points
         line = QLineF(x1, y1, x2, y2)
         # If the line is very small, we make our arrowhead smaller
