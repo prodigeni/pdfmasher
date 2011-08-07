@@ -13,6 +13,8 @@ from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.layout import LAParams, LTItem, LTChar, LTTextBoxHorizontal
 from pdfminer.converter import PDFPageAggregator
 
+from hscommon.geometry import Rect, Line
+from hscommon.util import extract
 from jobprogress.job import nulljob
 
 from .const import ElementState
@@ -73,7 +75,7 @@ def extract_text_elements_from_pdf(path, j=nulljob):
     device = PDFPageAggregator(rsrcmgr, laparams=laparams)
     interpreter = PDFPageInterpreter(rsrcmgr, device)
     pages = []
-    elements = []
+    all_elements = []
     enumerated_pages = list(enumerate(doc.get_pages()))
     progress_msg = "Reading page %i of %i"
     for pageno, page in j.iter_with_progress(enumerated_pages, progress_msg):
@@ -81,12 +83,13 @@ def extract_text_elements_from_pdf(path, j=nulljob):
         page_layout = device.get_result()
         pages.append(Page(page_layout.width, page_layout.height))
         textboxes = extract_textboxes(page_layout)
-        for boxno, textbox in enumerate(textboxes):
-            elem = create_element(textbox)
+        elements = [create_element(box) for box in textboxes]
+        merge_oneletter_elems(elements)
+        for i, elem in enumerate(elements):
             elem.page = pageno
-            elem.order = boxno
-            elements.append(elem)
-    return pages, elements
+            elem.order = i
+        all_elements += elements
+    return pages, all_elements
 
 def create_element(layout_element):
     x = layout_element.x0
@@ -125,6 +128,27 @@ def get_text(layout_elements):
         return layout_elements.get_text()
     else:
         return ' '.join(elem.get_text() for elem in layout_elements)
+
+def merge_oneletter_elems(elements):
+    # we go through all one-lettered boxes, we check if it intersects with any other rect. In
+    # addition, we also check that the bottom-right corner of the letter is in the top-left part
+    # of the paragraph.
+    # HOWEVER, We must not forget that Y-positions in pdfminer layout is upside down. The bottom of
+    # the page is 0 and the top is the max y-pos.
+    oneletter, others = extract(lambda e: len(e.text.strip()) == 1, elements)
+    for elem1 in oneletter:
+        box = elem1.layout_elem
+        rect = Rect(box.x0, box.y0, box.width, box.height)
+        for elem2 in others:
+            box = elem2.layout_elem
+            otherrect = Rect(box.x0, box.y0, box.width, box.height)
+            if rect.intersects(otherrect):
+                corner = rect.corners()[1]
+                line = Line(otherrect.center(), corner)
+                if line.dx() < 0 and line.dy() > 0:
+                    elem2.text = elem1.text.strip() + elem2.text
+                    elements.remove(elem1)
+                    break
 
 RE_MULTIPLE_SPACES = re.compile(r' {2,}')
 RE_NEWLINE_AND_SPACE = re.compile(r' \n |\n | \n')
