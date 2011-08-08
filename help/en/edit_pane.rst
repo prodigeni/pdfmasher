@@ -17,6 +17,11 @@ The first thing you usually want to do is to flag your "Ignored" elements, and t
 footnotes and titles. Often, ignored elements can get in your way. This is why there's a "Hide 
 ignored elements". When it's enabled, ignored elements will disappear from the table.
 
+Titles have multiple levels (1 to 6). 1 is the biggest title and 6 is the smallest. To select a
+title level, simply click on the "Title" button repeatedly. It will cycle the element's title level
+from 1 to 6. The current title will be shown in the "State" column. For example, "Title (3)" means a
+title of level 3.
+
 Because clicking buttons is slow, there's also keyboard shortcuts for each flag. When the element
 table has the focus, clicking on a letter associated (in parenthesis above) with a flag will set 
 selected elements to that flag. For example, pressing "T" will set all selected elements to Title.

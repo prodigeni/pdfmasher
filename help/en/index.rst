@@ -33,6 +33,7 @@ Contents:
    
    quickstart
    elements_table
+   page_repr
    edit_pane
    build_pane
    changelog

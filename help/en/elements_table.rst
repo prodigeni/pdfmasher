@@ -7,8 +7,8 @@ so don't hesitate to abuse this feature. You sort the table in a way that will g
 you want to target together, and then you shift select them and flag them (with the buttons in the
 Edit pane). These are the columns and their meaning:
 
-* ID: A unique number assigned to each elements extracted from the PDF in the order it was created.
 * Page: The page number in which the element is in.
+* Order: A number showing the order in which the element will appear in the final HTML file.
 * X: The X position of the leftmost part of the element in the page. The higher the number, the more 
   the element is to the right.
 * Y: The Y position of the topmost part of the element in the page. The higher the number, the 
