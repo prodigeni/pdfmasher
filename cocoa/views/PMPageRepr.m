@@ -9,6 +9,7 @@ http://www.hardcoded.net/licenses/bsd_license
 #import "PMPageRepr.h"
 #import "Utils.h"
 #import "HSGeometry.h"
+#import "NSEventAdditions.h"
 
 // in sync with core.gui.page_repr.PageColor
 #define PageColorPageBg 1
@@ -179,6 +180,21 @@ static NSColor* getColorFromConst(NSInteger c)
     [p lineToPoint:arrowPt1];
     [p lineToPoint:arrowPt2];
     [p fill];
+    [NSGraphicsContext restoreGraphicsState];
+}
+
+- (void)drawText:(NSString *)text inRectAtX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height
+{
+    [NSGraphicsContext saveGraphicsState];
+    NSFont *font = [NSFont labelFontOfSize:11];
+    NSMutableParagraphStyle *pstyle = [[[NSMutableParagraphStyle alloc] init] autorelease];
+	[pstyle setAlignment:NSCenterTextAlignment ];
+    NSDictionary *attr = [NSDictionary dictionaryWithObjectsAndKeys:
+        font, NSFontAttributeName,
+        [NSColor blackColor], NSForegroundColorAttributeName,
+        pstyle, NSParagraphStyleAttributeName,
+        nil];
+    [text drawInRect:NSMakeRect(x, y, width, height) withAttributes:attr];
     [NSGraphicsContext restoreGraphicsState];
 }
 

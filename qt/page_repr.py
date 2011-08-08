@@ -8,8 +8,8 @@
 
 from math import pi, sin, cos, radians
 
-from PyQt4.QtCore import Qt, QRect, QLineF, QPointF
-from PyQt4.QtGui import QWidget, QPainter, QPen, QPolygonF, QColor
+from PyQt4.QtCore import Qt, QRectF, QLineF, QPointF
+from PyQt4.QtGui import QWidget, QPainter, QPen, QPolygonF, QColor, QFont
 
 from core.gui.page_repr import PageRepresentation as PageRepresentationModel, PageColor
 
@@ -50,7 +50,7 @@ class PageRepresentation(QWidget):
             adjusted_height = width * ratio
             x = 0
             y = (height - adjusted_height) / 2
-        r = QRect(x, y, adjusted_width, adjusted_height)
+        r = QRectF(x, y, adjusted_width, adjusted_height)
         painter.fillRect(r, Qt.white)
         painter.drawRect(r)
     
@@ -83,7 +83,7 @@ class PageRepresentation(QWidget):
         x, y, width, height = rect
         painter = self.current_painter
         painter.save()
-        r = QRect(x, y, width, height)
+        r = QRectF(x, y, width, height)
         if bgcolor is not None:
             painter.fillRect(r, COLORS[bgcolor])
         if pencolor is not None:
@@ -124,6 +124,16 @@ class PageRepresentation(QWidget):
         brush.setStyle(Qt.SolidPattern)
         painter.setBrush(brush)
         painter.drawPolygon(head)
+        painter.restore()
+    
+    def draw_text(self, text, rect):
+        rect = QRectF(*rect)
+        painter = self.current_painter
+        painter.save()
+        font = QFont(painter.font())
+        font.setPointSize(11)
+        painter.setFont(font)
+        painter.drawText(rect, Qt.AlignHCenter|Qt.AlignVCenter, text)
         painter.restore()
     
     def refresh(self):

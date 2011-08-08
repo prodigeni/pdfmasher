@@ -53,6 +53,9 @@ class PyPageRepr(PyGUIObject):
     
     def draw_arrow(self, line, width, color):
         (x1, y1), (x2, y2) = line
-        self.cocoa.drawArrowFromX_y_toX_y_width_color_(
-            x1, y1, x2, y2, width, color)
+        self.cocoa.drawArrowFromX_y_toX_y_width_color_(x1, y1, x2, y2, width, color)
+    
+    def draw_text(self, text, rect):
+        x, y, width, height = rect
+        self.cocoa.drawText_inRectAtX_y_width_height_(text, x, y, width, height)
     

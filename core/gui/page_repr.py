@@ -37,6 +37,7 @@ class PageRepresentation:
     # refresh()
     # draw_rectangle(rect, bgcolor, pencolor)
     # draw_arrow(line, width, color)
+    # draw_text(text, rect)
     #
     
     def __init__(self, view, app):
@@ -113,6 +114,13 @@ class PageRepresentation:
         linewidth = 5
         for line in self._reorder_line_buffer:
             self.view.draw_arrow(line, linewidth, PageColor.ElemOrderArrow)
+    
+    def _draw_elem_rect(self, elem, rect):
+        color = STATE2COLOR.get(elem.state, PageColor.ElemNormal)
+        self.view.draw_rectangle(rect, None, color)
+        if elem.state == ElementState.Title:
+            level = str(elem.title_level)
+            self.view.draw_text(level, rect)
     
     def _get_intersections(self, reorder_line):
         # return a list of elements that intersect with line, in order. The order depends on the
@@ -216,13 +224,12 @@ class PageRepresentation:
         todraw = [e for e in self.elements if e in self._elem2drawrect]
         for elem in todraw:
             elem_rect = self._elem2drawrect[elem]
-            color = STATE2COLOR.get(elem.state, PageColor.ElemNormal)
             if elem in self.app.selected_elements:
                 innerrect = elem_rect.scaled_rect(-2, -2)
-                self.view.draw_rectangle(innerrect, None, color)
+                self._draw_elem_rect(elem, innerrect)
                 self.view.draw_rectangle(elem_rect, None, PageColor.ElemSelected)
             else:
-                self.view.draw_rectangle(elem_rect, None, color)
+                self._draw_elem_rect(elem, elem_rect)
         if self._reorder_mode:
             self._draw_order_arrows()
         self._draw_mouse_selection()
