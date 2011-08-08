@@ -71,7 +71,7 @@ def extract_text_elements_from_pdf(path, j=nulljob):
     doc.set_parser(parser)
     doc.initialize()
     rsrcmgr = PDFResourceManager()
-    laparams = LAParams(all_texts=True, paragraph_indent=5, detect_vertical=True)
+    laparams = LAParams(all_texts=True, paragraph_indent=5, detect_vertical=True, heuristic_word_margin=True)
     device = PDFPageAggregator(rsrcmgr, laparams=laparams)
     interpreter = PDFPageInterpreter(rsrcmgr, device)
     pages = []
