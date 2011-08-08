@@ -125,6 +125,16 @@ class PageRepresentation:
                 if inter is not None:
                     dist = inter.distance_to(reorder_line.p1)
                     intersections.append((dist, elem))
+        if not intersections:
+            # so we cross no line, but we might be in the middle of an elem, in which case we should
+            # return that elem. It's even possible that we're inside multiple rects. This case is
+            # tricky (there's multiple possibilities here). We just choose the elem for which the
+            # center is closest to our origin
+            origin = reorder_line.p1
+            for elem in self._active_elems():
+                rect = self._elem2drawrect[elem]
+                if rect.contains_point(origin):
+                    intersections.append((origin.distance_to(rect.center()), elem))
         intersections.sort(key=lambda tup: tup[0])
         return dedupe([elem for dist, elem in intersections])
     
