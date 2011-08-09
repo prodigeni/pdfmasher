@@ -61,7 +61,7 @@ class BuildPane(GUIObject):
         dest_path = self._current_path('txt')
         with open(dest_path, 'wt', encoding='utf-8') as fp:
             fp.write(generate_markdown(self.app.elements))
-        self.lastgen_desc = '{} generated at {}'.format(dest_path, datetime.now().strftime('%H:%M:%S'))
+        self.lastgen_desc = 'Generated at {}'.format(datetime.now().strftime('%H:%M:%S'))
         self.post_processing_enabled = True
         self.view.refresh()
     

@@ -9,6 +9,8 @@
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QCheckBox
 
+from qtlib.util import horizontalSpacer
+
 from core.gui.page_controller import PageController as PageControllerModel
 from .page_repr import PageRepresentation
 
@@ -40,6 +42,7 @@ class PageController(QWidget):
         self.buttonLayout.addWidget(self.nextPageButton)
         self.reorderModeCheckBox = QCheckBox("Re-order mode")
         self.buttonLayout.addWidget(self.reorderModeCheckBox)
+        self.buttonLayout.addItem(horizontalSpacer())
         self.mainLayout.addLayout(self.buttonLayout)
     
     #--- Signals

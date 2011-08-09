@@ -9,8 +9,9 @@
 from functools import partial
 
 from PyQt4.QtCore import Qt
-from PyQt4.QtGui import (QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QCheckBox, QTextEdit)
-from qtlib.util import verticalSpacer, horizontalSpacer
+from PyQt4.QtGui import (QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QCheckBox, QTextEdit,
+    QGridLayout)
+from qtlib.util import horizontalSpacer
 
 from core.const import ElementState
 from core.gui.edit_pane import EditPane as EditPaneModel
@@ -34,19 +35,18 @@ class EditPane(QWidget):
         self.cancelEditsButton.clicked.connect(self.model.cancel_edits)
         
     def _setupUi(self):
-        self.mainLayout = QHBoxLayout(self)
-        self.buttonLayout = QVBoxLayout()
+        self.mainLayout = QVBoxLayout(self)
+        self.buttonLayout = QGridLayout()
         self.normalButton = QPushButton("Normal")
-        self.buttonLayout.addWidget(self.normalButton)
+        self.buttonLayout.addWidget(self.normalButton, 0, 0)
         self.titleButton = QPushButton("Title")
-        self.buttonLayout.addWidget(self.titleButton)
+        self.buttonLayout.addWidget(self.titleButton, 1, 0)
         self.footnoteButton = QPushButton("Footnote")
-        self.buttonLayout.addWidget(self.footnoteButton)
+        self.buttonLayout.addWidget(self.footnoteButton, 2, 0)
         self.ignoreButton = QPushButton("Ignore")
-        self.buttonLayout.addWidget(self.ignoreButton)
+        self.buttonLayout.addWidget(self.ignoreButton, 0, 1)
         self.tofixButton = QPushButton("To Fix")
-        self.buttonLayout.addWidget(self.tofixButton)
-        self.buttonLayout.addItem(verticalSpacer())
+        self.buttonLayout.addWidget(self.tofixButton, 1, 1)
         self.mainLayout.addLayout(self.buttonLayout)
         
         self.rightLayout = QVBoxLayout()

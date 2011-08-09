@@ -1314,7 +1314,7 @@
 			<object class="NSWindowTemplate" id="972006081">
 				<int key="NSWindowStyleMask">15</int>
 				<int key="NSWindowBacking">2</int>
-				<string key="NSWindowRect">{{335, 180}, {648, 570}}</string>
+				<string key="NSWindowRect">{{335, 180}, {995, 657}}</string>
 				<int key="NSWTFlags">1954021376</int>
 				<string key="NSWindowTitle">PdfMasher</string>
 				<string key="NSWindowClass">NSWindow</string>
@@ -1327,7 +1327,7 @@
 						<object class="NSButton" id="857209874">
 							<reference key="NSNextResponder" ref="439893737"/>
 							<int key="NSvFlags">268</int>
-							<string key="NSFrame">{{12, 530}, {100, 32}}</string>
+							<string key="NSFrame">{{12, 617}, {100, 32}}</string>
 							<reference key="NSSuperview" ref="439893737"/>
 							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView" ref="788024821"/>
@@ -1353,7 +1353,7 @@
 						<object class="NSTextField" id="788024821">
 							<reference key="NSNextResponder" ref="439893737"/>
 							<int key="NSvFlags">266</int>
-							<string key="NSFrame">{{111, 540}, {520, 17}}</string>
+							<string key="NSFrame">{{111, 627}, {816, 17}}</string>
 							<reference key="NSSuperview" ref="439893737"/>
 							<reference key="NSWindow"/>
 							<reference key="NSNextKeyView" ref="1056506384"/>
@@ -1386,8 +1386,8 @@
 						</object>
 						<object class="NSTabView" id="117716348">
 							<reference key="NSNextResponder" ref="439893737"/>
-							<int key="NSvFlags">34</int>
-							<string key="NSFrame">{{13, 3}, {622, 202}}</string>
+							<int key="NSvFlags">17</int>
+							<string key="NSFrame">{{681, 10}, {301, 615}}</string>
 							<reference key="NSSuperview" ref="439893737"/>
 							<reference key="NSWindow"/>
 							<array class="NSMutableArray" key="NSTabViewItems"/>
@@ -1399,10 +1399,9 @@
 						<object class="NSTabView" id="1056506384">
 							<reference key="NSNextResponder" ref="439893737"/>
 							<int key="NSvFlags">18</int>
-							<string key="NSFrame">{{13, 197}, {622, 341}}</string>
+							<string key="NSFrame">{{13, 10}, {674, 615}}</string>
 							<reference key="NSSuperview" ref="439893737"/>
 							<reference key="NSWindow"/>
-							<reference key="NSNextKeyView" ref="25831338"/>
 							<string key="NSReuseIdentifierKey">_NS:461</string>
 							<array class="NSMutableArray" key="NSTabViewItems">
 								<object class="NSTabViewItem" id="132202044">
@@ -1422,15 +1421,15 @@
 															<object class="NSTableView" id="872483617">
 																<reference key="NSNextResponder" ref="576962643"/>
 																<int key="NSvFlags">256</int>
-																<string key="NSFrameSize">{566, 257}</string>
+																<string key="NSFrameSize">{620, 541}</string>
 																<reference key="NSSuperview" ref="576962643"/>
 																<reference key="NSWindow"/>
-																<reference key="NSNextKeyView" ref="854535524"/>
+																<reference key="NSNextKeyView" ref="48181579"/>
 																<bool key="NSEnabled">YES</bool>
 																<object class="NSTableHeaderView" key="NSHeaderView" id="177515980">
 																	<reference key="NSNextResponder" ref="48181579"/>
 																	<int key="NSvFlags">256</int>
-																	<string key="NSFrameSize">{566, 17}</string>
+																	<string key="NSFrameSize">{620, 17}</string>
 																	<reference key="NSSuperview" ref="48181579"/>
 																	<reference key="NSWindow"/>
 																	<reference key="NSNextKeyView" ref="969555580"/>
@@ -1472,7 +1471,7 @@
 																<int key="NSTableViewGroupRowStyle">1</int>
 															</object>
 														</array>
-														<string key="NSFrame">{{1, 17}, {566, 257}}</string>
+														<string key="NSFrame">{{1, 17}, {620, 541}}</string>
 														<reference key="NSSuperview" ref="904582340"/>
 														<reference key="NSWindow"/>
 														<reference key="NSNextKeyView" ref="872483617"/>
@@ -1502,7 +1501,7 @@
 														<string key="NSFrame">{{1, 301}, {591, 15}}</string>
 														<reference key="NSSuperview" ref="904582340"/>
 														<reference key="NSWindow"/>
-														<reference key="NSNextKeyView" ref="1056506384"/>
+														<reference key="NSNextKeyView" ref="117716348"/>
 														<int key="NSsFlags">1</int>
 														<reference key="NSTarget" ref="904582340"/>
 														<string key="NSAction">_doScroller:</string>
@@ -1514,7 +1513,7 @@
 														<array class="NSMutableArray" key="NSSubviews">
 															<reference ref="177515980"/>
 														</array>
-														<string key="NSFrame">{{1, 0}, {566, 17}}</string>
+														<string key="NSFrame">{{1, 0}, {620, 17}}</string>
 														<reference key="NSSuperview" ref="904582340"/>
 														<reference key="NSWindow"/>
 														<reference key="NSNextKeyView" ref="177515980"/>
@@ -1524,10 +1523,10 @@
 													</object>
 													<reference ref="969555580"/>
 												</array>
-												<string key="NSFrame">{{17, 17}, {568, 275}}</string>
+												<string key="NSFrame">{{17, 7}, {622, 559}}</string>
 												<reference key="NSSuperview" ref="25831338"/>
 												<reference key="NSWindow"/>
-												<reference key="NSNextKeyView" ref="48181579"/>
+												<reference key="NSNextKeyView" ref="576962643"/>
 												<int key="NSsFlags">133682</int>
 												<reference key="NSVScroller" ref="854535524"/>
 												<reference key="NSHScroller" ref="855072914"/>
@@ -1537,7 +1536,7 @@
 												<bytes key="NSScrollAmts">QSAAAEEgAABBmAAAQZgAAA</bytes>
 											</object>
 										</array>
-										<string key="NSFrame">{{10, 33}, {602, 295}}</string>
+										<string key="NSFrame">{{10, 33}, {654, 569}}</string>
 										<reference key="NSSuperview" ref="1056506384"/>
 										<reference key="NSWindow"/>
 										<reference key="NSNextKeyView" ref="904582340"/>
@@ -1558,7 +1557,7 @@
 							</array>
 						</object>
 					</array>
-					<string key="NSFrameSize">{648, 570}</string>
+					<string key="NSFrameSize">{995, 657}</string>
 					<reference key="NSSuperview"/>
 					<reference key="NSWindow"/>
 					<reference key="NSNextKeyView" ref="857209874"/>
@@ -2824,8 +2823,8 @@
 						<array class="NSMutableArray" key="children">
 							<reference ref="857209874"/>
 							<reference ref="788024821"/>
-							<reference ref="117716348"/>
 							<reference ref="1056506384"/>
+							<reference ref="117716348"/>
 						</array>
 						<reference key="parent" ref="972006081"/>
 					</object>
@@ -3662,25 +3661,17 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">PMMainWindow</string>
 					<string key="superclassName">NSWindowController</string>
-					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="loadPDF:">id</string>
-						<string key="nextPage:">id</string>
-						<string key="prevPage:">id</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="loadPDF:">
+					<object class="NSMutableDictionary" key="actions">
+						<string key="NS.key.0">loadPDF:</string>
+						<string key="NS.object.0">id</string>
+					</object>
+					<object class="NSMutableDictionary" key="actionInfosByName">
+						<string key="NS.key.0">loadPDF:</string>
+						<object class="IBActionInfo" key="NS.object.0">
 							<string key="name">loadPDF:</string>
 							<string key="candidateClassName">id</string>
 						</object>
-						<object class="IBActionInfo" key="nextPage:">
-							<string key="name">nextPage:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="prevPage:">
-							<string key="name">prevPage:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</dictionary>
+					</object>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="appDelegate">PMAppDelegate</string>
 						<string key="bottomTabView">NSTabView</string>
