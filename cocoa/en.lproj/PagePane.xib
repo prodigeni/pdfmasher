@@ -148,7 +148,7 @@
 					<object class="NSButton" id="636700020">
 						<reference key="NSNextResponder" ref="176219635"/>
 						<int key="NSvFlags">292</int>
-						<string key="NSFrame">{{238, 8}, {157, 18}}</string>
+						<string key="NSFrame">{{238, 8}, {119, 18}}</string>
 						<reference key="NSSuperview" ref="176219635"/>
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView"/>
@@ -157,7 +157,7 @@
 						<object class="NSButtonCell" key="NSCell" id="566473174">
 							<int key="NSCellFlags">67239424</int>
 							<int key="NSCellFlags2">0</int>
-							<string key="NSContents">Show Elements Order</string>
+							<string key="NSContents">Re-order mode</string>
 							<reference key="NSSupport" ref="340482039"/>
 							<string key="NSCellIdentifier">_NS:239</string>
 							<reference key="NSControlView" ref="636700020"/>
