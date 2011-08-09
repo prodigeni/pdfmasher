@@ -190,18 +190,25 @@ class PageRepresentation:
         if len(neworder) < 2:
             return # nothing to reorder
         # ok, we have our new order. That was easy huh? Now, what we have to do is to insert that
-        # new order in the rest of the elements, which might not all be in our new order. So we have
-        # to find our insertion point, divide it into a 'before' and an 'after' list, remove all our
-        # newly ordered elems from those lists, and do a before + neworder + after concat.
+        # new order in the rest of the elements, which might not all be in our new order. That's
+        # a bit complex too because when drawing arrows, a naive re-ordering is counter intuitive.
+        # I won't explain why what is done below is done thus because it's hard to describe, but
+        # here's what we do: We compute the min and max of old orders in our elems. Whatever came
+        # before min stays before. Whatever came after max stays *right* after, but not at the end.
+        # The end of the order is constituted of what is between min and max, but isn't in the new
+        # order. Arrow-wise, these elements have been "orphaned" by the new link and the most
+        # intuitive thing to do with them is to put them at the end of the order.
         minorder = min(e.order for e in neworder)
+        maxorder = max(e.order for e in neworder)
         all_elems = list(self._ordered_elems())
         affected_elems = set(neworder)
         unaffected_elems = [e for e in all_elems if e not in affected_elems]
         before = [e for e in unaffected_elems if e.order < minorder]
-        after = [e for e in unaffected_elems if e.order > minorder]
+        after = [e for e in unaffected_elems if e.order > maxorder]
+        inbetween = [e for e in unaffected_elems if minorder < e.order < maxorder]
         # we also add ignore elems to our big concat so that their order value doesn't conflict
         ignored = list(self._ignored_elems())
-        concat = before + neworder + after + ignored
+        concat = before + neworder + after + inbetween + ignored
         for i, elem in enumerate(concat):
             elem.order = i
     
