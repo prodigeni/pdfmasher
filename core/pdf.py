@@ -10,7 +10,7 @@ import re
 
 from pdfminer.pdfparser import PDFParser, PDFDocument
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfminer.layout import LAParams, LTItem, LTChar, LTTextBoxHorizontal
+from pdfminer.layout import LAParams, LTChar, LTTextBoxHorizontal
 from pdfminer.converter import PDFPageAggregator
 
 from hscommon.geometry import Rect, Line
@@ -37,19 +37,19 @@ from .const import ElementState
 # on the rest of the page.
 
 class TextElement:
-    def __init__(self, x, y, fontsize, text, layout_elem):
+    def __init__(self, rect, fontsize, text):
         # The X and the Y of a text element should always be its top left corner
         self.page = None # set later
         self.order = 0 # set later
-        self.x = x
-        self.y = y
+        self.rect = rect
+        self.x = rect.x
+        self.y = rect.y + rect.h # ypos in pdfminer are inverted and we want to top left corner
         self.fontsize = fontsize
         self.text = text
         self.state = ElementState.Normal
         self.title_level = 1 # 1 to 6
         # This is for footnotes-processed text
         self.modified_text = None
-        self.layout_elem = layout_elem
     
     def __repr__(self):
         return '<TextElement {page} {x}-{y} {state} "{text}">'.format(**self.__dict__)
@@ -92,12 +92,11 @@ def extract_text_elements_from_pdf(path, j=nulljob):
     return pages, all_elements
 
 def create_element(layout_element):
-    x = layout_element.x0
-    y = layout_element.y1 # top left corner in pdfminer is x0/y1
+    rect = Rect(layout_element.x0, layout_element.y0, layout_element.width, layout_element.height)
     chars = extract_chars(layout_element)
     fontsize = get_avg_text_height(chars)
-    text = fix_text(get_text(layout_element))
-    return TextElement(x, y, fontsize, text, layout_element)
+    text = fix_text(layout_element.get_text())
+    return TextElement(rect, fontsize, text)
 
 def extract_from_elem(elem, lookfor):
     if isinstance(elem, lookfor):
@@ -123,12 +122,6 @@ def get_avg_text_height(chars):
     totheight = sum(c.height for c in chars)
     return totheight / count
 
-def get_text(layout_elements):
-    if isinstance(layout_elements, LTItem):
-        return layout_elements.get_text()
-    else:
-        return ' '.join(elem.get_text() for elem in layout_elements)
-
 def merge_oneletter_elems(elements):
     # we go through all one-lettered boxes, we check if it intersects with any other rect. In
     # addition, we also check that the bottom-right corner of the letter is in the top-left part
@@ -137,11 +130,9 @@ def merge_oneletter_elems(elements):
     # the page is 0 and the top is the max y-pos.
     oneletter, others = extract(lambda e: len(e.text.strip()) == 1, elements)
     for elem1 in oneletter:
-        box = elem1.layout_elem
-        rect = Rect(box.x0, box.y0, box.width, box.height)
+        rect = elem1.rect
         for elem2 in others:
-            box = elem2.layout_elem
-            otherrect = Rect(box.x0, box.y0, box.width, box.height)
+            otherrect = elem2.rect
             if rect.intersects(otherrect):
                 corner = rect.corners()[1]
                 line = Line(otherrect.center(), corner)

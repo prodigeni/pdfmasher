@@ -78,12 +78,12 @@ class PageRepresentation:
         for elem in self.elements:
             if elem.state == ElementState.Ignored and self.app.hide_ignored:
                 continue # we don't draw the elem
-            lelem = elem.layout_elem
-            adjx = px + (lelem.x0 * xratio)
+            rect = elem.rect
+            adjx = px + (rect.x * xratio)
             # don't forget that ypos in pdfminer are inverted
-            adjy = py + (ph - (lelem.y1 * yratio))
-            adjw = lelem.width * xratio
-            adjh = lelem.height * yratio
+            adjy = py + (ph - ((rect.y+rect.h) * yratio))
+            adjw = rect.w * xratio
+            adjh = rect.h * yratio
             self._elem2drawrect[elem] = Rect(adjx, adjy, adjw, adjh)
     
     def _draw_mouse_selection(self):
