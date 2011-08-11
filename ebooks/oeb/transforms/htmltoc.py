@@ -80,7 +80,7 @@ class HTMLTOCAdder(object):
         if not getattr(getattr(oeb, 'toc', False), 'nodes', False):
             return
         logging.info('Generating in-line TOC...')
-        title = self.title or oeb.translate(DEFAULT_TITLE)
+        title = self.title or DEFAULT_TITLE
         style = self.style
         if style not in STYLE_CSS:
             logging.error('Unknown TOC style %r' % style)

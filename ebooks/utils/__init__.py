@@ -37,33 +37,6 @@ class CurrentDir(object):
             # The previous CWD no longer exists
             pass
 
-def strftime(fmt, t=None):
-    ''' A version of strftime that returns unicode strings and tries to handle dates
-    before 1900 '''
-    if not fmt:
-        return u''
-    if t is None:
-        t = time.localtime()
-    if hasattr(t, 'timetuple'):
-        t = t.timetuple()
-    early_year = t[0] < 1900
-    if early_year:
-        replacement = 1900 if t[0]%4 == 0 else 1901
-        fmt = fmt.replace('%Y', '_early year hack##')
-        t = list(t)
-        orig_year = t[0]
-        t[0] = replacement
-    ans = None
-    if iswindows:
-        if isinstance(fmt, unicode):
-            fmt = fmt.encode('mbcs')
-        ans = plugins['winutil'][0].strftime(fmt, t)
-    else:
-        ans = time.strftime(fmt, t).decode(preferred_encoding, 'replace')
-    if early_year:
-        ans = ans.replace('_early year hack##', str(orig_year))
-    return ans
-
 def unicode_path(path, abs=False):
     if not isinstance(path, unicode):
         path = path.decode(sys.getfilesystemencoding())
@@ -198,55 +171,6 @@ def get_types_map():
         _init_mimetypes()
     return mimetypes.types_map
 
-def prints(*args, **kwargs):
-    '''
-    Print unicode arguments safely by encoding them to preferred_encoding
-    Has the same signature as the print function from Python 3, except for the
-    additional keyword argument safe_encode, which if set to True will cause the
-    function to use repr when encoding fails.
-    '''
-    file = kwargs.get('file', sys.stdout)
-    sep  = kwargs.get('sep', ' ')
-    end  = kwargs.get('end', '\n')
-    enc = preferred_encoding
-    safe_encode = kwargs.get('safe_encode', False)
-    if 'CALIBRE_WORKER' in os.environ:
-        enc = 'utf-8'
-    for i, arg in enumerate(args):
-        if isinstance(arg, unicode):
-            try:
-                arg = arg.encode(enc)
-            except UnicodeEncodeError:
-                try:
-                    arg = arg.encode('utf-8')
-                except:
-                    if not safe_encode:
-                        raise
-                    arg = repr(arg)
-        if not isinstance(arg, str):
-            try:
-                arg = str(arg)
-            except ValueError:
-                arg = unicode(arg)
-            if isinstance(arg, unicode):
-                try:
-                    arg = arg.encode(enc)
-                except UnicodeEncodeError:
-                    try:
-                        arg = arg.encode('utf-8')
-                    except:
-                        if not safe_encode:
-                            raise
-                        arg = repr(arg)
-
-        try:
-            file.write(arg)
-        except:
-            file.write(repr(arg))
-        if i != len(args)-1:
-            file.write(bytes(sep))
-    file.write(bytes(end))
-
 _filename_sanitize = re.compile(r'[\xae\0\\|\?\*<":>\+/]')
 _filename_sanitize_unicode = frozenset([u'\\', u'|', u'?', u'*', u'<',
     u'"', u':', u'>', u'+', u'/'] + list(map(unichr, xrange(32))))
@@ -303,12 +227,6 @@ def extract(path, dir):
         raise Exception('Unknown archive type')
     extractor(path, dir)
 
-def walk(dir):
-    ''' A nice interface to os.walk '''
-    for record in os.walk(dir):
-        for f in record[-1]:
-            yield os.path.join(record[0], f)
-
 relpath = os.path.relpath
 
 def remove_bracketed_text(src,
@@ -328,20 +246,6 @@ def remove_bracketed_text(src,
         elif sum(counts.itervalues()) < 1:
             buf.append(char)
     return u''.join(buf)
-
-def human_readable(size):
-    """ Convert a size in bytes into a human readable form """
-    divisor, suffix = 1, "B"
-    for i, candidate in enumerate(('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB')):
-        if size < 1024**(i+1):
-            divisor, suffix = 1024**(i), candidate
-            break
-    size = str(float(size)/divisor)
-    if size.find(".") > -1:
-        size = size[:size.find(".")+2]
-    if size.endswith('.0'):
-        size = size[:-2]
-    return size + " " + suffix
 
 def sanitize_file_name2(name, substitute='_'):
     '''

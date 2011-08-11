@@ -61,7 +61,6 @@ it under the same terms as Perl itself.
 
 import re
 from .unicodepoints import CODEPOINTS
-from .zhcodepoints import CODEPOINTS as HANCODES
 
 class Unidecoder(object):
 
@@ -69,7 +68,6 @@ class Unidecoder(object):
 
     def __init__(self):
         self.codepoints = CODEPOINTS
-        self.codepoints.update(HANCODES)
 
     def decode(self, text):
         # Replace characters larger than 127 with their ASCII equivelent.

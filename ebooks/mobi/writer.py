@@ -27,7 +27,6 @@ from ..oeb.base import namespace
 from ..oeb.base import prefixname
 from ..oeb.base import urlnormalize
 from ..compression.palmdoc import compress_doc
-# from calibre.utils.magick.draw import Image, save_cover_data_to, thumbnail
 
 INDEXING = True
 FCIS_FLIS = True
@@ -109,39 +108,6 @@ def align_block(raw, multiple=4, pad='\0'):
     extra = len(raw) % multiple
     if extra == 0: return raw
     return raw + pad*(multiple - extra)
-
-# def rescale_image(data, maxsizeb, dimen=None):
-#     if dimen is not None:
-#         data = thumbnail(data, width=dimen[0], height=dimen[1],
-#                 compression_quality=90)[-1]
-#     else:
-#         # Replace transparent pixels with white pixels and convert to JPEG
-#         data = save_cover_data_to(data, 'img.jpg', return_data=True)
-#     if len(data) <= maxsizeb:
-#         return data
-#     orig_data = data
-#     img = Image()
-#     quality = 95
-# 
-#     img.load(data)
-#     while len(data) >= maxsizeb and quality >= 10:
-#         quality -= 5
-#         img.set_compression_quality(quality)
-#         data = img.export('jpg')
-#     if len(data) <= maxsizeb:
-#         return data
-#     orig_data = data
-# 
-#     scale = 0.9
-#     while len(data) >= maxsizeb and scale >= 0.05:
-#         img = Image()
-#         img.load(orig_data)
-#         w, h = img.size
-#         img.size = (int(scale*w), int(scale*h))
-#         img.set_compression_quality(quality)
-#         data = img.export('jpg')
-#         scale -= 0.05
-#     return data
 
 class Serializer(object): # {{{
     NSRMAP = {'': None, XML_NS: 'xml', XHTML_NS: '', MBP_NS: 'mbp'}

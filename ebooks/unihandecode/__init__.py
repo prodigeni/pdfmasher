@@ -23,21 +23,10 @@ class Unihandecoder(object):
     preferred_encoding = None
     decoder = None
 
-    def __init__(self, lang="zh", encoding='utf-8'):
+    def __init__(self, encoding='utf-8'):
         self.preferred_encoding = encoding
-        lang = lang.lower()
-        if lang[:2] == u'ja':
-            from .jadecoder import Jadecoder
-            self.decoder = Jadecoder()
-        elif lang[:2] == u'kr' or lang == u'korean':
-            from .krdecoder import Krdecoder
-            self.decoder = Krdecoder()
-        elif lang[:2] == u'vn' or lang == u'vietnum':
-            from .vndecoder import Vndecoder
-            self.decoder = Vndecoder()
-        else: #zh and others
-            from .unidecoder import Unidecoder
-            self.decoder = Unidecoder()
+        from .unidecoder import Unidecoder
+        self.decoder = Unidecoder()
 
     def decode(self, text):
         try:

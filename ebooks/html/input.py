@@ -18,9 +18,10 @@ from functools import partial
 from itertools import izip
 import logging
 
+from ..oeb.base import OEBBook
+from ..conversion.preprocess import HTMLPreProcessor
 from ..constants import islinux, isbsd, iswindows
 from ..utils import unicode_path, as_unicode
-from ..utils.localization import get_lang
 from ..utils.filenames import ascii_filename
 
 class Link(object):
@@ -254,10 +255,6 @@ class HTMLInput(object):
             oeb = self.create_oebbook(stream.name, basedir, opts, mi)
             return oeb
 
-        from ..conversion.plumber import create_oebbook
-        return create_oebbook(stream.name, opts,
-                encoding=opts.input_encoding)
-
     def is_case_sensitive(self, path):
         if getattr(self, '_is_case_sensitive', None) is not None:
             return self._is_case_sensitive
@@ -268,7 +265,6 @@ class HTMLInput(object):
         return self._is_case_sensitive
 
     def create_oebbook(self, htmlpath, basedir, opts, mi):
-        from ..conversion.plumber import create_oebbook
         from ..oeb.base import (DirContainer,
             rewrite_links, urlnormalize, urldefrag, BINARY_MIME, OEB_STYLES,
             xpath)
@@ -277,21 +273,23 @@ class HTMLInput(object):
         import cssutils, logging
         cssutils.log.setLevel(logging.WARN)
         self.OEB_STYLES = OEB_STYLES
-        oeb = create_oebbook(None, opts, self,
-                encoding=opts.input_encoding, populate=False)
+        html_preprocessor = HTMLPreProcessor(opts)
+        encoding = opts.input_encoding
+        assert encoding
+        oeb = OEBBook(html_preprocessor, pretty_print=opts.pretty_print, input_encoding=encoding)
         self.oeb = oeb
 
         metadata = oeb.metadata
         meta_info_to_oeb_metadata(mi, metadata)
         if not metadata.language:
-            logging.warn(u'Language not specified')
-            metadata.add('language', get_lang().replace('_', '-'))
+            logging.warn('Language not specified')
+            metadata.add('language', 'en')
         if not metadata.creator:
             logging.warn('Creator not specified')
-            metadata.add('creator', self.oeb.translate('Unknown'))
+            metadata.add('creator', 'Unknown')
         if not metadata.title:
             logging.warn('Title not specified')
-            metadata.add('title', self.oeb.translate('Unknown'))
+            metadata.add('title', 'Unknown')
         bookid = str(uuid.uuid4())
         metadata.add('identifier', bookid, id='uuid_id', scheme='uuid')
         for ident in metadata.identifier:

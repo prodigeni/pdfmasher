@@ -991,11 +991,11 @@ class Manifest(object):
                 head = etree.Element(XHTML('head'))
                 data.insert(0, head)
                 title = etree.SubElement(head, XHTML('title'))
-                title.text = self.oeb.translate(__('Unknown'))
+                title.text = 'Unknown'
             elif not xpath(data, '/h:html/h:head/h:title'):
                 logging.warn('File %r missing <title/> element' % self.href)
                 title = etree.SubElement(head, XHTML('title'))
-                title.text = self.oeb.translate(__('Unknown'))
+                title.text = 'Unknown'
             # Remove any encoding-specifying <meta/> elements
             for meta in self.META_XP(data):
                 meta.getparent().remove(meta)
@@ -1515,7 +1515,7 @@ class Guide(object):
                  not type.startswith('other.'):
                 type = 'other.' + type
             if not title and type in self.TITLES:
-                title = oeb.translate(self.TITLES[type])
+                title = self.TITLES[type]
             self.type = type
             self.title = title
             self.href = urlnormalize(href)
@@ -1917,14 +1917,6 @@ class OEBBook(object):
         encoding = opts.encoding
         pretty_print = opts.pretty_print
         return cls(encoding=encoding, pretty_print=pretty_print)
-
-    def translate(self, text):
-        """Translate :param:`text` into the book's primary language."""
-        return text
-        # XXX
-        # lang = str(self.metadata.language[0])
-        # lang = lang.split('-', 1)[0].lower()
-        # return translate(lang, text)
 
     def decode(self, data):
         """Automatically decode :param:`data` into a `unicode` object."""

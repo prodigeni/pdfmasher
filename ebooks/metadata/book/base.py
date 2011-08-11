@@ -7,7 +7,6 @@ __docformat__ = 'restructuredtext en'
 
 import copy, traceback
 
-from ...utils import prints
 from . import SC_COPYABLE_FIELDS
 from . import SC_FIELDS_COPY_NOT_NULL
 from . import STANDARD_METADATA_FIELDS
@@ -337,16 +336,6 @@ class Metadata(object):
                     m['#value#'] = None
             _data = object.__getattribute__(self, '_data')
             _data['user_metadata'][field] = m
-
-    # Old Metadata API {{{
-    def print_all_attributes(self):
-        for x in STANDARD_METADATA_FIELDS:
-            prints('%s:'%x, getattr(self, x, 'None'))
-        for x in self.custom_field_keys():
-            meta = self.get_user_metadata(x, make_copy=False)
-            if meta is not None:
-                prints(x, meta)
-        prints('--------------')
 
     def smart_update(self, other, replace_metadata=False):
         '''
