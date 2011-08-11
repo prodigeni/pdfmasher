@@ -14,6 +14,7 @@ import os.path
 import re
 from functools import partial
 
+from . import resources
 from ..constants import preferred_encoding, filesystem_encoding
 
 __builtin__.__dict__['dynamic_property'] = lambda(func): func(None)

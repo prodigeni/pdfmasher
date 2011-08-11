@@ -16,8 +16,8 @@ from urlparse import urlparse, urlunparse
 from urllib import unquote
 from functools import partial
 from itertools import izip
+import logging
 
-from ..customize.conversion import InputFormatPlugin, OptionRecommendation
 from ..constants import islinux, isbsd, iswindows
 from ..utils import unicode_path, as_unicode
 from ..utils.localization import get_lang
@@ -213,57 +213,25 @@ def traverse(path_to_html_file, max_levels=sys.maxint, verbose=0, encoding=None)
         sys.setrecursionlimit(orec)
 
 
-def get_filelist(htmlfile, dir, opts, log):
+def get_filelist(htmlfile, dir, opts):
     '''
     Build list of files referenced by html file or try to detect and use an
     OPF file instead.
     '''
-    log.info('Building file list...')
+    logging.info('Building file list...')
     filelist = traverse(htmlfile, max_levels=int(opts.max_levels),
                         verbose=opts.verbose,
                         encoding=opts.input_encoding)\
                 [0 if opts.breadth_first else 1]
     if opts.verbose:
-        log.debug('\tFound files...')
+        logging.debug('\tFound files...')
         for f in filelist:
-            log.debug('\t\t', f)
+            logging.debug('\t\t%s', f)
     return filelist
 
 
-class HTMLInput(InputFormatPlugin):
-
-    name        = 'HTML Input'
-    author      = 'Kovid Goyal'
-    description = 'Convert HTML and OPF files to an OEB'
-    file_types  = set(['opf', 'html', 'htm', 'xhtml', 'xhtm', 'shtm', 'shtml'])
-
-    options = set([
-        OptionRecommendation(name='breadth_first',
-            recommended_value=False, level=OptionRecommendation.LOW,
-            help='Traverse links in HTML files breadth first. Normally, '
-                    'they are traversed depth first.'
-        ),
-
-        OptionRecommendation(name='max_levels',
-            recommended_value=5, level=OptionRecommendation.LOW,
-            help='Maximum levels of recursion when following links in '
-                   'HTML files. Must be non-negative. 0 implies that no '
-                   'links in the root HTML file are followed. Default is '
-                   '%default.'
-        ),
-
-        OptionRecommendation(name='dont_package',
-            recommended_value=False, level=OptionRecommendation.LOW,
-            help='Normally this input plugin re-arranges all the input '
-                'files into a standard folder hierarchy. Only use this option '
-                'if you know what you are doing as it can result in various '
-                'nasty side effects in the rest of of the conversion pipeline.'
-        ),
-
-    ])
-
-    def convert(self, stream, opts, file_ext, log,
-                accelerators):
+class HTMLInput(object):
+    def convert(self, stream, opts, file_ext, accelerators):
         self._is_case_sensitive = None
         basedir = os.getcwd()
         self.opts = opts
@@ -283,11 +251,11 @@ class HTMLInput(InputFormatPlugin):
                 fmi = metadata_from_filename(fname)
                 fmi.smart_update(mi)
                 mi = fmi
-            oeb = self.create_oebbook(stream.name, basedir, opts, log, mi)
+            oeb = self.create_oebbook(stream.name, basedir, opts, mi)
             return oeb
 
         from ..conversion.plumber import create_oebbook
-        return create_oebbook(log, stream.name, opts,
+        return create_oebbook(stream.name, opts,
                 encoding=opts.input_encoding)
 
     def is_case_sensitive(self, path):
@@ -299,7 +267,7 @@ class HTMLInput(InputFormatPlugin):
                 and os.path.exists(path.upper()))
         return self._is_case_sensitive
 
-    def create_oebbook(self, htmlpath, basedir, opts, log, mi):
+    def create_oebbook(self, htmlpath, basedir, opts, mi):
         from ..conversion.plumber import create_oebbook
         from ..oeb.base import (DirContainer,
             rewrite_links, urlnormalize, urldefrag, BINARY_MIME, OEB_STYLES,
@@ -309,20 +277,20 @@ class HTMLInput(InputFormatPlugin):
         import cssutils, logging
         cssutils.log.setLevel(logging.WARN)
         self.OEB_STYLES = OEB_STYLES
-        oeb = create_oebbook(log, None, opts, self,
+        oeb = create_oebbook(None, opts, self,
                 encoding=opts.input_encoding, populate=False)
         self.oeb = oeb
 
         metadata = oeb.metadata
-        meta_info_to_oeb_metadata(mi, metadata, log)
+        meta_info_to_oeb_metadata(mi, metadata)
         if not metadata.language:
-            oeb.logger.warn(u'Language not specified')
+            logging.warn(u'Language not specified')
             metadata.add('language', get_lang().replace('_', '-'))
         if not metadata.creator:
-            oeb.logger.warn('Creator not specified')
+            logging.warn('Creator not specified')
             metadata.add('creator', self.oeb.translate('Unknown'))
         if not metadata.title:
-            oeb.logger.warn('Title not specified')
+            logging.warn('Title not specified')
             metadata.add('title', self.oeb.translate('Unknown'))
         bookid = str(uuid.uuid4())
         metadata.add('identifier', bookid, id='uuid_id', scheme='uuid')
@@ -331,13 +299,12 @@ class HTMLInput(InputFormatPlugin):
                 self.oeb.uid = metadata.identifier[0]
                 break
 
-        filelist = get_filelist(htmlpath, basedir, opts, log)
+        filelist = get_filelist(htmlpath, basedir, opts)
         filelist = [f for f in filelist if not f.is_binary]
         htmlfile_map = {}
         for f in filelist:
             path = f.path
-            oeb.container = DirContainer(os.path.dirname(path), log,
-                    ignore_opf=True)
+            oeb.container = DirContainer(os.path.dirname(path), ignore_opf=True)
             bname = os.path.basename(path)
             id, href = oeb.manifest.generate(id='html',
                     href=ascii_filename(bname))
@@ -347,8 +314,6 @@ class HTMLInput(InputFormatPlugin):
             oeb.spine.add(item, True)
 
         self.added_resources = {}
-        self.log = log
-        self.log('Normalizing filename cases')
         for path, href in htmlfile_map.items():
             if not self.is_case_sensitive(path):
                 path = path.lower()
@@ -357,11 +322,10 @@ class HTMLInput(InputFormatPlugin):
         self.urldefrag = urldefrag
         self.guess_type, self.BINARY_MIME = guess_type, BINARY_MIME
 
-        self.log('Rewriting HTML links')
         for f in filelist:
             path = f.path
             dpath = os.path.dirname(path)
-            oeb.container = DirContainer(dpath, log, ignore_opf=True)
+            oeb.container = DirContainer(dpath, ignore_opf=True)
             item = oeb.manifest.hrefs[htmlfile_map[path]]
             rewrite_links(item.data, partial(self.resource_adder, base=dpath))
 
@@ -401,7 +365,7 @@ class HTMLInput(InputFormatPlugin):
             if not item.linear: continue
             toc.add(title, item.href)
 
-        oeb.container = DirContainer(os.getcwdu(), oeb.log, ignore_opf=True)
+        oeb.container = DirContainer(os.getcwdu(), ignore_opf=True)
         return oeb
 
     def link_to_local_path(self, link_, base=None):
@@ -409,12 +373,12 @@ class HTMLInput(InputFormatPlugin):
             try:
                 link_ = link_.decode('utf-8', 'error')
             except:
-                self.log.warn('Failed to decode link %r. Ignoring'%link_)
+                logging.warn('Failed to decode link %r. Ignoring', link_)
                 return None, None
         try:
             l = Link(link_, base if base else os.getcwdu())
         except:
-            self.log.exception('Failed to process link: %r'%link_)
+            logging.exception('Failed to process link: %r', link_)
             return None, None
         if l.path is None:
             # Not a local resource
@@ -438,7 +402,7 @@ class HTMLInput(InputFormatPlugin):
         if not os.access(link, os.R_OK):
             return link_
         if os.path.isdir(link):
-            self.log.warn(link_, 'is a link to a directory. Ignoring.')
+            logging.warn('%r is a link to a directory. Ignoring.', link_)
             return link_
         if not self.is_case_sensitive(tempfile.gettempdir()):
             link = link.lower()
@@ -449,7 +413,7 @@ class HTMLInput(InputFormatPlugin):
             guessed = self.guess_type(href)[0]
             media_type = guessed or self.BINARY_MIME
             if media_type == 'text/plain':
-                self.log.warn('Ignoring link to text file %r'%link_)
+                logging.warn('Ignoring link to text file %r', link_)
                 return None
 
             self.oeb.log.debug('Added', link)
@@ -477,6 +441,6 @@ class HTMLInput(InputFormatPlugin):
             raw = open(link, 'rb').read().decode('utf-8', 'replace')
             raw = self.oeb.css_preprocessor(raw, add_namespace=True)
         except:
-            self.log.exception('Failed to read CSS file: %r'%link)
+            logging.exception('Failed to read CSS file: %r', link)
             return (None, None)
         return (None, raw)

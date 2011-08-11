@@ -9,7 +9,6 @@ __docformat__ = 'restructuredtext en'
 
 import __builtin__, sys, os
 
-from ..constants import config_dir
 
 class PathResolver(object):
 
@@ -34,12 +33,6 @@ class PathResolver(object):
             if suitable(dev_path):
                 self.locations.insert(0, dev_path)
                 self.default_path = dev_path
-
-        user_path = os.path.join(config_dir, 'resources')
-        self.user_path = None
-        if suitable(user_path):
-            self.locations.insert(0, user_path)
-            self.user_path = user_path
 
     def __call__(self, path, allow_user_override=True):
         path = path.replace(os.sep, '/')
@@ -69,8 +62,4 @@ def get_path(path, data=False, allow_user_override=True):
             return f.read()
     return fpath
 
-def get_image_path(path, data=False, allow_user_override=True):
-    return get_path('images/'+path, data=data)
-
 __builtin__.__dict__['P'] = get_path
-__builtin__.__dict__['I'] = get_image_path

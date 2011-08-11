@@ -7,23 +7,13 @@ import os, re
 
 from lxml import etree
 
-from ..customize.conversion import OutputFormatPlugin
 from ..utils import CurrentDir
-from ..customize.conversion import OptionRecommendation
 
 from urllib import unquote
 
-class OEBOutput(OutputFormatPlugin):
-
-    name = 'OEB Output'
-    author = 'Kovid Goyal'
-    file_type = 'oeb'
-
-    recommendations = set([('pretty_print', True, OptionRecommendation.HIGH)])
-
-
-    def convert(self, oeb_book, output_path, input_plugin, opts, log):
-        self.log, self.opts = log, opts
+class OEBOutput(object):
+    def convert(self, oeb_book, output_path, input_plugin, opts):
+        self.opts = opts
         if not os.path.exists(output_path):
             os.makedirs(output_path)
         from .base import OPF_MIME, NCX_MIME, PAGE_MAP_MIME
@@ -36,12 +26,12 @@ class OEBOutput(OutputFormatPlugin):
                         try:
                             self.workaround_nook_cover_bug(root)
                         except:
-                            self.log.exception('Something went wrong while trying to'
+                            logging.exception('Something went wrong while trying to'
                                     ' workaround Nook cover bug, ignoring')
                         try:
                             self.workaround_pocketbook_cover_bug(root)
                         except:
-                            self.log.exception('Something went wrong while trying to'
+                            logging.exception('Something went wrong while trying to'
                                     ' workaround Pocketbook cover bug, ignoring')
                     raw = etree.tostring(root, pretty_print=True,
                             encoding='utf-8', xml_declaration=True)
@@ -78,7 +68,7 @@ class OEBOutput(OutputFormatPlugin):
                 if len(manifest_item) == 1 and \
                         manifest_item[0].get('media-type',
                                 '').startswith('image/'):
-                    self.log.warn('The cover image has an id != "cover". Renaming'
+                    logging.warn('The cover image has an id != "cover". Renaming'
                             ' to work around bug in Nook Color')
 
                     import uuid

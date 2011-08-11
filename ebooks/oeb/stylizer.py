@@ -139,7 +139,6 @@ class Stylizer(object):
         if self.profile is None:
             # Just in case the default profile is removed in the future :)
             self.profile = opts.output_profile
-        self.logger = oeb.logger
         item = oeb.manifest.hrefs[path]
         basename = os.path.basename(path)
         cssname = os.path.splitext(basename)[0] + '.css'
@@ -149,12 +148,6 @@ class Stylizer(object):
             head = head[0]
         else:
             head = []
-
-        # Add cssutils parsing profiles from output_profile
-        for profile in self.opts.output_profile.extra_css_modules:
-            cssprofiles.addProfile(profile['name'],
-                                        profile['props'],
-                                        profile['macros'])
 
         parser = CSSParser(fetcher=self._fetch_css_file,
                 log=logging.getLogger('calibre.css'))
@@ -183,12 +176,12 @@ class Stylizer(object):
                 path = item.abshref(href)
                 sitem = oeb.manifest.hrefs.get(path, None)
                 if sitem is None:
-                    self.logger.warn(
+                    logging.warn(
                         'Stylesheet %r referenced by file %r not in manifest' %
                         (path, item.href))
                     continue
                 if not hasattr(sitem.data, 'cssRules'):
-                    self.logger.warn(
+                    logging.warn(
                     'Stylesheet %r referenced by file %r is not CSS'%(path,
                         item.href))
                     continue
@@ -202,9 +195,9 @@ class Stylizer(object):
                     stylesheet.namespaces['h'] = XHTML_NS
                     stylesheets.append(stylesheet)
                 except:
-                    self.logger.exception('Failed to parse %s, ignoring.'%w)
-                    self.logger.debug('Bad css: ')
-                    self.logger.debug(x)
+                    logging.exception('Failed to parse %s, ignoring.'%w)
+                    logging.debug('Bad css: ')
+                    logging.debug(x)
         rules = []
         index = 0
         self.stylesheets = set()
@@ -238,8 +231,7 @@ class Stylizer(object):
             if not matches:
                 ntext = capital_sel_pat.sub(lambda m: m.group().lower(), text)
                 if ntext != text:
-                    self.logger.warn('Transformed CSS selector', text, 'to',
-                            ntext)
+                    logging.warn('Transformed CSS selector' + text + 'to' + ntext)
                     selector = CSSSelector(ntext)
                     matches = selector(tree)
 
@@ -251,8 +243,7 @@ class Stylizer(object):
                         matches.append(x)
                         found = True
                 if found:
-                    self.logger.warn('Ignoring case mismatches for CSS selector: %s in %s'
-                        %(text, item.href))
+                    logging.warn('Ignoring case mismatches for CSS selector: %s in %s'%(text, item.href))
             if fl:
                 from lxml.builder import ElementMaker
                 E = ElementMaker(namespace=XHTML_NS)
@@ -305,11 +296,11 @@ class Stylizer(object):
     def _fetch_css_file(self, path):
         hrefs = self.oeb.manifest.hrefs
         if path not in hrefs:
-            self.logger.warn('CSS import of missing file %r' % path)
+            logging.warn('CSS import of missing file %r' % path)
             return (None, None)
         item = hrefs[path]
         if item.media_type not in OEB_STYLES:
-            self.logger.warn('CSS import of non-CSS file %r' % path)
+            logging.warn('CSS import of non-CSS file %r' % path)
             return (None, None)
         data = item.data.cssText
         return ('utf-8', data)

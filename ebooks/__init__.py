@@ -65,53 +65,6 @@ class HTMLRenderer(object):
             self.loop.exit(0)
 
 
-def extract_cover_from_embedded_svg(html, base, log):
-    from lxml import etree
-    from calibre.ebooks.oeb.base import XPath, SVG, XLINK
-    root = etree.fromstring(html)
-
-    svg = XPath('//svg:svg')(root)
-    if len(svg) == 1 and len(svg[0]) == 1 and svg[0][0].tag == SVG('image'):
-        image = svg[0][0]
-        href = image.get(XLINK('href'), None)
-        path = os.path.join(base, *href.split('/'))
-        if href and os.access(path, os.R_OK):
-            return open(path, 'rb').read()
-
-def extract_calibre_cover(raw, base, log):
-    from calibre.ebooks.BeautifulSoup import BeautifulSoup
-    soup = BeautifulSoup(raw)
-    matches = soup.find(name=['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span',
-        'font', 'br'])
-    images = soup.findAll('img')
-    if matches is None and len(images) == 1 and \
-            images[0].get('alt', '')=='cover':
-        img = images[0]
-        img = os.path.join(base, *img['src'].split('/'))
-        if os.path.exists(img):
-            return open(img, 'rb').read()
-
-def render_html_svg_workaround(path_to_html, log, width=590, height=750):
-    from calibre.ebooks.oeb.base import SVG_NS
-    raw = open(path_to_html, 'rb').read()
-    data = None
-    if SVG_NS in raw:
-        try:
-            data = extract_cover_from_embedded_svg(raw,
-                   os.path.dirname(path_to_html), log)
-        except:
-            pass
-    if data is None:
-        try:
-            data = extract_calibre_cover(raw, os.path.dirname(path_to_html), log)
-        except:
-            pass
-    if data is None:
-        renderer = render_html(path_to_html, width, height)
-        data = getattr(renderer, 'data', None)
-    return data
-
-
 def render_html(path_to_html, width=590, height=750, as_xhtml=True):
     from PyQt4.QtWebKit import QWebPage
     from PyQt4.Qt import QEventLoop, QPalette, Qt, QUrl, QSize
@@ -209,46 +162,3 @@ def unit_convert(value, base, font, dpi):
         elif unit == 'cm':
             result = value * 0.40
     return result
-
-def generate_masthead(title, output_path=None, width=600, height=60):
-    from calibre.ebooks.conversion.config import load_defaults
-    from calibre.utils.fonts import fontconfig
-    font_path = default_font = P('fonts/liberation/LiberationSerif-Bold.ttf')
-    recs = load_defaults('mobi_output')
-    masthead_font_family = recs.get('masthead_font', 'Default')
-
-    if masthead_font_family != 'Default':
-        masthead_font = fontconfig.files_for_family(masthead_font_family)
-        # Assume 'normal' always in dict, else use default
-        # {'normal': (path_to_font, friendly name)}
-        if 'normal' in masthead_font:
-            font_path = masthead_font['normal'][0]
-
-    if not font_path or not os.access(font_path, os.R_OK):
-        font_path = default_font
-
-    try:
-        from PIL import Image, ImageDraw, ImageFont
-        Image, ImageDraw, ImageFont
-    except ImportError:
-        import Image, ImageDraw, ImageFont
-
-    img = Image.new('RGB', (width, height), 'white')
-    draw = ImageDraw.Draw(img)
-    try:
-        font = ImageFont.truetype(font_path, 48)
-    except:
-        font = ImageFont.truetype(default_font, 48)
-    text = title.encode('utf-8')
-    width, height = draw.textsize(text, font=font)
-    left = max(int((width - width)/2.), 0)
-    top = max(int((height - height)/2.), 0)
-    draw.text((left, top), text, fill=(0,0,0), font=font)
-    if output_path is None:
-        f = StringIO()
-        img.save(f, 'JPEG')
-        return f.getvalue()
-    else:
-        with open(output_path, 'wb') as f:
-            img.save(f, 'JPEG')
-

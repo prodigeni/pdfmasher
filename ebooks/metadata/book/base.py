@@ -8,20 +8,12 @@ __docformat__ = 'restructuredtext en'
 import copy, traceback
 
 from ...utils import prints
-from ...constants import DEBUG
 from . import SC_COPYABLE_FIELDS
 from . import SC_FIELDS_COPY_NOT_NULL
 from . import STANDARD_METADATA_FIELDS
 from . import TOP_LEVEL_IDENTIFIERS
 from . import ALL_METADATA_FIELDS
-from ...field_metadata import FieldMetadata
 from ...utils.date import isoformat, format_date
-# from ...utils.icu import sort_key
-from ...utils.formatter import TemplateFormatter
-
-def human_readable(size, precision=2):
-    """ Convert a size in bytes into megabytes """
-    return ('%.'+str(precision)+'f'+ 'MB') % ((size/(1024.*1024.)),)
 
 NULL_VALUES = {
                 'user_metadata': {},
@@ -38,43 +30,8 @@ NULL_VALUES = {
                 'language'     : 'und'
 }
 
-field_metadata = FieldMetadata()
 
 _ = lambda s: s
-
-class SafeFormat(TemplateFormatter):
-
-    def get_value(self, orig_key, args, kwargs):
-        if not orig_key:
-            return ''
-        orig_key = orig_key.lower()
-        key = orig_key
-        if key != 'title_sort' and key not in TOP_LEVEL_IDENTIFIERS:
-            key = field_metadata.search_term_to_field_key(key)
-            if key is None or (self.book and
-                                key not in self.book.all_field_keys()):
-                if hasattr(self.book, orig_key):
-                    key = orig_key
-                else:
-                    raise ValueError('Value: unknown field ' + orig_key)
-        try:
-            b = self.book.get_user_metadata(key, False)
-        except:
-            b = None
-        if b and b['datatype'] == 'int' and self.book.get(key, 0) == 0:
-            v = ''
-        elif b and b['datatype'] == 'float' and self.book.get(key, 0.0) == 0.0:
-            v = ''
-        else:
-            v = self.book.format_field(key, series_with_index=False)[1]
-        if v is None:
-            return ''
-        if v == '':
-            return ''
-        return v
-
-# DEPRECATED. This is not thread safe. Do not use.
-composite_formatter = SafeFormat()
 
 class Metadata(object):
 
@@ -114,7 +71,6 @@ class Metadata(object):
                 # List of strings or []
                 self.author = list(authors) if authors else []# Needed for backward compatibility
                 self.authors = list(authors) if authors else []
-        self.formatter = SafeFormat()
 
     def is_null(self, field):
         '''
@@ -144,19 +100,6 @@ class Metadata(object):
             return object.__getattribute__(self, field)
         except AttributeError:
             pass
-        if field in _data['user_metadata'].iterkeys():
-            d = _data['user_metadata'][field]
-            val = d['#value#']
-            if d['datatype'] != 'composite':
-                return val
-            if val is None:
-                d['#value#'] = 'RECURSIVE_COMPOSITE FIELD (Metadata) ' + field
-                val = d['#value#'] = self.formatter.safe_format(
-                                            d['display']['composite_template'],
-                                            self,
-                                            'TEMPLATE ERROR',
-                                            self).strip()
-            return val
         if field.startswith('#') and field.endswith('_index'):
             try:
                 return self.get_extra(field[:-6])
@@ -333,31 +276,6 @@ class Metadata(object):
     # Extended interfaces. These permit one to get copies of metadata dictionaries, and to
     # get and set custom field metadata
 
-    def get_standard_metadata(self, field, make_copy):
-        '''
-        return field metadata from the field if it is there. Otherwise return
-        None. field is the key name, not the label. Return a copy if requested,
-        just in case the user wants to change values in the dict.
-        '''
-        if field in field_metadata and field_metadata[field]['kind'] == 'field':
-            if make_copy:
-                return copy.deepcopy(field_metadata[field])
-            return field_metadata[field]
-        return None
-
-    def get_all_standard_metadata(self, make_copy):
-        '''
-        return a dict containing all the standard field metadata associated with
-        the book.
-        '''
-        if not make_copy:
-            return field_metadata
-        res = {}
-        for k in field_metadata:
-            if field_metadata[k]['kind'] == 'field':
-                res[k] = copy.deepcopy(field_metadata[k])
-        return res
-
     def get_all_user_metadata(self, make_copy):
         '''
         return a dict containing all the custom field metadata associated with
@@ -419,31 +337,6 @@ class Metadata(object):
                     m['#value#'] = None
             _data = object.__getattribute__(self, '_data')
             _data['user_metadata'][field] = m
-
-    def template_to_attribute(self, other, ops):
-        '''
-        Takes a list [(src,dest), (src,dest)], evaluates the template in the
-        context of other, then copies the result to self[dest]. This is on a
-        best-efforts basis. Some assignments can make no sense.
-        '''
-        if not ops:
-            return
-        formatter = SafeFormat()
-        for op in ops:
-            try:
-                src = op[0]
-                dest = op[1]
-                val = formatter.safe_format\
-                    (src, other, 'PLUGBOARD TEMPLATE ERROR', other)
-                if dest == 'tags':
-                    self.set(dest, [f.strip() for f in val.split(',') if f.strip()])
-                elif dest == 'authors':
-                    self.set(dest, [f.strip() for f in val.split('&') if f.strip()])
-                else:
-                    self.set(dest, val)
-            except:
-                if DEBUG:
-                    traceback.print_exc()
 
     # Old Metadata API {{{
     def print_all_attributes(self):
@@ -595,95 +488,6 @@ class Metadata(object):
         '''
         name, val, ign, ign = self.format_field_extended(key, series_with_index)
         return (name, val)
-
-    def format_field_extended(self, key, series_with_index=True):
-        from calibre.ebooks.metadata import authors_to_string
-        '''
-        returns the tuple (display_name, formatted_value, original_value,
-        field_metadata)
-        '''
-
-        # Handle custom series index
-        if key.startswith('#') and key.endswith('_index'):
-            tkey = key[:-6] # strip the _index
-            cmeta = self.get_user_metadata(tkey, make_copy=False)
-            if cmeta and cmeta['datatype'] == 'series':
-                if self.get(tkey):
-                    res = self.get_extra(tkey)
-                    return (unicode(cmeta['name']+'_index'),
-                            self.format_series_index(res), res, cmeta)
-                else:
-                    return (unicode(cmeta['name']+'_index'), '', '', cmeta)
-
-        if key in self.custom_field_keys():
-            res = self.get(key, None)
-            cmeta = self.get_user_metadata(key, make_copy=False)
-            name = unicode(cmeta['name'])
-            if cmeta['datatype'] != 'composite' and (res is None or res == ''):
-                return (name, res, None, None)
-            orig_res = res
-            cmeta = self.get_user_metadata(key, make_copy=False)
-            if res is None or res == '':
-                return (name, res, None, None)
-            orig_res = res
-            datatype = cmeta['datatype']
-            if datatype == 'text' and cmeta['is_multiple']:
-                res = cmeta['is_multiple']['list_to_ui'].join(res)
-            elif datatype == 'series' and series_with_index:
-                if self.get_extra(key) is not None:
-                    res = res + \
-                        ' [%s]'%self.format_series_index(val=self.get_extra(key))
-            elif datatype == 'datetime':
-                res = format_date(res, cmeta['display'].get('date_format','dd MMM yyyy'))
-            elif datatype == 'bool':
-                res = 'Yes' if res else 'No'
-            elif datatype == 'rating':
-                res = res/2.0
-            elif datatype in ['int', 'float']:
-                try:
-                    fmt = cmeta['display'].get('number_format', None)
-                    res = fmt.format(res)
-                except:
-                    pass
-            return (name, unicode(res), orig_res, cmeta)
-
-        # convert top-level ids into their value
-        if key in TOP_LEVEL_IDENTIFIERS:
-            fmeta = field_metadata['identifiers']
-            name = key
-            res = self.get(key, None)
-            return (name, res, res, fmeta)
-
-        # Translate aliases into the standard field name
-        fmkey = field_metadata.search_term_to_field_key(key)
-        if fmkey in field_metadata and field_metadata[fmkey]['kind'] == 'field':
-            res = self.get(key, None)
-            fmeta = field_metadata[fmkey]
-            name = unicode(fmeta['name'])
-            if res is None or res == '':
-                return (name, res, None, None)
-            orig_res = res
-            name = unicode(fmeta['name'])
-            datatype = fmeta['datatype']
-            if key == 'authors':
-                res = authors_to_string(res)
-            elif key == 'series_index':
-                res = self.format_series_index(res)
-            elif datatype == 'text' and fmeta['is_multiple']:
-                if isinstance(res, dict):
-                    res = [k + ':' + v for k,v in res.items()]
-                res = fmeta['is_multiple']['list_to_ui'].join(sorted(res, key=sort_key))
-            elif datatype == 'series' and series_with_index:
-                res = res + ' [%s]'%self.format_series_index()
-            elif datatype == 'datetime':
-                res = format_date(res, fmeta['display'].get('date_format','dd MMM yyyy'))
-            elif datatype == 'rating':
-                res = res/2.0
-            elif key == 'size':
-                res = human_readable(res)
-            return (name, unicode(res), orig_res, fmeta)
-
-        return (None, None, None, None)
 
     def __unicode__(self):
         '''

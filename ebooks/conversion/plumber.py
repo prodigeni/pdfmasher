@@ -20,21 +20,20 @@ from .preprocess import HTMLPreProcessor
 class OptionValues(object):
     pass
 
-def create_oebbook(log, path_or_stream, opts, reader=None,
+def create_oebbook(path_or_stream, opts, reader=None,
         encoding='utf-8', populate=True):
     '''
     Create an OEBBook.
     '''
     from ..oeb.base import OEBBook
-    html_preprocessor = HTMLPreProcessor(log, opts)
+    html_preprocessor = HTMLPreProcessor(opts)
     if not encoding:
         encoding = None
-    oeb = OEBBook(log, html_preprocessor,
-            pretty_print=opts.pretty_print, input_encoding=encoding)
+    oeb = OEBBook(html_preprocessor, pretty_print=opts.pretty_print, input_encoding=encoding)
     if not populate:
         return oeb
     # Read OEB Book into OEBBook
-    log('Parsing all content...')
+    logging.info('Parsing all content...')
     if reader is None:
         from ..oeb.reader import OEBReader
         reader = OEBReader

@@ -11,7 +11,6 @@ from lxml import etree
 from lxml.builder import ElementMaker
 
 from ..constants import __appname__, __version__
-# from ..BeautifulSoup import BeautifulSoup
 
 NCX_NS = "http://www.daisy.org/z3986/2005/ncx/"
 CALIBRE_NS = "http://calibre.kovidgoyal.net/2009/metadata"

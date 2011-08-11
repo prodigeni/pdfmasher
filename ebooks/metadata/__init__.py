@@ -12,7 +12,7 @@ from urlparse import urlparse
 
 from ..utils import relpath, guess_type, remove_bracketed_text
 
-from ..utils.config import tweaks
+from ..utils import tweaks
 
 _author_pat = re.compile(',?\s+(and|with)\s+', re.IGNORECASE)
 def string_to_authors(raw):
@@ -35,10 +35,10 @@ def author_to_author_sort(author, method=None):
     if len(tokens) < 2:
         return author
     if method is None:
-        method = tweaks['author_sort_copy_method']
+        method = tweaks.author_sort_copy_method
     if method == u'copy':
         return author
-    suffixes = set([x.lower() for x in tweaks['author_name_suffixes']])
+    suffixes = set([x.lower() for x in tweaks.author_name_suffixes])
     suffixes |= set([x+u'.' for x in suffixes])
 
     last = tokens[-1].lower()
@@ -63,7 +63,7 @@ def authors_to_sort_string(authors):
     return ' & '.join(map(author_to_author_sort, authors))
 
 try:
-    _title_pat = re.compile(tweaks.get('title_sort_articles',
+    _title_pat = re.compile(tweaks.__dict__.get('title_sort_articles',
                                        r'^(A|The|An)\s+'), re.IGNORECASE)
 except:
     print 'Error in title sort pattern'
@@ -75,7 +75,7 @@ _ignore_starts = u'\'"'+u''.join(unichr(x) for x in range(0x2018, 0x201e)+[0x203
 
 def title_sort(title, order=None):
     if order is None:
-        order = tweaks['title_series_sorting']
+        order = tweaks.title_series_sorting
     title = title.strip()
     if order == 'strictly_alphabetic':
         return title

@@ -9,7 +9,7 @@ forced at "likely" locations to conform to size limitations. This transform
 assumes a prior call to the flatcss transform.
 '''
 
-import os, math, functools, collections, re, copy
+import os, math, functools, collections, re, copy, logging
 
 from lxml.etree import XPath as _XPath
 from lxml import etree
@@ -48,7 +48,6 @@ class Split(object):
 
     def __call__(self, oeb, opts):
         self.oeb = oeb
-        self.log = oeb.log
         self.opts = opts
         self.map = {}
         for item in list(self.oeb.manifest.items):
@@ -174,7 +173,6 @@ class FlowSplitter(object):
         self.item           = item
         self.oeb            = oeb
         self.opts           = opts
-        self.log            = oeb.log
         self.page_breaks    = page_breaks
         self.page_break_ids = page_break_ids
         self.max_flow_size  = max_flow_size
@@ -192,26 +190,26 @@ class FlowSplitter(object):
 
         if self.max_flow_size > 0:
             lt_found = False
-            self.log('\tLooking for large trees in %s...'%item.href)
+            logging.info('\tLooking for large trees in %s...'%item.href)
             trees = list(self.trees)
             self.tree_map = {}
             for i, tree in enumerate(trees):
                 size = len(tostring(tree.getroot()))
                 if size > self.max_flow_size:
-                    self.log('\tFound large tree #%d'%i)
+                    logging.info('\tFound large tree #%d'%i)
                     lt_found = True
                     self.split_trees = []
                     self.split_to_size(tree)
                     self.tree_map[tree] = self.split_trees
             if not lt_found:
-                self.log('\tNo large trees found')
+                logging.info('\tNo large trees found')
             self.trees = []
             for x in trees:
                 self.trees.extend(self.tree_map.get(x, [x]))
 
         self.was_split = len(self.trees) > 1
         if self.was_split:
-            self.log('\tSplit into %d parts'%len(self.trees))
+            logging.info('\tSplit into %d parts'%len(self.trees))
         self.commit()
 
     def split_on_page_breaks(self, orig_tree):
@@ -226,7 +224,7 @@ class FlowSplitter(object):
         for pattern, before in ordered_ids:
             elem = pattern(tree)
             if elem:
-                self.log.debug('\t\tSplitting on page-break')
+                logging.debug('\t\tSplitting on page-break')
                 before, after = self.do_split(tree, elem[0], before)
                 self.trees.append(before)
                 tree = after
@@ -278,7 +276,7 @@ class FlowSplitter(object):
         npath = sp.getroottree().getpath(sp)
 
         if self.opts.verbose > 3 and npath != path:
-            self.log.debug('\t\t\tMoved split point %s to %s'%(path, npath))
+            logging.debug('\t\t\tMoved split point %s to %s'%(path, npath))
 
 
         return npath
@@ -355,10 +353,10 @@ class FlowSplitter(object):
         return True
 
     def split_text(self, text, root, size):
-        self.log.debug('\t\t\tSplitting text of length: %d'%len(text))
+        logging.debug('\t\t\tSplitting text of length: %d'%len(text))
         rest = text.replace('\r', '')
         parts = re.split('\n\n', rest)
-        self.log.debug('\t\t\t\tFound %d parts'%len(parts))
+        logging.debug('\t\t\t\tFound %d parts'%len(parts))
         if max(map(len, parts)) > size:
             raise SplitError('Cannot split as file contains a <pre> tag '
                 'with a very large paragraph', root)
@@ -374,7 +372,7 @@ class FlowSplitter(object):
 
 
     def split_to_size(self, tree):
-        self.log.debug('\t\tSplitting...')
+        logging.debug('\t\tSplitting...')
         root = tree.getroot()
         # Split large <pre> tags
         for pre in list(XPath('//h:pre')(root)):
@@ -383,7 +381,7 @@ class FlowSplitter(object):
             for child in list(pre.iterchildren()):
                 pre.remove(child)
             if len(pre.text) > self.max_flow_size*0.5:
-                self.log.debug('\t\tSplitting large <pre> tag')
+                logging.debug('\t\tSplitting large <pre> tag')
                 frags = self.split_text(pre.text, root, int(0.2*self.max_flow_size))
                 new_pres = []
                 for frag in frags:
@@ -399,12 +397,12 @@ class FlowSplitter(object):
         split_point, before = self.find_split_point(root)
         if split_point is None:
             raise SplitError(self.item.href, root)
-        self.log.debug('\t\t\tSplit point:', split_point.tag, tree.getpath(split_point))
+        logging.debug('\t\t\tSplit point:', split_point.tag, tree.getpath(split_point))
 
         trees = self.do_split(tree, split_point, before)
         sizes = [len(tostring(t.getroot())) for t in trees]
         if min(sizes) < 5*1024:
-            self.log.debug('\t\t\tSplit tree too small')
+            logging.debug('\t\t\tSplit tree too small')
             self.split_to_size(tree)
             return
 
@@ -414,11 +412,11 @@ class FlowSplitter(object):
                 continue
             elif size <= self.max_flow_size:
                 self.split_trees.append(t)
-                self.log.debug(
+                logging.debug(
                     '\t\t\tCommitted sub-tree #%d (%d KB)'%(
                                len(self.split_trees), size/1024.))
             else:
-                self.log.debug(
+                logging.debug(
                         '\t\t\tSplit tree still too large: %d KB' % \
                                 (size/1024.))
                 self.split_to_size(t)

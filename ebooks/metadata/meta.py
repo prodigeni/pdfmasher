@@ -4,9 +4,7 @@ __copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
 
 import os, re, collections
 
-from ..utils.config import prefs
 from ..constants import filesystem_encoding
-from .opf2 import OPF
 from ..utils import isbytestring
 # from ..customize.ui import get_file_type_metadata, set_file_type_metadata
 from . import MetaInformation, string_to_authors
@@ -138,7 +136,7 @@ def metadata_from_filename(name, pat=None):
     name = name.rpartition('.')[0]
     mi = MetaInformation(None, None)
     if pat is None:
-        pat = re.compile(prefs.get('filename_pattern'))
+        pat = re.compile(ur'(?P<title>.+) - (?P<author>[^_]+)')
     name = name.replace('_', ' ')
     match = pat.search(name)
     if match is not None:
@@ -150,18 +148,6 @@ def metadata_from_filename(name, pat=None):
             au = match.group('author')
             aus = string_to_authors(au)
             mi.authors = aus
-            if prefs['swap_author_names'] and mi.authors:
-                def swap(a):
-                    if ',' in a:
-                        parts = a.split(',', 1)
-                    else:
-                        parts = a.split(None, 1)
-                    if len(parts) > 1:
-                        t = parts[-1]
-                        parts = parts[:-1]
-                        parts.insert(0, t)
-                    return ' '.join(parts)
-                mi.authors = [swap(x) for x in mi.authors]
         except (IndexError, ValueError):
             pass
         try:
@@ -194,25 +180,3 @@ def metadata_from_filename(name, pat=None):
     if mi.is_null('title'):
         mi.title = name
     return mi
-
-def opf_metadata(opfpath):
-    if hasattr(opfpath, 'read'):
-        f = opfpath
-        opfpath = getattr(f, 'name', os.getcwd())
-    else:
-        f = open(opfpath, 'rb')
-    try:
-        opf = OPF(f, os.path.dirname(opfpath))
-        if opf.application_id is not None:
-            mi = opf.to_book_metadata()
-            if hasattr(opf, 'cover') and opf.cover:
-                cpath = os.path.join(os.path.dirname(opfpath), opf.cover)
-                if os.access(cpath, os.R_OK):
-                    fmt = cpath.rpartition('.')[-1]
-                    data = open(cpath, 'rb').read()
-                    mi.cover_data = (fmt, data)
-            return mi
-    except:
-        import traceback
-        traceback.print_exc()
-        pass

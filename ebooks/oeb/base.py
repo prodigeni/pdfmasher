@@ -375,7 +375,7 @@ def urlnormalize(href):
     parts = (urlquote(part) for part in parts)
     return urlunparse(parts)
 
-def merge_multiple_html_heads_and_bodies(root, log=None):
+def merge_multiple_html_heads_and_bodies(root):
     heads, bodies = xpath(root, '//h:head'), xpath(root, '//h:body')
     if not (len(heads) > 1 or len(bodies) > 1): return root
     for child in root: root.remove(child)
@@ -388,8 +388,7 @@ def merge_multiple_html_heads_and_bodies(root, log=None):
         for x in b:
             body.append(x)
     map(root.append, (head, body))
-    if log is not None:
-        log.warn('Merging multiple <head> and <body> sections')
+    logging.warn('Merging multiple <head> and <body> sections')
     return root
 
 
@@ -411,26 +410,6 @@ def strip_encoding_declarations(raw):
     return raw
 
 
-class DummyHandler(logging.Handler):
-
-    def __init__(self):
-        logging.Handler.__init__(self, logging.WARNING)
-        self.setFormatter(logging.Formatter('%(message)s'))
-        self.log = None
-
-    def emit(self, record):
-        if self.log is not None:
-            msg = self.format(record)
-            f = self.log.error if record.levelno >= logging.ERROR \
-                    else self.log.warn
-            f(msg)
-
-
-_css_logger = logging.getLogger('calibre.css')
-_css_logger.setLevel(logging.WARNING)
-_css_log_handler = DummyHandler()
-_css_logger.addHandler(_css_log_handler)
-
 class OEBError(Exception):
     """Generic OEB-processing error."""
     pass
@@ -444,9 +423,6 @@ class NullContainer(object):
 
     For use with book formats which do not support container-like access.
     """
-
-    def __init__(self, log):
-        self.log = log
 
     def read(self, path):
         raise OEBError('Attempt to read from NullContainer')
@@ -463,8 +439,7 @@ class NullContainer(object):
 class DirContainer(object):
     """Filesystem directory container."""
 
-    def __init__(self, path, log, ignore_opf=False):
-        self.log = log
+    def __init__(self, path, ignore_opf=False):
         if isbytestring(path):
             path = path.decode(filesystem_encoding)
         self.opfname = None
@@ -868,7 +843,7 @@ class Manifest(object):
 
         def _parse_xhtml(self, data):
             orig_data = data
-            self.oeb.log.debug('Parsing', self.href, '...')
+            logging.debug('Parsing', self.href, '...')
             # Convert to Unicode and normalize line endings
             data = self.oeb.decode(data)
             data = strip_encoding_declarations(data)
@@ -909,7 +884,7 @@ class Manifest(object):
                     try:
                         data = etree.fromstring(data, parser=parser)
                     except etree.XMLSyntaxError as err:
-                        self.oeb.logger.warn('Parsing file %r as HTML' % self.href)
+                        logging.warn('Parsing file %r as HTML' % self.href)
                         if err.args and err.args[0].startswith('Excessive depth'):
                             from lxml.html import soupparser
                             data = soupparser.fromstring(data)
@@ -970,7 +945,7 @@ class Manifest(object):
 
             # Force into the XHTML namespace
             if not namespace(data.tag):
-                self.oeb.log.warn('Forcing', self.href, 'into XHTML namespace')
+                logging.warn('Forcing %s into XHTML namespace', self.href)
                 data.attrib['xmlns'] = XHTML_NS
                 data = etree.tostring(data, encoding=unicode)
 
@@ -982,7 +957,7 @@ class Manifest(object):
                     try:
                         data = etree.fromstring(data, parser=parser)
                     except etree.XMLSyntaxError:
-                        self.oeb.logger.warn('Stripping comments and meta tags from %s'%
+                        logging.warn('Stripping comments and meta tags from %s'%
                                 self.href)
                         data = re.compile(r'<!--.*?-->', re.DOTALL).sub('',
                                 data)
@@ -1006,20 +981,19 @@ class Manifest(object):
                     nroot.append(elem)
                 data = nroot
 
-            data = merge_multiple_html_heads_and_bodies(data, self.oeb.logger)
+            data = merge_multiple_html_heads_and_bodies(data)
             # Ensure has a <head/>
             head = xpath(data, '/h:html/h:head')
             head = head[0] if head else None
             if head is None:
-                self.oeb.logger.warn(
+                logging.warn(
                     'File %r missing <head/> element' % self.href)
                 head = etree.Element(XHTML('head'))
                 data.insert(0, head)
                 title = etree.SubElement(head, XHTML('title'))
                 title.text = self.oeb.translate(__('Unknown'))
             elif not xpath(data, '/h:html/h:head/h:title'):
-                self.oeb.logger.warn(
-                    'File %r missing <title/> element' % self.href)
+                logging.warn('File %r missing <title/> element' % self.href)
                 title = etree.SubElement(head, XHTML('title'))
                 title.text = self.oeb.translate(__('Unknown'))
             # Remove any encoding-specifying <meta/> elements
@@ -1036,7 +1010,7 @@ class Manifest(object):
                     body.getparent().remove(body)
                     data.append(body)
                 else:
-                    self.oeb.logger.warn(
+                    logging.warn(
                         'File %r missing <body/> element' % self.href)
                     etree.SubElement(data, XHTML('body'))
 
@@ -1115,12 +1089,11 @@ class Manifest(object):
                         ans.append(rule)
                 return ans
 
-            self.oeb.log.debug('Parsing', self.href, '...')
+            logging.debug('Parsing', self.href, '...')
             data = self.oeb.decode(data)
             data = self.oeb.css_preprocessor(data, add_namespace=True)
             parser = CSSParser(loglevel=logging.WARNING,
-                               fetcher=self.override_css_fetch or self._fetch_css,
-                               log=_css_logger)
+                               fetcher=self.override_css_fetch or self._fetch_css)
             data = parser.parseString(data, href=self.href)
             data.namespaces['h'] = XHTML_NS
             import_rules = list(data.cssRules.rulesOfType(CSSRule.IMPORT_RULE))
@@ -1140,11 +1113,11 @@ class Manifest(object):
         def _fetch_css(self, path):
             hrefs = self.oeb.manifest.hrefs
             if path not in hrefs:
-                self.oeb.logger.warn('CSS import of missing file %r' % path)
+                logging.warn('CSS import of missing file %r' % path)
                 return (None, None)
             item = hrefs[path]
             if item.media_type not in OEB_STYLES:
-                self.oeb.logger.warn('CSS import of non-CSS file %r' % path)
+                logging.warn('CSS import of non-CSS file %r' % path)
                 return (None, None)
             data = item.data.cssText
             return ('utf-8', data)
@@ -1885,11 +1858,8 @@ class OEBBook(object):
     COVER_SVG_XP    = XPath('h:body//svg:svg[position() = 1]')
     COVER_OBJECT_XP = XPath('h:body//h:object[@data][position() = 1]')
 
-    def __init__(self, logger,
-            html_preprocessor,
-            css_preprocessor=CSSPreProcessor(),
-            encoding='utf-8', pretty_print=False,
-            input_encoding='utf-8'):
+    def __init__(self, html_preprocessor, css_preprocessor=CSSPreProcessor(),
+            encoding='utf-8', pretty_print=False, input_encoding='utf-8'):
         """Create empty book.  Arguments:
 
         :param:`encoding`: Default encoding for textual content read
@@ -1902,9 +1872,6 @@ class OEBBook(object):
         :param css_preprocessor: A callable that takes a unicode object
             and returns a unicode object. Will be called on all CSS files
             before they are parsed.
-        :param:`logger`: A Log object to use for logging all messages
-            related to the processing of this book.  It is accessible
-            via the instance data members :attr:`logger,log`.
 
         It provides the following public instance data members for
         accessing various parts of the OEB data model:
@@ -1920,15 +1887,13 @@ class OEBBook(object):
         :attr:`pages`: List of "pages," such as indexed to a print edition of
             the same text.
         """
-        _css_log_handler.log = logger
         self.encoding = encoding
         self.input_encoding = input_encoding
         self.html_preprocessor = html_preprocessor
         self.css_preprocessor = css_preprocessor
         self.pretty_print = pretty_print
-        self.logger = self.log = logger
         self.version = '2.0'
-        self.container = NullContainer(self.log)
+        self.container = NullContainer()
         self.metadata = Metadata(self)
         self.uid = None
         self.manifest = Manifest(self)

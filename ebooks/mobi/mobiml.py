@@ -9,11 +9,14 @@ __copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.cam>'
 import copy
 import re
 from lxml import etree
+import math
+from itertools import izip
+import logging
 
 from ..oeb.base import namespace, barename
 from ..oeb.base import XHTML, XHTML_NS, OEB_DOCS, urlnormalize
 from ..oeb.stylizer import Stylizer
-from ..oeb.transforms.flatcss import KeyMapper
+# from ..oeb.transforms.flatcss import KeyMapper
 # from calibre.utils.magick.draw import identify_data
 
 MBP_NS = 'http://mobipocket.com/ns/mbp'
@@ -35,9 +38,9 @@ PAGE_BREAKS = set(['always', 'left', 'right'])
 
 COLLAPSE = re.compile(r'[ \t\r\n\v]+')
 
-def asfloat(value):
+def asfloat(value, default=0.0):
     if not isinstance(value, (int, long, float)):
-        return 0.0
+        value = default
     return float(value)
 
 def isspace(text):
@@ -95,17 +98,79 @@ class FormatState(object):
     def __ne__(self, other):
         return not self.__eq__(other)
 
+class KeyMapper(object):
+    def __init__(self, sbase, dbase, dkey):
+        self.sbase = float(sbase)
+        self.dprop = [(self.relate(x, dbase), float(x)) for x in dkey]
+        self.cache = {}
+
+    @staticmethod
+    def relate(size, base):
+        if size == 0:
+            return base
+        size = float(size)
+        base = float(base)
+        if abs(size - base) < 0.1: return 0
+        sign = -1 if size < base else 1
+        endp = 0 if size < base else 36
+        diff = (abs(base - size) * 3) + ((36 - size) / 100)
+        logb = abs(base - endp)
+        result = sign * math.log(diff, logb)
+        return result
+
+    def __getitem__(self, ssize):
+        ssize = asfloat(ssize, 0)
+        if ssize in self.cache:
+            return self.cache[ssize]
+        dsize = self.map(ssize)
+        self.cache[ssize] = dsize
+        return dsize
+
+    def map(self, ssize):
+        sbase = self.sbase
+        prop = self.relate(ssize, sbase)
+        diff = [(abs(prop - p), s) for p, s in self.dprop]
+        dsize = min(diff)[1]
+        return dsize
+
+FONT_SIZES = [('xx-small', 1),
+              ('x-small',  None),
+              ('small',    2),
+              ('medium',   3),
+              ('large',    4),
+              ('x-large',  5),
+              ('xx-large', 6),
+              (None,       7)]
+
+class OutputProfile(object):
+
+    fbase  = 12
+    fsizes = [5, 7, 9, 12, 13.5, 17, 20, 22, 24]
+    screen_size = (1600, 1200)
+    dpi = 100
+    mobi_ems_per_blockquote = 1.0
+
+    def __init__(self):
+        self.width, self.height = self.screen_size
+        fsizes = list(self.fsizes)
+        self.fkey = list(self.fsizes)
+        self.fsizes = []
+        for (name, num), size in izip(FONT_SIZES, fsizes):
+            self.fsizes.append((name, num, float(size)))
+        self.fnames = dict((name, sz) for name, _, sz in self.fsizes if name)
+        self.fnums = dict((num, sz) for _, num, sz in self.fsizes if num)
+        self.width_pts = self.width * 72./self.dpi
+        self.height_pts = self.height * 72./self.dpi
 
 class MobiMLizer(object):
     def __init__(self, ignore_tables=False):
         self.ignore_tables = ignore_tables
 
     def __call__(self, oeb, context):
-        oeb.logger.info('Converting XHTML to Mobipocket markup...')
+        logging.info('Converting XHTML to Mobipocket markup...')
         self.oeb = oeb
-        self.log = self.oeb.logger
         self.opts = context
-        self.profile = profile = context.dest
+        self.profile = profile = OutputProfile()
         self.fnums = fnums = dict((v, k) for k, v in profile.fnums.items())
         self.fmap = KeyMapper(profile.fbase, profile.fbase, fnums.keys())
         self.remove_html_cover()
@@ -120,7 +185,7 @@ class MobiMLizer(object):
         del oeb.guide['cover']
         item = oeb.manifest.hrefs[href]
         if item.spine_position is not None:
-            self.log.warn('Found an HTML cover,', item.href, 'removing it.',
+            logging.warn('Found an HTML cover,', item.href, 'removing it.',
                     'If you find some content missing from the output MOBI, it '
                     'is because you misidentified the HTML cover in the input '
                     'document')
@@ -285,8 +350,7 @@ class MobiMLizer(object):
             else:
                 inline.append(item)
 
-    def mobimlize_elem(self, elem, stylizer, bstate, istates,
-            ignore_valign=False):
+    def mobimlize_elem(self, elem, stylizer, bstate, istates, ignore_valign=False):
         if not isinstance(elem.tag, basestring) \
            or namespace(elem.tag) != XHTML_NS:
             return
@@ -405,13 +469,13 @@ class MobiMLizer(object):
                 # try:
                 #     item = self.oeb.manifest.hrefs[urlnormalize(href)]
                 # except:
-                #     self.oeb.logger.warn('Failed to find image:',
+                #     logging.warn('Failed to find image:',
                 #             href)
                 # else:
                 #     try:
                 #         width, height = identify_data(item.data)[:2]
                 #     except:
-                #         self.oeb.logger.warn('Invalid image:', href)
+                #         logging.warn('Invalid image:', href)
                 #     else:
                 #         if 'width' not in istate.attrib and 'height' not in \
                 #                     istate.attrib:

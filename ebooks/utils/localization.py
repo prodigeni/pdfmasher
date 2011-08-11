@@ -24,31 +24,7 @@ def available_translations():
     return _available_translations
 
 def get_lang():
-    'Try to figure out what language to display the interface in'
-    from .config_base import prefs
-    lang = prefs['language']
-    lang = os.environ.get('CALIBRE_OVERRIDE_LANG', lang)
-    if lang is not None:
-        return lang
-    try:
-        lang = locale.getdefaultlocale(['LANGUAGE', 'LC_ALL', 'LC_CTYPE',
-                                    'LC_MESSAGES', 'LANG'])[0]
-    except:
-        pass # This happens on Ubuntu apparently
-    if lang is None and os.environ.has_key('LANG'): # Needed for OS X
-        try:
-            lang = os.environ['LANG']
-        except:
-            pass
-    if lang:
-        match = re.match('[a-z]{2,3}(_[A-Z]{2}){0,1}', lang)
-        if match:
-            lang = match.group()
-    if lang == 'zh':
-        lang = 'zh_CN'
-    if lang is None:
-        lang = 'en'
-    return lang
+    return 'en'
 
 def get_lc_messages_path(lang):
     hlang = None

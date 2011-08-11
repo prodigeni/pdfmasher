@@ -7,6 +7,7 @@ __docformat__ = 'restructuredtext en'
 
 import textwrap
 from urllib import unquote
+import logging
 
 from lxml import etree
 from ...utils import guess_type
@@ -77,9 +78,8 @@ class CoverManager(object):
         self.non_svg_template = self.NONSVG_TEMPLATE.replace('__style__',
                 style)
 
-    def __call__(self, oeb, opts, log):
+    def __call__(self, oeb, opts):
         self.oeb = oeb
-        self.log = log
         self.insert_cover()
 
     def default_cover(self):
@@ -89,7 +89,6 @@ class CoverManager(object):
         from ...metadata import authors_to_string, fmt_sidx
         if self.no_default_cover:
             return None
-        self.log('Generating default cover')
         m = self.oeb.metadata
         title = unicode(m.title[0])
         authors = [unicode(x) for x in m.creator if x.role == 'aut']
@@ -99,20 +98,20 @@ class CoverManager(object):
                     sidx=fmt_sidx(m.series_index[0], use_roman=True),
                     series=unicode(m.series[0]))
 
-        try:
-            from calibre.ebooks import calibre_cover
-            img_data = calibre_cover(title, authors_to_string(authors),
-                    series_string=series_string)
-            id, href = self.oeb.manifest.generate('cover',
-                    'cover_image.jpg')
-            item = self.oeb.manifest.add(id, href, guess_type('t.jpg')[0],
-                        data=img_data)
-            m.clear('cover')
-            m.add('cover', item.id)
-
-            return item.href
-        except:
-            self.log.exception('Failed to generate default cover')
+        # try:
+        #     from calibre.ebooks import calibre_cover
+        #     img_data = calibre_cover(title, authors_to_string(authors),
+        #             series_string=series_string)
+        #     id, href = self.oeb.manifest.generate('cover',
+        #             'cover_image.jpg')
+        #     item = self.oeb.manifest.add(id, href, guess_type('t.jpg')[0],
+        #                 data=img_data)
+        #     m.clear('cover')
+        #     m.add('cover', item.id)
+        # 
+        #     return item.href
+        # except:
+        #     logging.exception('Failed to generate default cover')
         return None
 
     def inspect_cover(self, href):
@@ -123,7 +122,7 @@ class CoverManager(object):
         #             raw = x.data
         #             return identify_data(raw)[:2]
         #         except:
-        #             self.log.exception('Failed to read image dimensions')
+        #             logging.exception('Failed to read image dimensions')
         return None, None
 
     def insert_cover(self):
@@ -139,7 +138,7 @@ class CoverManager(object):
                 return
             width, height = self.inspect_cover(href)
             if width is None or height is None:
-                self.log.warning('Failed to read cover dimensions')
+                logging.warning('Failed to read cover dimensions')
                 width, height = 600, 800
             #if self.preserve_aspect_ratio:
             #    width, height = 600, 800

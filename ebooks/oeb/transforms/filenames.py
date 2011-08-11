@@ -25,7 +25,6 @@ class RenameFiles(object): # {{{
 
     def __call__(self, oeb, opts):
         import cssutils
-        self.log = oeb.logger
         self.opts = opts
         self.oeb = oeb
 
@@ -90,7 +89,6 @@ class UniqueFilenames(object): # {{{
     'Ensure that every item in the manifest has a unique filename'
 
     def __call__(self, oeb, opts):
-        self.log = oeb.logger
         self.opts = opts
         self.oeb = oeb
 
@@ -117,10 +115,10 @@ class UniqueFilenames(object): # {{{
                 self.seen_filenames.add(fname)
 
         if self.rename_map:
-            self.log('Found non-unique filenames, renaming to support broken'
+            logging.info('Found non-unique filenames, renaming to support broken'
                     ' EPUB readers like FBReader, Aldiko and Stanza...')
             from pprint import pformat
-            self.log.debug(pformat(self.rename_map))
+            logging.debug(pformat(self.rename_map))
 
             renamer = RenameFiles(self.rename_map)
             renamer(oeb, opts)
@@ -142,7 +140,6 @@ class FlatFilenames(object): # {{{
     'Ensure that every item in the manifest has a unique filename without subdirectories.'
 
     def __call__(self, oeb, opts):
-        self.log = oeb.logger
         self.opts = opts
         self.oeb = oeb
 
@@ -170,11 +167,11 @@ class FlatFilenames(object): # {{{
             oeb.manifest.remove(item)
 
         if self.rename_map:
-            self.log('Found non-flat filenames, renaming to support broken'
+            logging.info('Found non-flat filenames, renaming to support broken'
                     ' EPUB readers like FBReader...')
             from pprint import pformat
-            self.log.debug(pformat(self.rename_map))
-            self.log.debug(pformat(self.renamed_items_map))
+            logging.debug(pformat(self.rename_map))
+            logging.debug(pformat(self.renamed_items_map))
 
             renamer = RenameFiles(self.rename_map, self.renamed_items_map)
             renamer(oeb, opts)

@@ -10,7 +10,7 @@ import os
 from ...utils.date import isoformat, now
 from ...utils import guess_type
 
-def meta_info_to_oeb_metadata(mi, m, log, override_input_metadata=False):
+def meta_info_to_oeb_metadata(mi, m, override_input_metadata=False):
     from ..base import OPF
     if not mi.is_null('title'):
         m.clear('title')
@@ -101,10 +101,10 @@ class MergeMetadata(object):
     'Merge in user metadata, including cover'
 
     def __call__(self, oeb, mi, opts, override_input_metadata=False):
-        self.oeb, self.log = oeb, oeb.log
+        self.oeb = oeb
         m = self.oeb.metadata
-        self.log('Merging user specified metadata...')
-        meta_info_to_oeb_metadata(mi, m, oeb.log,
+        logging.info('Merging user specified metadata...')
+        meta_info_to_oeb_metadata(mi, m,
                 override_input_metadata=override_input_metadata)
         cover_id = self.set_cover(mi, opts.prefer_metadata_cover)
         m.clear('cover')

@@ -25,10 +25,9 @@ def XPath(x):
 class DetectStructure(object):
 
     def __call__(self, oeb, opts):
-        self.log = oeb.log
         self.oeb = oeb
         self.opts = opts
-        self.log('Detecting structure...')
+        logging.info('Detecting structure...')
 
         self.detect_chapters()
         if self.oeb.auto_generated_toc or opts.use_auto_toc:
@@ -44,15 +43,14 @@ class DetectStructure(object):
                 self.oeb.toc = orig_toc
             else:
                 self.oeb.auto_generated_toc = True
-                self.log('Auto generated TOC with %d entries.' %
+                logging.info('Auto generated TOC with %d entries.' %
                         self.oeb.toc.count())
 
         if opts.toc_filter is not None:
             regexp = re.compile(opts.toc_filter)
             for node in list(self.oeb.toc.iter()):
                 if not node.title or regexp.search(node.title) is not None:
-                    self.log('Filtering', node.title if node.title else\
-                            'empty node', 'from TOC')
+                    logging.info('Filtering %s from TOC', node.title if node.title else 'empty node')
                     self.oeb.toc.remove(node)
 
         if opts.page_breaks_before is not None:
@@ -82,7 +80,7 @@ class DetectStructure(object):
             for item, elem in self.detected_chapters:
                 text = xml2text(elem).strip()
                 text = re.sub(r'\s+', ' ', text.strip())
-                self.log('\tDetected chapter:', text[:50])
+                logging.info('\tDetected chapter: %s', text[:50])
                 if chapter_mark == 'none':
                     continue
                 elif chapter_mark == 'rule':
@@ -94,7 +92,7 @@ class DetectStructure(object):
                 try:
                     elem.addprevious(mark)
                 except TypeError:
-                    self.log.exception('Failed to mark chapter')
+                    logging.exception('Failed to mark chapter')
 
     def create_level_based_toc(self):
         if self.opts.level1_toc is not None:
@@ -129,7 +127,7 @@ class DetectStructure(object):
                             play_order=self.oeb.toc.next_play_order())
                         if self.opts.max_toc_links > 0 and \
                                 num >= self.opts.max_toc_links:
-                            self.log('Maximum TOC links reached, stopping.')
+                            logging.info('Maximum TOC links reached, stopping.')
                             return
 
 
