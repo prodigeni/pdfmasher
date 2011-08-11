@@ -284,15 +284,15 @@ class Serializer(object): # {{{
 class MobiWriter(object):
     COLLAPSE_RE = re.compile(r'[ \t\r\n\v]+')
 
-    def __init__(self, opts,
-            write_page_breaks_after_item=True):
-        self.opts = opts
+    def __init__(self, write_page_breaks_after_item=True, dont_compress=False,
+            prefer_author_sort=False, mobi_periodical=False, verbose=0):
         self.write_page_breaks_after_item = write_page_breaks_after_item
-        self._compression = UNCOMPRESSED if getattr(opts, 'dont_compress',
-                False) else PALMDOC
-        self._imagemax = (PALM_MAX_IMAGE_SIZE if getattr(opts,
-            'rescale_images', False) else OTHER_MAX_IMAGE_SIZE)
-        self._prefer_author_sort = getattr(opts, 'prefer_author_sort', False)
+        self._compression = UNCOMPRESSED if dont_compress else PALMDOC
+        # self._imagemax = (PALM_MAX_IMAGE_SIZE if getattr(opts,
+        #     'rescale_images', False) else OTHER_MAX_IMAGE_SIZE)
+        self._prefer_author_sort = prefer_author_sort
+        self._mobi_periodical = mobi_periodical
+        self._verbose = verbose
         self._primary_index_record = None
         self._conforming_periodical_toc = False
         self._indexable = False
@@ -307,14 +307,6 @@ class MobiWriter(object):
         self._initialIndexRecordFound = False
         self._firstSectionConcluded = False
         self._currentSectionIndex = 0
-
-    @classmethod
-    def generate(cls, opts):
-        """Generate a Writer instance from command-line options."""
-        imagemax = PALM_MAX_IMAGE_SIZE if opts.rescale_images else None
-        prefer_author_sort = opts.prefer_author_sort
-        return cls(compression=PALMDOC, imagemax=imagemax,
-            prefer_author_sort=prefer_author_sort)
 
     def __call__(self, oeb, path):
         if hasattr(path, 'write'):
@@ -348,7 +340,9 @@ class MobiWriter(object):
             except:
                 logging.exception('Failed to generate index')
 
-        self._generate_images()
+        # XXX
+        self._first_image_record = []
+        # self._generate_images()
 
     def _map_image_names(self):
         index = 1
@@ -446,7 +440,7 @@ class MobiWriter(object):
             if length is None:
                 length = self._content_length - offset
 
-            if self.opts.verbose > 3 :
+            if self._verbose > 3 :
                 logging.info("child %03d: %s" % (i, child))
                 logging.info("    title: %s" % child.title)
                 logging.info("    depth: %d" % child.depth())
@@ -492,10 +486,10 @@ class MobiWriter(object):
                     self._HTMLRecords[interimSpanRecord].continuingNode = myIndex
                     self._HTMLRecords[interimSpanRecord].currentSectionNodeCount = 1
                     interimSpanRecord += 1
-                if self.opts.verbose > 3 : logging.info(" node %03d: %-15.15s... spans HTML records %03d - %03d \t offset: 0x%06X length: 0x%06X" % \
+                if self._verbose > 3 : logging.info(" node %03d: %-15.15s... spans HTML records %03d - %03d \t offset: 0x%06X length: 0x%06X" % \
                     (myIndex, child.title if child.title.strip() > "" else "(missing)", myStartingRecord, interimSpanRecord, offset, length) )
             else :
-                if self.opts.verbose > 3 : logging.info(" node %03d: %-15.15s... spans HTML records %03d - %03d \t offset: 0x%06X length: 0x%06X" % \
+                if self._verbose > 3 : logging.info(" node %03d: %-15.15s... spans HTML records %03d - %03d \t offset: 0x%06X length: 0x%06X" % \
                     (myIndex, child.title if child.title.strip() > "" else "(missing)", myStartingRecord, myStartingRecord, offset, length) )
 
             myIndex += 1
@@ -533,7 +527,7 @@ class MobiWriter(object):
                 # Skip periodical and section entries
                 continue
             else :
-                if self.opts.verbose > 3 :logging.info("\tFirst sequential node: %03d" % firstSequentialNode)
+                if self._verbose > 3 :logging.info("\tFirst sequential node: %03d" % firstSequentialNode)
                 break
 
         for i, child in enumerate(entries):
@@ -557,7 +551,7 @@ class MobiWriter(object):
             if length is None:
                 length = self._content_length - offset
 
-            if self.opts.verbose > 3 :
+            if self._verbose > 3 :
                 logging.info("child %03d: %s" % (i, child))
                 logging.info("    title: %s" % child.title)
                 logging.info("    depth: %d" % child.depth())
@@ -665,14 +659,14 @@ class MobiWriter(object):
                     self._HTMLRecords[interimSpanRecord].currentSectionNodeCount = 1
                     interimSpanRecord += 1
 
-                if self.opts.verbose > 3 :logging.info("     node: %03d %-10.10s %-15.15s... spans HTML records %03d-%03d \t offset: 0x%06X length: 0x%06X" % \
+                if self._verbose > 3 :logging.info("     node: %03d %-10.10s %-15.15s... spans HTML records %03d-%03d \t offset: 0x%06X length: 0x%06X" % \
                     (myIndex, self._ctoc_map[i]['klass'], child.title if child.title.strip() > "" else "(missing)", thisRecord, interimSpanRecord, offset, length) )
             elif thisRecord == numberOfHTMLRecords-1:
                 # Check for short terminating record (GR provisional)
                 if self._HTMLRecords[thisRecord].continuingNode == -1:
                     self._HTMLRecords[thisRecord].continuingNode = self._HTMLRecords[thisRecord].openingNode - 1
             else :
-                if self.opts.verbose > 3 : logging.info("     node: %03d %-10.10s %-15.15s... spans HTML records %03d-%03d \t offset: 0x%06X length: 0x%06X" % \
+                if self._verbose > 3 : logging.info("     node: %03d %-10.10s %-15.15s... spans HTML records %03d-%03d \t offset: 0x%06X length: 0x%06X" % \
                     (myIndex, self._ctoc_map[i]['klass'], child.title if child.title.strip() > "" else "(missing)", thisRecord, thisRecord, offset, length) )
 
             myIndex += 1
@@ -681,7 +675,7 @@ class MobiWriter(object):
         return True
 
     def _generate_tbs_book(self, nrecords, lastrecord):
-        if self.opts.verbose > 3 :logging.info("Assembling TBS for Book: HTML record %03d of %03d" % \
+        if self._verbose > 3 :logging.info("Assembling TBS for Book: HTML record %03d of %03d" % \
                                     (nrecords, lastrecord) )
         # Variables for trailing byte sequence
         tbsType = 0x00
@@ -769,7 +763,7 @@ class MobiWriter(object):
                 # nodeCount = 0xDF + 0xFF + n(0x3F) - need to add 2 because we didn't count them earlier
                 tbSequence += chr(self._HTMLRecords[nrecords].currentSectionNodeCount + 2)
                 tbSequence += decint(len(tbSequence) + 1, DECINT_FORWARD)
-                if self.opts.verbose > 2 :
+                if self._verbose > 2 :
                     logging.info("\nAssembling TBS for Flat Periodical: HTML record %03d of %03d, section %d" % \
                         (nrecords, lastrecord, self._HTMLRecords[nrecords].continuingNodeParent ) )
                     self._HTMLRecords[nrecords].dumpData(nrecords, self._oeb)
@@ -777,7 +771,7 @@ class MobiWriter(object):
         else :
             # An HTML record with nextSectionNumber = -1 has no section change in this record
             # Default for flat periodicals with only one section
-            if self.opts.verbose > 2 :
+            if self._verbose > 2 :
                 logging.info("\nAssembling TBS for Flat Periodical: HTML record %03d of %03d, section %d" % \
                     (nrecords, lastrecord, self._HTMLRecords[nrecords].continuingNodeParent ) )
                 self._HTMLRecords[nrecords].dumpData(nrecords, self._oeb)
@@ -864,7 +858,7 @@ class MobiWriter(object):
             else :
                 self._initialIndexRecordFound = True
 
-                if self.opts.verbose > 2 :
+                if self._verbose > 2 :
                     logging.info("\nAssembling TBS for Structured Periodical: HTML record %03d of %03d, section %d" % \
                         (nrecords, lastrecord, self._HTMLRecords[nrecords].continuingNodeParent ) )
                     self._HTMLRecords[nrecords].dumpData(nrecords, self._oeb)
@@ -891,7 +885,7 @@ class MobiWriter(object):
 
                 if self._HTMLRecords[nrecords].nextSectionNumber == -1 :
                     # An HTML record with nextSectionNumber = -1 has no section change in this record
-                    if self.opts.verbose > 2 :
+                    if self._verbose > 2 :
                         logging.info("\nAssembling TBS for Structured Periodical: HTML record %03d of %03d, section %d" % \
                             (nrecords, lastrecord, self._HTMLRecords[nrecords].continuingNodeParent ) )
                         self._HTMLRecords[nrecords].dumpData(nrecords, self._oeb)
@@ -955,7 +949,7 @@ class MobiWriter(object):
                 elif self._HTMLRecords[nrecords].nextSectionNumber > 0 :
                     tbsType = 3
 
-                    if self.opts.verbose > 2 :
+                    if self._verbose > 2 :
                         logging.info("\nAssembling TBS for Structured Periodical: HTML record %03d of %03d, switching sections %d-%d" % \
                         (nrecords, lastrecord, self._HTMLRecords[nrecords].continuingNodeParent, self._HTMLRecords[nrecords].nextSectionNumber) )
                         self._HTMLRecords[nrecords].dumpData(nrecords, self._oeb)
@@ -1027,7 +1021,7 @@ class MobiWriter(object):
             else :
                 # After first section switch, use types 2 and 3
                 if self._HTMLRecords[nrecords].nextSectionNumber == -1 :
-                    if self.opts.verbose > 2 :
+                    if self._verbose > 2 :
                         logging.info("\nAssembling TBS for Structured Periodical: HTML record %03d of %03d, section %d" % \
                             (nrecords, lastrecord, self._HTMLRecords[nrecords].continuingNodeParent ) )
                         self._HTMLRecords[nrecords].dumpData(nrecords, self._oeb)
@@ -1071,7 +1065,7 @@ class MobiWriter(object):
                     # Section switch when section > 1
                     tbsType = 3
 
-                    if self.opts.verbose > 2 :
+                    if self._verbose > 2 :
                         logging.info("\nAssembling TBS for Structured Periodical: HTML record %03d of %03d, switching sections %d-%d" % \
                         (nrecords, lastrecord, self._HTMLRecords[nrecords].continuingNodeParent, self._HTMLRecords[nrecords].nextSectionNumber) )
                         self._HTMLRecords[nrecords].dumpData(nrecords, self._oeb)
@@ -1198,11 +1192,11 @@ class MobiWriter(object):
             logging.info('  Compressing markup content...')
         data, overlap = self._read_text_record(text)
 
-        if not self.opts.mobi_periodical:
+        if not self._mobi_periodical:
             self._flatten_toc()
 
         # Evaluate toc for conformance
-        if self.opts.mobi_periodical :
+        if self._mobi_periodical:
             logging.info('  MOBI periodical specified, evaluating TOC for periodical conformance ...')
             self._conforming_periodical_toc = self._evaluate_periodical_toc()
 
@@ -1241,7 +1235,7 @@ class MobiWriter(object):
                 while breaks and (breaks[0] - offset) < RECORD_SIZE:
                     # .pop returns item, removes it from list
                     pbreak = (breaks.pop(0) - running) >> 3
-                    if self.opts.verbose > 2 :
+                    if self._verbose > 2 :
                         logging.info('pbreak = 0x%X at 0x%X' % (pbreak, record.tell()) )
                     encoded = decint(pbreak, DECINT_FORWARD)
                     record.write(encoded)
@@ -1285,26 +1279,23 @@ class MobiWriter(object):
             nrecords += 1
         self._text_nrecords = nrecords
 
-    def _generate_images(self):
-        logging.info('Serializing images...')
-        images = [(index, href) for href, index in self._images.items()]
-        images.sort()
-        self._first_image_record = None
-        for _, href in images:
-            item = self._oeb.manifest.hrefs[href]
-            # XXX
-            item.unload_data_from_memory()
-            continue
-            # try:
-            #     data = rescale_image(item.data, self._imagemax)
-            # except:
-            #     self._oeb.logger.warn('Bad image file %r' % item.href)
-            #     continue
-            # finally:
-            #     item.unload_data_from_memory()
-            self._records.append(data)
-            if self._first_image_record is None:
-                self._first_image_record = len(self._records)-1
+    # def _generate_images(self):
+    #     logging.info('Serializing images...')
+    #     images = [(index, href) for href, index in self._images.items()]
+    #     images.sort()
+    #     self._first_image_record = None
+    #     for _, href in images:
+    #         item = self._oeb.manifest.hrefs[href]
+    #         try:
+    #             data = rescale_image(item.data, self._imagemax)
+    #         except:
+    #             self._oeb.logger.warn('Bad image file %r' % item.href)
+    #             continue
+    #         finally:
+    #             item.unload_data_from_memory()
+    #         self._records.append(data)
+    #         if self._first_image_record is None:
+    #             self._first_image_record = len(self._records)-1
 
     def _generate_end_records(self):
         if FCIS_FLIS :
@@ -1543,7 +1534,7 @@ class MobiWriter(object):
         nrecs += 1
 
         # Write cdetype
-        if not self.opts.mobi_periodical:
+        if not self._mobi_periodical:
             data = 'EBOK'
             exth.write(pack('>II', 501, len(data)+8))
             exth.write(data)
@@ -1654,13 +1645,13 @@ class MobiWriter(object):
 
         if klass == 'chapter' or klass == None :
             documentType = 'book'
-            if self.opts.verbose > 2 :
+            if self._verbose > 2 :
                 logging.info("Adding a MobiBook to self._MobiDoc")
             self._MobiDoc.documentStructure = MobiBook()
 
         elif klass == 'periodical' :
             documentType = klass
-            if self.opts.verbose > 2 :
+            if self._verbose > 2 :
                 logging.info("Adding a MobiPeriodical to self._MobiDoc")
             self._MobiDoc.documentStructure = MobiPeriodical(self._MobiDoc.getNextNode())
             self._MobiDoc.documentStructure.startAddress = self._anchor_offset_kindle
@@ -1820,7 +1811,7 @@ class MobiWriter(object):
         if self._MobiDoc.mobiType > 0x100 :
             # Write secondary index records
             #tagx = TAGX['secondary_'+\
-            #        ('periodical' if self.opts.mobi_periodical else 'book')]
+            #        ('periodical' if self._mobi_periodical else 'book')]
             tagx = TAGX['secondary_'+'periodical']
             tagx_len = 8 + len(tagx)
 
@@ -1859,7 +1850,7 @@ class MobiWriter(object):
             # Write INDX0 and INDX1 to the stream
             indx0, indx1 = indx0.getvalue(), indx1.getvalue()
             self._records.extend((indx0, indx1))
-            if self.opts.verbose > 3:
+            if self._verbose > 3:
                 from tempfile import mkdtemp
                 import os
                 t = mkdtemp()
@@ -1944,7 +1935,7 @@ class MobiWriter(object):
 
     def _write_chapter_node(self, indxt, indices, index, offset, length, count):
         # Writes an INDX1 NCXEntry of entryType 0x0F - chapter
-        if self.opts.verbose > 2:
+        if self._verbose > 2:
             pass
 
         pos = 0xc0 + indxt.tell()
@@ -1971,7 +1962,7 @@ class MobiWriter(object):
                 # Write our index to the list
                 sectionIndices.append(currentSection)
 
-                if self.opts.verbose > 3 :
+                if self._verbose > 3 :
                     logging.info("Periodical: %15.15s \tkls:%s \tdpt:%d  ply:%03d" % \
                         (section.title, section.klass, section.depth(), section.play_order) )
 
@@ -1985,7 +1976,7 @@ class MobiWriter(object):
                 # Write our index to the list
                 sectionIndices.append(currentSection)
 
-                if self.opts.verbose > 3 :
+                if self._verbose > 3 :
                     logging.info("   Section: %15.15s \tkls:%s \tdpt:%d  ply:%03d \tindex:%d" % \
                         (section.title, section.klass, section.depth(), section.play_order,j) )
 
@@ -1994,7 +1985,7 @@ class MobiWriter(object):
                 sectionIndices.append(currentSection)
 
             else :
-                if self.opts.verbose > 3 :
+                if self._verbose > 3 :
                     logging.info( " Unrecognized class %s in structured document" % section.klass)
         return sectionIndices, sectionParents
 
@@ -2005,7 +1996,7 @@ class MobiWriter(object):
         for (j, article) in enumerate(sectionArticles):
             # Recompute offset and length for each article
             offset, length = self._compute_offset_length(i, article, entries)
-            if self.opts.verbose > 2 :
+            if self._verbose > 2 :
                 logging.info( "article %02d: offset = 0x%06X length = 0x%06X" % (j, offset, length) )
 
             ctoc_map_index = i + j + 1
@@ -2018,7 +2009,7 @@ class MobiWriter(object):
 
     def _add_book_chapters(self, myDoc, indxt, indices):
         chapterCount = myDoc.documentStructure.chapterCount()
-        if self.opts.verbose > 3 :
+        if self._verbose > 3 :
             logging.info("Writing %d chapters for mobitype 0x%03X" % (chapterCount, myDoc.mobiType))
 
         for (c, chapter) in enumerate(list(myDoc.documentStructure.chapters)) :
@@ -2031,7 +2022,7 @@ class MobiWriter(object):
     def _add_periodical_flat_articles(self, myDoc, indxt, indices):
         sectionParent = myDoc.documentStructure.sectionParents[0]
         articleCount = len(sectionParent.articles)
-        if self.opts.verbose > 3 :
+        if self._verbose > 3 :
             logging.info("Writing %d articles for mobitype 0x%03X" % (articleCount, myDoc.mobiType))
 
         # Singleton periodical
@@ -2073,7 +2064,7 @@ class MobiWriter(object):
         #       <article>
         #       <article> ...
 
-        if self.opts.verbose > 2 :
+        if self._verbose > 2 :
             logging.info( "Writing NCXEntries for mobiType 0x%03X" % myDoc.mobiType)
 
         sectionParent = myDoc.documentStructure.sectionParents[0]
@@ -2123,7 +2114,7 @@ class MobiWriter(object):
 
             # articles
             for (i, article) in enumerate(list(sectionParent.articles)) :
-                if self.opts.verbose > 3 :
+                if self._verbose > 3 :
                     logging.info( "Adding section:article %d:%02d" % \
                         (sectionParent.myIndex, i))
                 index = article.myCtocMapIndex
@@ -2172,7 +2163,7 @@ class MobiWriter(object):
 
             if documentType == "periodical" :
                 myPeriodical = myDoc.documentStructure
-                if self.opts.verbose > 3 :
+                if self._verbose > 3 :
                     logging.info("\nDocument: %s \tkls:%s \tdpt:%d  ply:%03d" % \
                         (child.title, child.klass, child.depth(), child.play_order) )
                 sectionIndices, sectionParents = \
@@ -2181,11 +2172,11 @@ class MobiWriter(object):
             elif documentType == "book" :
                 myBook = myDoc.documentStructure
 
-                if self.opts.verbose > 3 :
+                if self._verbose > 3 :
                     logging.info("\nBook: %-19.19s \tkls:%s \tdpt:%d  ply:%03d" % \
                     (child.title, child.klass, child.depth(), child.play_order) )
             else :
-                if self.opts.verbose > 3 :
+                if self._verbose > 3 :
                     logging.info("unknown document type %12.12s \tdepth:%d" % (child.title, child.depth()) )
 
         # Original code starts here
@@ -2197,33 +2188,32 @@ class MobiWriter(object):
 
             offset, length = self._compute_offset_length(i, child, entries)
 
-            if child.klass == 'chapter'  or  \
-                (not self.opts.mobi_periodical and child.klass == 'article') :
+            if child.klass == 'chapter' or (not self._mobi_periodical and child.klass == 'article'):
                 # create chapter object - confirm i + 0 is correct!!
                 myNewChapter = MobiChapter(myDoc.getNextNode(), offset, length, i)
                 myBook.addChapter(myNewChapter)
 
                 # Diagnostic
                 try :
-                    if self.opts.verbose > 3 :
+                    if self._verbose > 3 :
                         logging.info( "  Chapter: %-14.14s \tcls:%s \tdpt:%d  ply:%03d \toff:0x%X \t:len0x%X" % \
                         (child.title, child.klass, child.depth(), child.play_order, offset, length) )
                 except :
-                    if self.opts.verbose > 3 :
+                    if self._verbose > 3 :
                         logging.info( "  Chapter: %-14.14s \tclass:%s \tdepth:%d  playOrder:%03d \toff:0x%X \t:len0x%X" % \
                         ("(bad string)", child.klass, child.depth(), child.play_order, offset, length))
 
-            elif child.klass == 'section' and self.opts.mobi_periodical :
-                if self.opts.verbose > 3 :
+            elif child.klass == 'section' and self._mobi_periodical :
+                if self._verbose > 3 :
                     logging.info("\n  Section: %-15.15s \tkls:%s \tdpt:%d  ply:%03d" % \
                         (child.title, child.klass, child.depth(), child.play_order))
                 self._generate_section_article_indices(i, child, entries, sectionIndices, sectionParents)
 
-        if self.opts.verbose > 3 :
+        if self._verbose > 3 :
             logging.info("")
 
         mobiType = myDoc.mobiType
-        if self.opts.verbose > 3 :
+        if self._verbose > 3 :
             self._MobiDoc.dumpInfo()
 
         if mobiType == 0x02 :
@@ -2412,7 +2402,7 @@ class MobiWriter(object):
         if self._conforming_periodical_toc :
             logging.info('Generating structured CTOC ...')
             for (child) in toc.iter():
-                if self.opts.verbose > 2 :
+                if self._verbose > 2 :
                     logging.info("  %s" % child)
                 self._add_structured_ctoc_node(child, self._ctoc)
                 #first = False
@@ -2426,7 +2416,7 @@ class MobiWriter(object):
                 # no class defaults to 'chapter'
                 if child.klass is None : child.klass = 'chapter'
                 if (child.klass == 'article' or child.klass == 'chapter') and child.depth() == 1 :
-                    if self.opts.verbose > 2 :
+                    if self._verbose > 2 :
                         logging.info("adding (klass:%s depth:%d) %s to flat ctoc" % \
                                               (child.klass, child.depth(), child) )
 
@@ -2454,7 +2444,7 @@ class MobiWriter(object):
                         logging.warn("  Ignoring redundant href: %s in '%s'" % (h, child.title))
 
                 else :
-                    if self.opts.verbose > 2 :
+                    if self._verbose > 2 :
                         logging.info("skipping class: %s depth %d at position %d" % \
                                               (child.klass, child.depth(),i))
 
@@ -2463,7 +2453,7 @@ class MobiWriter(object):
 
         # Instantiate a MobiDocument(mobitype)
         if (not self._periodicalCount and not self._sectionCount and not self._articleCount) or \
-            not self.opts.mobi_periodical :
+            not self._mobi_periodical :
             mobiType = 0x002
         elif self._periodicalCount:
             pt = None
@@ -2477,7 +2467,7 @@ class MobiWriter(object):
 
         self._MobiDoc = MobiDocument(mobiType)
 
-        if self.opts.verbose > 2 :
+        if self._verbose > 2 :
             structType = 'book'
             if mobiType > 0x100 :
                 structType = 'flat periodical' if mobiType == 0x102 else 'structured periodical'

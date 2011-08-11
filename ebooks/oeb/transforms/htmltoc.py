@@ -61,11 +61,7 @@ class HTMLTOCAdder(object):
               help=_('Title for any generated in-line table of contents.'))
         return cfg
 
-    @classmethod
-    def generate(cls, opts):
-        return cls(title=opts.toc_title)
-
-    def __call__(self, oeb, context):
+    def __call__(self, oeb):
         if 'toc' in oeb.guide:
             # Ensure toc pointed to in <guide> is in spine
             from calibre.ebooks.oeb.base import urlnormalize

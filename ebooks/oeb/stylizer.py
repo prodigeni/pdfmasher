@@ -123,22 +123,12 @@ class CSSSelector(etree.XPath):
 class Stylizer(object):
     STYLESHEETS = WeakKeyDictionary()
 
-    def __init__(self, tree, path, oeb, opts, profile=None,
-            extra_css='', user_css=''):
-        self.oeb, self.opts = oeb, opts
+    def __init__(self, tree, path, oeb, profile, extra_css='', user_css='',
+            change_justification='left'):
+        assert profile is not None
+        self.oeb = oeb
         self.profile = profile
-        if self.profile is None:
-            # Use the default profile. This should really be using
-            # opts.output_profile, but I don't want to risk changing it, as
-            # doing so might well have hard to debug font size effects.
-            from calibre.customize.ui import output_profiles
-            for x in output_profiles():
-                if x.short_name == 'default':
-                    self.profile = x
-                    break
-        if self.profile is None:
-            # Just in case the default profile is removed in the future :)
-            self.profile = opts.output_profile
+        self.change_justification = change_justification
         item = oeb.manifest.hrefs[path]
         basename = os.path.basename(path)
         cssname = os.path.splitext(basename)[0] + '.css'
@@ -396,8 +386,8 @@ class Stylizer(object):
         if text == 'inherit':
             style['text-align'] = 'inherit'
         else:
-            if text in ('left', 'justify') and self.opts.change_justification in ('left', 'justify'):
-                val = self.opts.change_justification
+            if text in ('left', 'justify') and self.change_justification in ('left', 'justify'):
+                val = self.change_justification
                 style['text-align'] = val
             else:
                 style['text-align'] = text

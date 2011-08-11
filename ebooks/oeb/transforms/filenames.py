@@ -12,7 +12,7 @@ from lxml import etree
 
 from ..base import rewrite_links, urlnormalize
 
-class RenameFiles(object): # {{{
+class RenameFiles(object):
 
     '''
     Rename files and adjust all links pointing to them. Note that the spine
@@ -23,9 +23,8 @@ class RenameFiles(object): # {{{
         self.rename_map = rename_map
         self.renamed_items_map = renamed_items_map
 
-    def __call__(self, oeb, opts):
+    def __call__(self, oeb):
         import cssutils
-        self.opts = opts
         self.oeb = oeb
 
         for item in oeb.manifest.items:
@@ -82,14 +81,11 @@ class RenameFiles(object): # {{{
             replacement += '#' + frag
         return replacement
 
-# }}}
-
-class UniqueFilenames(object): # {{{
+class UniqueFilenames(object):
 
     'Ensure that every item in the manifest has a unique filename'
 
-    def __call__(self, oeb, opts):
-        self.opts = opts
+    def __call__(self, oeb):
         self.oeb = oeb
 
         self.seen_filenames = set([])
@@ -121,7 +117,7 @@ class UniqueFilenames(object): # {{{
             logging.debug(pformat(self.rename_map))
 
             renamer = RenameFiles(self.rename_map)
-            renamer(oeb, opts)
+            renamer(oeb)
 
 
     def unique_suffix(self, fname):
@@ -135,12 +131,11 @@ class UniqueFilenames(object): # {{{
                 return suffix
 # }}}
 
-class FlatFilenames(object): # {{{
+class FlatFilenames(object):
 
     'Ensure that every item in the manifest has a unique filename without subdirectories.'
 
-    def __call__(self, oeb, opts):
-        self.opts = opts
+    def __call__(self, oeb):
         self.oeb = oeb
 
         self.rename_map = {}
@@ -174,6 +169,5 @@ class FlatFilenames(object): # {{{
             logging.debug(pformat(self.renamed_items_map))
 
             renamer = RenameFiles(self.rename_map, self.renamed_items_map)
-            renamer(oeb, opts)
-# }}}
+            renamer(oeb)
 

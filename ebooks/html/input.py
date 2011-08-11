@@ -214,17 +214,16 @@ def traverse(path_to_html_file, max_levels=sys.maxint, verbose=0, encoding=None)
         sys.setrecursionlimit(orec)
 
 
-def get_filelist(htmlfile, dir, opts):
+def get_filelist(htmlfile, dir, encoding='utf-8', max_levels=999, breadth_first=False, verbose=0):
     '''
     Build list of files referenced by html file or try to detect and use an
     OPF file instead.
     '''
     logging.info('Building file list...')
-    filelist = traverse(htmlfile, max_levels=int(opts.max_levels),
-                        verbose=opts.verbose,
-                        encoding=opts.input_encoding)\
-                [0 if opts.breadth_first else 1]
-    if opts.verbose:
+    filelist = traverse(htmlfile, max_levels=int(max_levels),
+                        verbose=verbose,
+                        encoding=encoding)[0 if breadth_first else 1]
+    if verbose:
         logging.debug('\tFound files...')
         for f in filelist:
             logging.debug('\t\t%s', f)
@@ -232,28 +231,19 @@ def get_filelist(htmlfile, dir, opts):
 
 
 class HTMLInput(object):
-    def convert(self, stream, opts, file_ext, accelerators):
+    def convert(self, stream, encoding='utf-8', pretty_print=False):
         self._is_case_sensitive = None
         basedir = os.getcwd()
-        self.opts = opts
 
-        fname = None
-        if hasattr(stream, 'name'):
-            basedir = os.path.dirname(stream.name)
-            fname = os.path.basename(stream.name)
+        basedir = os.path.dirname(stream.name)
+        fname = os.path.basename(stream.name)
 
-        if file_ext != 'opf':
-            if opts.dont_package:
-                raise ValueError('The --dont-package option is not supported for an HTML input file')
-            from ..metadata.html import get_metadata
-            mi = get_metadata(stream)
-            if fname:
-                from ..metadata.meta import metadata_from_filename
-                fmi = metadata_from_filename(fname)
-                fmi.smart_update(mi)
-                mi = fmi
-            oeb = self.create_oebbook(stream.name, basedir, opts, mi)
-            return oeb
+        from ..metadata.html import get_metadata
+        from ..metadata.meta import metadata_from_filename
+        mi = get_metadata(stream)
+        fmi = metadata_from_filename(fname)
+        fmi.smart_update(mi)
+        return self.create_oebbook(stream.name, basedir, fmi, encoding, pretty_print)
 
     def is_case_sensitive(self, path):
         if getattr(self, '_is_case_sensitive', None) is not None:
@@ -264,7 +254,7 @@ class HTMLInput(object):
                 and os.path.exists(path.upper()))
         return self._is_case_sensitive
 
-    def create_oebbook(self, htmlpath, basedir, opts, mi):
+    def create_oebbook(self, htmlpath, basedir, mi, encoding, pretty_print):
         from ..oeb.base import (DirContainer,
             rewrite_links, urlnormalize, urldefrag, BINARY_MIME, OEB_STYLES,
             xpath)
@@ -273,10 +263,9 @@ class HTMLInput(object):
         import cssutils, logging
         cssutils.log.setLevel(logging.WARN)
         self.OEB_STYLES = OEB_STYLES
-        html_preprocessor = HTMLPreProcessor(opts)
-        encoding = opts.input_encoding
+        html_preprocessor = HTMLPreProcessor()
         assert encoding
-        oeb = OEBBook(html_preprocessor, pretty_print=opts.pretty_print, input_encoding=encoding)
+        oeb = OEBBook(html_preprocessor, pretty_print=pretty_print, input_encoding=encoding)
         self.oeb = oeb
 
         metadata = oeb.metadata
@@ -297,7 +286,7 @@ class HTMLInput(object):
                 self.oeb.uid = metadata.identifier[0]
                 break
 
-        filelist = get_filelist(htmlpath, basedir, opts)
+        filelist = get_filelist(htmlpath, basedir)
         filelist = [f for f in filelist if not f.is_binary]
         htmlfile_map = {}
         for f in filelist:

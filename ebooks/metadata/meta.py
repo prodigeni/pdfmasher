@@ -6,64 +6,7 @@ import os, re, collections
 
 from ..constants import filesystem_encoding
 from ..utils import isbytestring
-# from ..customize.ui import get_file_type_metadata, set_file_type_metadata
 from . import MetaInformation, string_to_authors
-
-_METADATA_PRIORITIES = [
-                       'html', 'htm', 'xhtml', 'xhtm',
-                       'rtf', 'fb2', 'pdf', 'prc', 'odt',
-                       'epub', 'lit', 'lrx', 'lrf', 'mobi',
-                       'rb', 'imp', 'azw', 'snb'
-                      ]
-
-# The priorities for loading metadata from different file types
-# Higher values should be used to update metadata from lower values
-METADATA_PRIORITIES = collections.defaultdict(lambda:0)
-for i, ext in enumerate(_METADATA_PRIORITIES):
-    METADATA_PRIORITIES[ext] = i
-
-def path_to_ext(path):
-    return os.path.splitext(path)[1][1:].lower()
-
-def metadata_from_formats(formats, force_read_metadata=False, pattern=None):
-    try:
-        return _metadata_from_formats(formats, force_read_metadata, pattern)
-    except:
-        mi = metadata_from_filename(list(iter(formats), pattern)[0])
-        if not mi.authors:
-            mi.authors = [_('Unknown')]
-        return mi
-
-def _metadata_from_formats(formats, force_read_metadata=False, pattern=None):
-    mi = MetaInformation(None, None)
-    formats.sort(cmp=lambda x,y: cmp(METADATA_PRIORITIES[path_to_ext(x)],
-                                     METADATA_PRIORITIES[path_to_ext(y)]))
-    extensions = list(map(path_to_ext, formats))
-    if 'opf' in extensions:
-        opf = formats[extensions.index('opf')]
-        mi2 = opf_metadata(opf)
-        if mi2 is not None and mi2.title:
-            return mi2
-
-    for path, ext in zip(formats, extensions):
-        with open(path, 'rb') as stream:
-            try:
-                newmi = get_metadata(stream, stream_type=ext,
-                                     use_libprs_metadata=True,
-                                     force_read_metadata=force_read_metadata,
-                                     pattern=pattern)
-                mi.smart_update(newmi)
-            except:
-                continue
-            if getattr(mi, 'application_id', None) is not None:
-                return mi
-
-    if not mi.title:
-        mi.title = _('Unknown')
-    if not mi.authors:
-        mi.authors = [_('Unknown')]
-
-    return mi
 
 def get_metadata(stream, stream_type='lrf', use_libprs_metadata=False,
                  force_read_metadata=False, pattern=None):
@@ -123,11 +66,6 @@ def _get_metadata(stream, stream_type, use_libprs_metadata,
         base.smart_update(opf)
 
     return base
-
-# def set_metadata(stream, mi, stream_type='lrf'):
-#     if stream_type:
-#         stream_type = stream_type.lower()
-#     set_file_type_metadata(stream, mi, stream_type)
 
 
 def metadata_from_filename(name, pat=None):

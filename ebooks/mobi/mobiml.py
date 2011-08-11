@@ -166,10 +166,10 @@ class MobiMLizer(object):
     def __init__(self, ignore_tables=False):
         self.ignore_tables = ignore_tables
 
-    def __call__(self, oeb, context):
+    def __call__(self, oeb, mobi_ignore_margins=False):
         logging.info('Converting XHTML to Mobipocket markup...')
         self.oeb = oeb
-        self.opts = context
+        self.mobi_ignore_margins = mobi_ignore_margins
         self.profile = profile = OutputProfile()
         self.fnums = fnums = dict((v, k) for k, v in profile.fnums.items())
         self.fmap = KeyMapper(profile.fbase, profile.fbase, fnums.keys())
@@ -196,7 +196,7 @@ class MobiMLizer(object):
     def mobimlize_spine(self):
         'Iterate over the spine and convert it to MOBIML'
         for item in self.oeb.spine:
-            stylizer = Stylizer(item.data, item.href, self.oeb, self.opts, self.profile)
+            stylizer = Stylizer(item.data, item.href, self.oeb, self.profile)
             body = item.data.find(XHTML('body'))
             nroot = etree.Element(XHTML('html'), nsmap=MOBI_NSMAP)
             nbody = etree.SubElement(nroot, XHTML('body'))
@@ -262,7 +262,7 @@ class MobiMLizer(object):
                     para.attrib['value'] = str(istates[-2].list_num)
             elif tag in NESTABLE_TAGS and istate.rendered:
                 para = wrapper = bstate.nested[-1]
-            elif not self.opts.mobi_ignore_margins and left > 0 and indent >= 0:
+            elif not self.mobi_ignore_margins and left > 0 and indent >= 0:
                 ems = self.profile.mobi_ems_per_blockquote
                 para = wrapper = etree.SubElement(parent, XHTML('blockquote'))
                 para = wrapper
@@ -351,8 +351,7 @@ class MobiMLizer(object):
                 inline.append(item)
 
     def mobimlize_elem(self, elem, stylizer, bstate, istates, ignore_valign=False):
-        if not isinstance(elem.tag, basestring) \
-           or namespace(elem.tag) != XHTML_NS:
+        if not isinstance(elem.tag, basestring) or namespace(elem.tag) != XHTML_NS:
             return
         style = stylizer.style(elem)
         # <mbp:frame-set/> does not exist lalalala
@@ -573,8 +572,8 @@ class MobiMLizer(object):
                 return
 
         if tag == 'blockquote':
-            old_mim = self.opts.mobi_ignore_margins
-            self.opts.mobi_ignore_margins = False
+            old_mim = self.mobi_ignore_margins
+            self.mobi_ignore_margins = False
 
         if text or tag in CONTENT_TAGS or tag in NESTABLE_TAGS:
             self.mobimlize_content(tag, text, bstate, istates)
@@ -592,7 +591,7 @@ class MobiMLizer(object):
                 self.mobimlize_content(tag, tail, bstate, istates)
 
         if tag == 'blockquote':
-            self.opts.mobi_ignore_margins = old_mim
+            self.mobi_ignore_margins = old_mim
 
         if bstate.content and style['page-break-after'] in PAGE_BREAKS:
             bstate.pbreak = True

@@ -78,7 +78,7 @@ class CoverManager(object):
         self.non_svg_template = self.NONSVG_TEMPLATE.replace('__style__',
                 style)
 
-    def __call__(self, oeb, opts):
+    def __call__(self, oeb):
         self.oeb = oeb
         self.insert_cover()
 

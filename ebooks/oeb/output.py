@@ -12,8 +12,7 @@ from ..utils import CurrentDir
 from urllib import unquote
 
 class OEBOutput(object):
-    def convert(self, oeb_book, output_path, input_plugin, opts):
-        self.opts = opts
+    def convert(self, oeb_book, output_path, input_plugin):
         if not os.path.exists(output_path):
             os.makedirs(output_path)
         from .base import OPF_MIME, NCX_MIME, PAGE_MAP_MIME
@@ -51,7 +50,7 @@ class OEBOutput(object):
                     f.write(str(item))
                 item.unload_data_from_memory(memory=path)
 
-    def workaround_nook_cover_bug(self, root): # {{{
+    def workaround_nook_cover_bug(self, root):
         cov = root.xpath('//*[local-name() = "meta" and @name="cover" and'
                 ' @content != "cover"]')
 
@@ -83,9 +82,8 @@ class OEBOutput(object):
                     manifest_item = manifest_item[0]
                     manifest_item.set('id', 'cover')
                     cov.set('content', 'cover')
-    # }}}
-
-    def workaround_pocketbook_cover_bug(self, root): # {{{
+    
+    def workaround_pocketbook_cover_bug(self, root):
         m = root.xpath('//*[local-name() = "manifest"]/*[local-name() = "item" '
                 ' and @id="cover"]')
         if len(m) == 1:
@@ -93,4 +91,3 @@ class OEBOutput(object):
             p = m.getparent()
             p.remove(m)
             p.insert(0, m)
-    # }}}

@@ -636,22 +636,6 @@ class Metadata(object):
         def __unicode__(self):
             return as_unicode(self.value)
 
-        def to_opf1(self, dcmeta=None, xmeta=None, nsrmap={}):
-            attrib = {}
-            for key, value in self.attrib.items():
-                if namespace(key) == OPF2_NS:
-                    key = barename(key)
-                attrib[key] = prefixname(value, nsrmap)
-            if namespace(self.term) == DC11_NS:
-                name = DC(icu_title(barename(self.term)))
-                elem = element(dcmeta, name, attrib=attrib)
-                elem.text = self.value
-            else:
-                elem = element(xmeta, 'meta', attrib=attrib)
-                elem.attrib['name'] = prefixname(self.term, nsrmap)
-                elem.attrib['content'] = prefixname(self.value, nsrmap)
-            return elem
-
         def to_opf2(self, parent=None, nsrmap={}):
             attrib = {}
             for key, value in self.attrib.items():
@@ -731,20 +715,6 @@ class Metadata(object):
             nsmap.update(OPF2_NSMAP)
             return nsmap
         return property(fget=fget)
-
-    def to_opf1(self, parent=None):
-        nsmap = self._opf1_nsmap
-        nsrmap = dict((value, key) for key, value in nsmap.items())
-        elem = element(parent, 'metadata', nsmap=nsmap)
-        dcmeta = element(elem, 'dc-metadata', nsmap=OPF1_NSMAP)
-        xmeta = element(elem, 'x-metadata')
-        for term in self.items:
-            for item in self.items[term]:
-                item.to_opf1(dcmeta, xmeta, nsrmap=nsrmap)
-        if 'ms-chaptertour' not in self.items:
-            chaptertour = self.Item('ms-chaptertour', 'chaptertour')
-            chaptertour.to_opf1(dcmeta, xmeta, nsrmap=nsrmap)
-        return elem
 
     def to_opf2(self, parent=None):
         nsmap = self._opf2_nsmap
@@ -1351,21 +1321,6 @@ class Manifest(object):
     def __contains__(self, item):
         return item in self.items
 
-    def to_opf1(self, parent=None):
-        elem = element(parent, 'manifest')
-        for item in self.items:
-            media_type = item.media_type
-            if media_type in OEB_DOCS:
-                media_type = OEB_DOC_MIME
-            elif media_type in OEB_STYLES:
-                media_type = OEB_CSS_MIME
-            attrib = {'id': item.id, 'href': urlunquote(item.href),
-                      'media-type': media_type}
-            if item.fallback:
-                attrib['fallback'] = item.fallback
-            element(elem, 'item', attrib=attrib)
-        return elem
-
     def to_opf2(self, parent=None):
 
         def sort(x, y):
@@ -1449,13 +1404,6 @@ class Spine(object):
 
     def __contains__(self, item):
         return (item in self.items)
-
-    def to_opf1(self, parent=None):
-        elem = element(parent, 'spine')
-        for item in self.items:
-            if item.linear:
-                element(elem, 'itemref', attrib={'idref': item.id})
-        return elem
 
     def to_opf2(self, parent=None):
         elem = element(parent, OPF('spine'))
@@ -1580,15 +1528,6 @@ class Guide(object):
 
     def __len__(self):
         return len(self.refs)
-
-    def to_opf1(self, parent=None):
-        elem = element(parent, 'guide')
-        for ref in self.refs.values():
-            attrib = {'type': ref.type, 'href': urlunquote(ref.href)}
-            if ref.title:
-                attrib['title'] = ref.title
-            element(elem, 'reference', attrib=attrib)
-        return elem
 
     def to_opf2(self, parent=None):
         elem = element(parent, OPF('guide'))
@@ -1715,13 +1654,6 @@ class TOC(object):
         return 'TOC: %s --> %s'%(self.title, self.href)
 
 
-    def to_opf1(self, tour):
-        for node in self.nodes:
-            element(tour, 'site', attrib={
-                'title': node.title, 'href': urlunquote(node.href)})
-            node.to_opf1(tour)
-        return tour
-
     def to_ncx(self, parent=None):
         if parent is None:
             parent = etree.Element(NCX('navMap'))
@@ -1742,35 +1674,6 @@ class TOC(object):
             element(point, NCX('content'), src=urlunquote(node.href))
             node.to_ncx(point)
         return parent
-
-    def rationalize_play_orders(self):
-        '''
-        Ensure that all nodes with the same play_order have the same href and
-        with different play_orders have different hrefs.
-        '''
-        def po_node(n):
-            for x in self.iter():
-                if x is n:
-                    return
-                if x.play_order == n.play_order:
-                    return x
-
-        def href_node(n):
-            for x in self.iter():
-                if x is n:
-                    return
-                if x.href == n.href:
-                    return x
-
-        for x in self.iter():
-            y = po_node(x)
-            if y is not None:
-                if x.href != y.href:
-                    x.play_order = getattr(href_node(x), 'play_order',
-                            self.next_play_order())
-            y = href_node(x)
-            if y is not None:
-                x.play_order = y.play_order
 
 class PageList(object):
     """Collection of named "pages" to mapped positions within an OEB data model
@@ -1951,24 +1854,6 @@ class OEBBook(object):
             pass
         data, _ = xml_to_unicode(data)
         return fix_data(data)
-
-    def to_opf1(self):
-        """Produce OPF 1.2 representing the book's metadata and structure.
-
-        Returns a dictionary in which the keys are MIME types and the values
-        are tuples of (default) filenames and lxml.etree element structures.
-        """
-        package = etree.Element('package',
-            attrib={'unique-identifier': self.uid.id})
-        self.metadata.to_opf1(package)
-        self.manifest.to_opf1(package)
-        self.spine.to_opf1(package)
-        tours = element(package, 'tours')
-        tour = element(tours, 'tour',
-            attrib={'id': 'chaptertour', 'title': 'Chapter Tour'})
-        self.toc.to_opf1(tour)
-        self.guide.to_opf1(package)
-        return {OPF_MIME: ('content.opf', package)}
 
     def _update_playorder(self, ncx):
         hrefs = set(map(urlnormalize, xpath(ncx, '//ncx:content/@src')))

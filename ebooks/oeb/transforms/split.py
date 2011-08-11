@@ -46,9 +46,8 @@ class Split(object):
         if self.page_breaks_xpath is not None:
             self.page_break_selectors = [(XPath(self.page_breaks_xpath), False)]
 
-    def __call__(self, oeb, opts):
+    def __call__(self, oeb):
         self.oeb = oeb
-        self.opts = opts
         self.map = {}
         for item in list(self.oeb.manifest.items):
             if item.spine_position is not None and etree.iselement(item.data):
@@ -62,7 +61,7 @@ class Split(object):
             page_breaks, page_break_ids = self.find_page_breaks(item)
 
         splitter = FlowSplitter(item, page_breaks, page_break_ids,
-                self.max_flow_size, self.oeb, self.opts)
+                self.max_flow_size, self.oeb)
         if splitter.was_split:
             am = splitter.anchor_map
             self.map[item.href] = collections.defaultdict(
@@ -168,14 +167,13 @@ class Split(object):
 class FlowSplitter(object):
     'The actual splitting logic'
 
-    def __init__(self, item, page_breaks, page_break_ids, max_flow_size, oeb,
-            opts):
+    def __init__(self, item, page_breaks, page_break_ids, max_flow_size, oeb, verbose=0):
         self.item           = item
         self.oeb            = oeb
-        self.opts           = opts
         self.page_breaks    = page_breaks
         self.page_break_ids = page_break_ids
         self.max_flow_size  = max_flow_size
+        self.verbose        = verbose
         self.base           = item.href
         self.csp_counter    = 0
 
@@ -275,7 +273,7 @@ class FlowSplitter(object):
 
         npath = sp.getroottree().getpath(sp)
 
-        if self.opts.verbose > 3 and npath != path:
+        if self.verbose > 3 and npath != path:
             logging.debug('\t\t\tMoved split point %s to %s'%(path, npath))
 
 

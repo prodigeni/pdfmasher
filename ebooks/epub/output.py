@@ -6,7 +6,7 @@ __license__   = 'GPL v3'
 __copyright__ = '2009, Kovid Goyal <kovid@kovidgoyal.net>'
 __docformat__ = 'restructuredtext en'
 
-import os, shutil, re
+import os, shutil, re, logging
 
 from ..ptempfile import TemporaryDirectory
 
@@ -73,32 +73,29 @@ def upshift_markup(oeb):
             u.tag = 'span'
             u.set('style', 'text-decoration:underline')
 
-def convert(oeb, output_path, opts):
-    if opts.epub_flatten:
+def convert(oeb, output_path, epub_flatten=False, dont_split_on_page_breaks=False,
+        flow_size=260, no_default_epub_cover=False, no_svg_cover=False,
+        preserve_cover_aspect_ratio=False, pretty_print=False):
+    if epub_flatten:
         from ..oeb.transforms.filenames import FlatFilenames
-        FlatFilenames()(oeb, opts)
+        FlatFilenames()(oeb)
     else:
         from ..oeb.transforms.filenames import UniqueFilenames
-        UniqueFilenames()(oeb, opts)
+        UniqueFilenames()(oeb)
 
     workaround_ade_quirks(oeb)
     workaround_webkit_quirks(oeb)
     upshift_markup(oeb)
-    # from calibre.ebooks.oeb.transforms.rescale import RescaleImages
-    # RescaleImages()(oeb, opts)
-
     from ..oeb.transforms.split import Split
-    split = Split(not opts.dont_split_on_page_breaks,
-            max_flow_size=opts.flow_size*1024
-            )
-    split(oeb, opts)
+    split = Split(not dont_split_on_page_breaks, max_flow_size=flow_size*1024)
+    split(oeb)
 
     from ..oeb.transforms.cover import CoverManager
     cm = CoverManager(
-            no_default_cover=opts.no_default_epub_cover,
-            no_svg_cover=opts.no_svg_cover,
-            preserve_aspect_ratio=opts.preserve_cover_aspect_ratio)
-    cm(oeb, opts)
+            no_default_cover=no_default_epub_cover,
+            no_svg_cover=no_svg_cover,
+            preserve_aspect_ratio=preserve_cover_aspect_ratio)
+    cm(oeb)
 
     workaround_sony_quirks(oeb)
 
@@ -125,23 +122,17 @@ def convert(oeb, output_path, opts):
         from ..oeb.output import OEBOutput
         metadata_xml = None
         extra_entries = []
-        # if self.is_periodical:
-        #     if self.opts.output_profile.epub_periodical_format == 'sony':
-        #         from calibre.ebooks.epub.periodical import sony_metadata
-        #         metadata_xml, atom_xml = sony_metadata(oeb)
-        #         extra_entries = [('atom.xml', 'application/atom+xml', atom_xml)]
         oeb_output = OEBOutput()
-        oeb_output.convert(oeb, tdir, None, opts)
+        oeb_output.convert(oeb, tdir, None)
         opf = [x for x in os.listdir(tdir) if x.endswith('.opf')][0]
-        if opts.pretty_print:
+        if pretty_print:
             condense_ncx([os.path.join(tdir, x) for x in os.listdir(tdir) if x.endswith('.ncx')][0])
         from . import initialize_container
         with initialize_container(output_path, os.path.basename(opf),
                 extra_entries=extra_entries) as epub:
             epub.add_dir(tdir)
             if metadata_xml is not None:
-                epub.writestr('META-INF/metadata.xml',
-                        metadata_xml.encode('utf-8'))
+                epub.writestr('META-INF/metadata.xml', metadata_xml.encode('utf-8'))
 
 def condense_ncx(ncx_path):
     tree = etree.parse(ncx_path)

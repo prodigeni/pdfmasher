@@ -27,41 +27,6 @@ def authors_to_string(authors):
     else:
         return ''
 
-def author_to_author_sort(author, method=None):
-    if not author:
-        return u''
-    sauthor = remove_bracketed_text(author).strip()
-    tokens = sauthor.split()
-    if len(tokens) < 2:
-        return author
-    if method is None:
-        method = tweaks.author_sort_copy_method
-    if method == u'copy':
-        return author
-    suffixes = set([x.lower() for x in tweaks.author_name_suffixes])
-    suffixes |= set([x+u'.' for x in suffixes])
-
-    last = tokens[-1].lower()
-    suffix = None
-    if last in suffixes:
-        suffix = tokens[-1]
-        tokens = tokens[:-1]
-
-    if method == u'comma' and u',' in u''.join(tokens):
-        return author
-
-    atokens = tokens[-1:] + tokens[:-1]
-    if suffix:
-        atokens.append(suffix)
-
-    if method != u'nocomma' and len(atokens) > 1:
-        atokens[0] += u','
-
-    return u' '.join(atokens)
-
-def authors_to_sort_string(authors):
-    return ' & '.join(map(author_to_author_sort, authors))
-
 try:
     _title_pat = re.compile(tweaks.__dict__.get('title_sort_articles',
                                        r'^(A|The|An)\s+'), re.IGNORECASE)
@@ -262,41 +227,4 @@ def MetaInformation(title, authors=('Unknown',)):
         title = mi.title
         authors = mi.authors
     return Metadata(title, authors, other=mi)
-
-def check_isbn10(isbn):
-    try:
-        digits = map(int, isbn[:9])
-        products = [(i+1)*digits[i] for i in range(9)]
-        check = sum(products)%11
-        if (check == 10 and isbn[9] == 'X') or check == int(isbn[9]):
-            return isbn
-    except:
-        pass
-    return None
-
-def check_isbn13(isbn):
-    try:
-        digits = map(int, isbn[:12])
-        products = [(1 if i%2 ==0 else 3)*digits[i] for i in range(12)]
-        check = 10 - (sum(products)%10)
-        if check == 10:
-            check = 0
-        if str(check) == isbn[12]:
-            return isbn
-    except:
-        pass
-    return None
-
-def check_isbn(isbn):
-    if not isbn:
-        return None
-    isbn = re.sub(r'[^0-9X]', '', isbn.upper())
-    all_same = re.match(r'(\d)\1{9,12}$', isbn)
-    if all_same is not None:
-        return None
-    if len(isbn) == 10:
-        return check_isbn10(isbn)
-    if len(isbn) == 13:
-        return check_isbn13(isbn)
-    return None
 
