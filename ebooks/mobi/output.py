@@ -16,6 +16,6 @@ def convert(oeb, output_path, toc_title=None, mobi_toc_at_start=False):
     tocadder(oeb)
     mobimlizer = MobiMLizer()
     mobimlizer(oeb)
-    writer = MobiWriter(dont_compress=True)
+    writer = MobiWriter()
     writer(oeb, output_path)
 
