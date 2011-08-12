@@ -5,6 +5,8 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
+from __future__ import unicode_literals
+
 import functools, re
 import logging
 
@@ -16,31 +18,24 @@ XLINK_NS     = 'http://www.w3.org/1999/xlink'
 
 convert_entities = functools.partial(entity_to_unicode,
         result_exceptions = {
-            u'<' : '&lt;',
-            u'>' : '&gt;',
-            u"'" : '&apos;',
-            u'"' : '&quot;',
-            u'&' : '&amp;',
+            '<' : '&lt;',
+            '>' : '&gt;',
+            "'" : '&apos;',
+            '"' : '&quot;',
+            '&' : '&amp;',
         })
 
 LIGATURES = {
-#        u'\u00c6': u'AE',
-#        u'\u00e6': u'ae',
-#        u'\u0152': u'OE',
-#        u'\u0153': u'oe',
-#        u'\u0132': u'IJ',
-#        u'\u0133': u'ij',
-#        u'\u1D6B': u'ue',
-        u'\uFB00': u'ff',
-        u'\uFB01': u'fi',
-        u'\uFB02': u'fl',
-        u'\uFB03': u'ffi',
-        u'\uFB04': u'ffl',
-        u'\uFB05': u'ft',
-        u'\uFB06': u'st',
+        '\uFB00': u'ff',
+        '\uFB01': u'fi',
+        '\uFB02': u'fl',
+        '\uFB03': u'ffi',
+        '\uFB04': u'ffl',
+        '\uFB05': u'ft',
+        '\uFB06': u'st',
         }
 
-_ligpat = re.compile(u'|'.join(LIGATURES))
+_ligpat = re.compile('|'.join(LIGATURES))
 
 class CSSPreProcessor(object):
 

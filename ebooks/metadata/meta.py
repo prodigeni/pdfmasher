@@ -1,10 +1,12 @@
-from __future__ import with_statement
 # Copyright 2008, Kovid Goyal <kovid at kovidgoyal.net>
 # Copyright 2011 Hardcoded Software (http://www.hardcoded.net)
 # 
 # This software is licensed under the "GPL v3" License as described in the "LICENSE" file, 
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
+
+from __future__ import with_statement
+from __future__ import unicode_literals
 
 import os, re, collections
 
@@ -78,7 +80,7 @@ def metadata_from_filename(name, pat=None):
     name = name.rpartition('.')[0]
     mi = MetaInformation(None, None)
     if pat is None:
-        pat = re.compile(ur'(?P<title>.+) - (?P<author>[^_]+)')
+        pat = re.compile(r'(?P<title>.+) - (?P<author>[^_]+)')
     name = name.replace('_', ' ')
     match = pat.search(name)
     if match is not None:

@@ -5,6 +5,8 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
+from __future__ import unicode_literals
+
 import copy, traceback
 
 from . import SC_COPYABLE_FIELDS
@@ -443,32 +445,15 @@ class Metadata(object):
         if not getattr(self, 'series', None):
             self.series_index = None
 
-    def format_series_index(self, val=None):
-        from calibre.ebooks.metadata import fmt_sidx
-        v = self.series_index if val is None else val
-        try:
-            x = float(v)
-        except (ValueError, TypeError):
-            x = 1
-        return fmt_sidx(x)
-
-    def authors_from_string(self, raw):
-        from calibre.ebooks.metadata import string_to_authors
-        self.authors = string_to_authors(raw)
-
-    def format_authors(self):
-        from calibre.ebooks.metadata import authors_to_string
-        return authors_to_string(self.authors)
-
     def format_tags(self):
-        return u', '.join([unicode(t) for t in self.tags])
+        return ', '.join([unicode(t) for t in self.tags])
         # return u', '.join([unicode(t) for t in sorted(self.tags, key=sort_key)])
 
     def format_rating(self, v=None, divide_by=1.0):
         if v is None:
             if self.rating is not None:
                 return unicode(self.rating/divide_by)
-            return u'None'
+            return 'None'
         return unicode(v/divide_by)
 
     def format_field(self, key, series_with_index=True):
@@ -477,53 +462,6 @@ class Metadata(object):
         '''
         name, val, ign, ign = self.format_field_extended(key, series_with_index)
         return (name, val)
-
-    def __unicode__(self):
-        '''
-        A string representation of this object, suitable for printing to
-        console
-        '''
-        from calibre.ebooks.metadata import authors_to_string
-        ans = []
-        def fmt(x, y):
-            ans.append(u'%-20s: %s'%(unicode(x), unicode(y)))
-
-        fmt('Title', self.title)
-        if self.title_sort:
-            fmt('Title sort', self.title_sort)
-        if self.authors:
-            fmt('Author(s)',  authors_to_string(self.authors) + \
-               ((' [' + self.author_sort + ']') if self.author_sort else ''))
-        if self.publisher:
-            fmt('Publisher', self.publisher)
-        if getattr(self, 'book_producer', False):
-            fmt('Book Producer', self.book_producer)
-        if self.tags:
-            fmt('Tags', u', '.join([unicode(t) for t in self.tags]))
-        if self.series:
-            fmt('Series', self.series + ' #%s'%self.format_series_index())
-        if not self.is_null('language'):
-            fmt('Language', self.language)
-        if self.rating is not None:
-            fmt('Rating', self.rating)
-        if self.timestamp is not None:
-            fmt('Timestamp', isoformat(self.timestamp))
-        if self.pubdate is not None:
-            fmt('Published', isoformat(self.pubdate))
-        if self.rights is not None:
-            fmt('Rights', unicode(self.rights))
-        if self.identifiers:
-            fmt('Identifiers', u', '.join(['%s:%s'%(k, v) for k, v in
-                self.identifiers.iteritems()]))
-        if self.comments:
-            fmt('Comments', self.comments)
-
-        for key in self.custom_field_keys():
-            val = self.get(key, None)
-            if val:
-                (name, val) = self.format_field(key)
-                fmt(name, unicode(val))
-        return u'\n'.join(ans)
 
     def to_html(self):
         '''
@@ -552,14 +490,12 @@ class Metadata(object):
                 (name, val) = self.format_field(key)
                 ans += [(name, val)]
         for i, x in enumerate(ans):
-            ans[i] = u'<tr><td><b>%s</b></td><td>%s</td></tr>'%x
-        return u'<table>%s</table>'%u'\n'.join(ans)
+            ans[i] = '<tr><td><b>%s</b></td><td>%s</td></tr>'%x
+        return '<table>%s</table>'%u'\n'.join(ans)
 
     def __str__(self):
         return self.__unicode__().encode('utf-8')
 
     def __nonzero__(self):
         return bool(self.title or self.author or self.comments or self.tags)
-
-    # }}}
 

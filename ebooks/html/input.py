@@ -6,6 +6,7 @@
 # http://www.hardcoded.net/licenses/gplv3_license
 
 from __future__ import with_statement
+from __future__ import unicode_literals
 
 '''
 Input plugin for HTML or OPF ebooks.

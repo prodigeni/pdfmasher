@@ -1,10 +1,11 @@
-'''
-Write content to Mobipocket books.
-'''
+# Copyright 2008, Marshall T. Vandegrift <llasram@gmail.cam> and Kovid Goyal <kovid@kovidgoyal.net>
+# Copyright 2011 Hardcoded Software (http://www.hardcoded.net)
+# 
+# This software is licensed under the "GPL v3" License as described in the "LICENSE" file, 
+# which should be included with this package. The terms are also available at 
+# http://www.hardcoded.net/licenses/gplv3_license
 
-__license__   = 'GPL v3'
-__copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.cam> and \
-        Kovid Goyal <kovid@kovidgoyal.net>'
+from __future__ import unicode_literals
 
 from collections import defaultdict
 import random
@@ -65,22 +66,22 @@ MAX_THUMB_DIMEN = (180, 240)
 
 TAGX = {
         'chapter' :
-        '\x00\x00\x00\x01\x01\x01\x01\x00\x02\x01\x02\x00\x03\x01\x04\x00\x04\x01\x08\x00\x00\x00\x00\x01',
+        b'\x00\x00\x00\x01\x01\x01\x01\x00\x02\x01\x02\x00\x03\x01\x04\x00\x04\x01\x08\x00\x00\x00\x00\x01',
         'subchapter' :
-        '\x00\x00\x00\x01\x01\x01\x01\x00\x02\x01\x02\x00\x03\x01\x04\x00\x04\x01\x08\x00\x05\x01\x10\x00\x15\x01\x10\x00\x16\x01\x20\x00\x17\x01\x40\x00\x00\x00\x00\x01',
+        b'\x00\x00\x00\x01\x01\x01\x01\x00\x02\x01\x02\x00\x03\x01\x04\x00\x04\x01\x08\x00\x05\x01\x10\x00\x15\x01\x10\x00\x16\x01\x20\x00\x17\x01\x40\x00\x00\x00\x00\x01',
         'periodical' :
-        '\x00\x00\x00\x02\x01\x01\x01\x00\x02\x01\x02\x00\x03\x01\x04\x00\x04\x01\x08\x00\x05\x01\x10\x00\x15\x01\x20\x00\x16\x01\x40\x00\x17\x01\x80\x00\x00\x00\x00\x01\x45\x01\x01\x00\x46\x01\x02\x00\x47\x01\x04\x00\x00\x00\x00\x01',
-        'secondary_book':'\x00\x00\x00\x01\x01\x01\x01\x00\x00\x00\x00\x01',
-        'secondary_periodical':'\x00\x00\x00\x01\x01\x01\x01\x00\x0b\x03\x02\x00\x00\x00\x00\x01'
+        b'\x00\x00\x00\x02\x01\x01\x01\x00\x02\x01\x02\x00\x03\x01\x04\x00\x04\x01\x08\x00\x05\x01\x10\x00\x15\x01\x20\x00\x16\x01\x40\x00\x17\x01\x80\x00\x00\x00\x00\x01\x45\x01\x01\x00\x46\x01\x02\x00\x47\x01\x04\x00\x00\x00\x00\x01',
+        'secondary_book':b'\x00\x00\x00\x01\x01\x01\x01\x00\x00\x00\x00\x01',
+        'secondary_periodical':b'\x00\x00\x00\x01\x01\x01\x01\x00\x0b\x03\x02\x00\x00\x00\x00\x01'
         }
 
 INDXT = {
-        'chapter' : '\x0f',
-        'subchapter' : '\x1f',
-        'article'    : '\x3f',
-        'chapter with subchapters': '\x6f',
-        'periodical' : '\xdf',
-        'section' : '\xff',
+        'chapter' : b'\x0f',
+        'subchapter' : b'\x1f',
+        'article'    : b'\x3f',
+        'chapter with subchapters': b'\x6f',
+        'periodical' : b'\xdf',
+        'section' : b'\xff',
         }
 
 def encode(data):
@@ -102,9 +103,9 @@ def decint(value, direction):
         bytes[0] |= 0x80
     elif direction == DECINT_BACKWARD:
         bytes[-1] |= 0x80
-    return ''.join(chr(b) for b in reversed(bytes))
+    return b''.join(chr(b) for b in reversed(bytes))
 
-def align_block(raw, multiple=4, pad='\0'):
+def align_block(raw, multiple=4, pad=b'\0'):
     extra = len(raw) % multiple
     if extra == 0: return raw
     return raw + pad*(multiple - extra)
@@ -1226,7 +1227,7 @@ class MobiWriter(object):
             record.write(data)
             # Write trailing muti-byte sequence if any
             record.write(overlap)
-            record.write(pack('>B', len(overlap)))
+            record.write(pack(b'>B', len(overlap)))
 
             if WRITE_PBREAKS :
                 nextra = 0
@@ -1302,18 +1303,18 @@ class MobiWriter(object):
             # This adds the binary blobs of FLIS and FCIS, which don't seem to be necessary
             self._flis_number = len(self._records)
             self._records.append(
-            'FLIS\0\0\0\x08\0\x41\0\0\0\0\0\0\xff\xff\xff\xff\0\x01\0\x03\0\0\0\x03\0\0\0\x01'+
-            '\xff'*4)
-            fcis = 'FCIS\x00\x00\x00\x14\x00\x00\x00\x10\x00\x00\x00\x01\x00\x00\x00\x00'
-            fcis += pack('>I', self._text_length)
-            fcis += '\x00\x00\x00\x00\x00\x00\x00\x20\x00\x00\x00\x08\x00\x01\x00\x01\x00\x00\x00\x00'
+            b'FLIS\0\0\0\x08\0\x41\0\0\0\0\0\0\xff\xff\xff\xff\0\x01\0\x03\0\0\0\x03\0\0\0\x01'+
+            b'\xff'*4)
+            fcis = b'FCIS\x00\x00\x00\x14\x00\x00\x00\x10\x00\x00\x00\x01\x00\x00\x00\x00'
+            fcis += pack(b'>I', self._text_length)
+            fcis += b'\x00\x00\x00\x00\x00\x00\x00\x20\x00\x00\x00\x08\x00\x01\x00\x01\x00\x00\x00\x00'
             self._fcis_number = len(self._records)
             self._records.append(fcis)
-            self._records.append('\xE9\x8E\x0D\x0A')
+            self._records.append(b'\xE9\x8E\x0D\x0A')
 
         else :
             self._flis_number = len(self._records)
-            self._records.append('\xE9\x8E\x0D\x0A')
+            self._records.append(b'\xE9\x8E\x0D\x0A')
 
     def _generate_record0(self):
         metadata = self._oeb.metadata
@@ -1328,7 +1329,7 @@ class MobiWriter(object):
 
         record0 = StringIO()
         # The PalmDOC Header
-        record0.write(pack('>HHIHHHH', self._compression, 0,
+        record0.write(pack(b'>HHIHHHH', self._compression, 0,
             self._text_length,
             self._text_nrecords-1, RECORD_SIZE, 0, 0)) # 0 - 15 (0x0 - 0xf)
         uid = random.randint(0, 0xffffffff)
@@ -1336,7 +1337,7 @@ class MobiWriter(object):
         # The MOBI Header
 
         # 0x0 - 0x3
-        record0.write('MOBI')
+        record0.write(b'MOBI')
 
         # 0x4 - 0x7   : Length of header
         # 0x8 - 0x11  : MOBI type
@@ -1351,33 +1352,33 @@ class MobiWriter(object):
 
         btype = self._MobiDoc.mobiType
 
-        record0.write(pack('>IIIII',
+        record0.write(pack(b'>IIIII',
             0xe8, btype, 65001, uid, 6))
 
         # 0x18 - 0x1f : Unknown
-        record0.write('\xff' * 8)
+        record0.write(b'\xff' * 8)
 
 
         # 0x20 - 0x23 : Secondary index record
         if btype < 0x100 :
-            record0.write(pack('>I', 0xffffffff))
+            record0.write(pack(b'>I', 0xffffffff))
         elif btype > 0x100 and self._indexable :
             if self._primary_index_record is None:
-                record0.write(pack('>I', 0xffffffff))
+                record0.write(pack(b'>I', 0xffffffff))
             else:
-                record0.write(pack('>I', self._primary_index_record + 2 + len(self._ctoc_records)))
+                record0.write(pack(b'>I', self._primary_index_record + 2 + len(self._ctoc_records)))
         else :
-            record0.write(pack('>I', 0xffffffff))
+            record0.write(pack(b'>I', 0xffffffff))
 
         # 0x24 - 0x3f : Unknown
-        record0.write('\xff' * 28)
+        record0.write(b'\xff' * 28)
 
         # 0x40 - 0x43 : Offset of first non-text record
-        record0.write(pack('>I',
+        record0.write(pack(b'>I',
             self._text_nrecords + 1))
 
         # 0x44 - 0x4b : title offset, title length
-        record0.write(pack('>II',
+        record0.write(pack(b'>II',
             0xe8 + 16 + len(exth), len(title)))
 
         # 0x4c - 0x4f : Language specifier
@@ -1385,76 +1386,76 @@ class MobiWriter(object):
             str(metadata.language[0])))
 
         # 0x50 - 0x57 : Unknown
-        record0.write('\0' * 8)
+        record0.write(b'\0' * 8)
 
         # 0x58 - 0x5b : Format version
         # 0x5c - 0x5f : First image record number
-        record0.write(pack('>II',
+        record0.write(pack(b'>II',
             6, self._first_image_record if self._first_image_record else 0))
 
         # 0x60 - 0x63 : First HUFF/CDIC record number
         # 0x64 - 0x67 : Number of HUFF/CDIC records
         # 0x68 - 0x6b : First DATP record number
         # 0x6c - 0x6f : Number of DATP records
-        record0.write('\0' * 16)
+        record0.write(b'\0' * 16)
 
         # 0x70 - 0x73 : EXTH flags
-        record0.write(pack('>I', 0x50))
+        record0.write(pack(b'>I', 0x50))
 
         # 0x74 - 0x93 : Unknown
-        record0.write('\0' * 32)
+        record0.write(b'\0' * 32)
 
         # 0x94 - 0x97 : DRM offset
         # 0x98 - 0x9b : DRM count
         # 0x9c - 0x9f : DRM size
         # 0xa0 - 0xa3 : DRM flags
-        record0.write(pack('>IIII',
+        record0.write(pack(b'>IIII',
             0xffffffff, 0xffffffff, 0, 0))
 
 
         # 0xa4 - 0xaf : Unknown
-        record0.write('\0'*12)
+        record0.write(b'\0'*12)
 
         # 0xb0 - 0xb1 : First content record number
         # 0xb2 - 0xb3 : last content record number
         # (Includes Image, DATP, HUFF, DRM)
-        record0.write(pack('>HH', 1, last_content_record))
+        record0.write(pack(b'>HH', 1, last_content_record))
 
         # 0xb4 - 0xb7 : Unknown
-        record0.write('\0\0\0\x01')
+        record0.write(b'\0\0\0\x01')
 
         # 0xb8 - 0xbb : FCIS record number
         if FCIS_FLIS :
             # Write these if FCIS/FLIS turned on
             # 0xb8 - 0xbb : FCIS record number
-            record0.write(pack('>I', self._fcis_number))
+            record0.write(pack(b'>I', self._fcis_number))
 
             # 0xbc - 0xbf : Unknown (FCIS record count?)
-            record0.write(pack('>I', 1))
+            record0.write(pack(b'>I', 1))
 
             # 0xc0 - 0xc3 : FLIS record number
-            record0.write(pack('>I', self._flis_number))
+            record0.write(pack(b'>I', self._flis_number))
 
             # 0xc4 - 0xc7 : Unknown (FLIS record count?)
-            record0.write(pack('>I', 1))
+            record0.write(pack(b'>I', 1))
         else :
             # 0xb8 - 0xbb : FCIS record number
-            record0.write(pack('>I', 0xffffffff))
+            record0.write(pack(b'>I', 0xffffffff))
 
             # 0xbc - 0xbf : Unknown (FCIS record count?)
-            record0.write(pack('>I', 0xffffffff))
+            record0.write(pack(b'>I', 0xffffffff))
 
             # 0xc0 - 0xc3 : FLIS record number
-            record0.write(pack('>I', 0xffffffff))
+            record0.write(pack(b'>I', 0xffffffff))
 
             # 0xc4 - 0xc7 : Unknown (FLIS record count?)
-            record0.write(pack('>I', 1))
+            record0.write(pack(b'>I', 1))
 
         # 0xc8 - 0xcf : Unknown
-        record0.write('\0'*8)
+        record0.write(b'\0'*8)
 
         # 0xd0 - 0xdf : Unknown
-        record0.write(pack('>IIII', 0xffffffff, 0, 0xffffffff, 0xffffffff))
+        record0.write(pack(b'>IIII', 0xffffffff, 0, 0xffffffff, 0xffffffff))
 
         # 0xe0 - 0xe3 : Extra record data
         # Extra record data flags:
@@ -1469,16 +1470,16 @@ class MobiWriter(object):
             trailingDataFlags |= 2
         if WRITE_PBREAKS :
             trailingDataFlags |= 4
-        record0.write(pack('>I', trailingDataFlags))
+        record0.write(pack(b'>I', trailingDataFlags))
 
         # 0xe4 - 0xe7 : Primary index record
-        record0.write(pack('>I', 0xffffffff if self._primary_index_record is
+        record0.write(pack(b'>I', 0xffffffff if self._primary_index_record is
             None else self._primary_index_record))
 
         record0.write(exth)
         record0.write(title)
         record0 = record0.getvalue()
-        self._records[0] = record0 + ('\0' * (1024*8))
+        self._records[0] = record0 + (b'\0' * (1024*8))
 
     def _build_exth(self):
         oeb = self._oeb
@@ -1504,7 +1505,7 @@ class MobiWriter(object):
                     else:
                         continue
                 data = data.encode('utf-8')
-                exth.write(pack('>II', code, len(data) + 8))
+                exth.write(pack(b'>II', code, len(data) + 8))
                 exth.write(data)
                 nrecs += 1
             if term == 'rights' :
@@ -1512,7 +1513,7 @@ class MobiWriter(object):
                     rights = normalize(unicode(oeb.metadata.rights[0])).encode('utf-8')
                 except:
                     rights = 'Unknown'
-                exth.write(pack('>II', EXTH_CODES['rights'], len(rights) + 8))
+                exth.write(pack(b'>II', EXTH_CODES['rights'], len(rights) + 8))
                 exth.write(rights)
                 nrecs += 1
 
@@ -1529,14 +1530,14 @@ class MobiWriter(object):
 
         if isinstance(uuid, unicode):
             uuid = uuid.encode('utf-8')
-        exth.write(pack('>II', 113, len(uuid) + 8))
+        exth.write(pack(b'>II', 113, len(uuid) + 8))
         exth.write(uuid)
         nrecs += 1
 
         # Write cdetype
         if not self._mobi_periodical:
-            data = 'EBOK'
-            exth.write(pack('>II', 501, len(data)+8))
+            data = b'EBOK'
+            exth.write(pack(b'>II', 501, len(data)+8))
             exth.write(data)
             nrecs += 1
 
@@ -1547,7 +1548,7 @@ class MobiWriter(object):
             datestr = str(oeb.metadata['timestamp'][0])
 
         if datestr is not None:
-            exth.write(pack('>II',EXTH_CODES['pubdate'], len(datestr) + 8))
+            exth.write(pack(b'>II',EXTH_CODES['pubdate'], len(datestr) + 8))
             exth.write(datestr)
             nrecs += 1
         else:
@@ -1560,19 +1561,19 @@ class MobiWriter(object):
             href = item.href
             if href in self._images:
                 index = self._images[href] - 1
-                exth.write(pack('>III', 0xc9, 0x0c, index))
-                exth.write(pack('>III', 0xcb, 0x0c, 0))
+                exth.write(pack(b'>III', 0xc9, 0x0c, index))
+                exth.write(pack(b'>III', 0xcb, 0x0c, 0))
                 nrecs += 2
                 index = self._add_thumbnail(item)
                 if index is not None:
-                    exth.write(pack('>III', 0xca, 0x0c, index - 1))
+                    exth.write(pack(b'>III', 0xca, 0x0c, index - 1))
                     nrecs += 1
 
         exth = exth.getvalue()
         trail = len(exth) % 4
-        pad = '\0' * (4 - trail) # Always pad w/ at least 1 byte
-        exth = ['EXTH', pack('>II', len(exth) + 12, nrecs), exth, pad]
-        return ''.join(exth)
+        pad = b'\0' * (4 - trail) # Always pad w/ at least 1 byte
+        exth = [b'EXTH', pack(b'>II', len(exth) + 12, nrecs), exth, pad]
+        return b''.join(exth)
 
     def _add_thumbnail(self, item):
         try:
@@ -1594,13 +1595,13 @@ class MobiWriter(object):
         title = title + ('\0' * (32 - len(title)))
         now = int(time.time())
         nrecords = len(self._records)
-        self._write(title, pack('>HHIIIIII', 0, 0, now, now, 0, 0, 0, 0),
-            'BOOK', 'MOBI', pack('>IIH', (2*nrecords)-1, 0, nrecords))
+        self._write(title, pack(b'>HHIIIIII', 0, 0, now, now, 0, 0, 0, 0),
+            b'BOOK', b'MOBI', pack(b'>IIH', (2*nrecords)-1, 0, nrecords))
         offset = self._tell() + (8 * nrecords) + 2
         for i, record in enumerate(self._records):
-            self._write(pack('>I', offset), '\0', pack('>I', 2*i)[1:])
+            self._write(pack(b'>I', offset), b'\0', pack(b'>I', 2*i)[1:])
             offset += len(record)
-        self._write('\0\0')
+        self._write(b'\0\0')
 
     def _write_content(self):
         for record in self._records:
@@ -1698,32 +1699,32 @@ class MobiWriter(object):
 
         # Assemble the INDX0[0] and INDX1[0] output streams
         indx1 = StringIO()
-        indx1.write('INDX'+pack('>I', 0xc0)) # header length
+        indx1.write(b'INDX'+pack(b'>I', 0xc0)) # header length
 
         # 0x8 - 0xb : Unknown
-        indx1.write('\0'*4)
+        indx1.write(b'\0'*4)
 
         # 0xc - 0xf : Header type
-        indx1.write(pack('>I', 1))
+        indx1.write(pack(b'>I', 1))
 
         # 0x10 - 0x13 : Unknown
-        indx1.write('\0'*4)
+        indx1.write(b'\0'*4)
 
         # 0x14 - 0x17 : IDXT offset
         # 0x18 - 0x1b : IDXT count
-        indx1.write(pack('>I', 0xc0+len(indxt)))
-        indx1.write(pack('>I', indxt_count + 1))
+        indx1.write(pack(b'>I', 0xc0+len(indxt)))
+        indx1.write(pack(b'>I', indxt_count + 1))
 
         # 0x1c - 0x23 : Unknown
-        indx1.write('\xff'*8)
+        indx1.write(b'\xff'*8)
 
         # 0x24 - 0xbf
-        indx1.write('\0'*156)
+        indx1.write(b'\0'*156)
         indx1.write(indxt)
         indx1.write(indices)
         indx1 = indx1.getvalue()
 
-        idxt0 = chr(len(last_name)) + last_name + pack('>H', indxt_count + 1)
+        idxt0 = chr(len(last_name)) + last_name + pack(b'>H', indxt_count + 1)
         idxt0 = align_block(idxt0)
         indx0 = StringIO()
 
@@ -1732,63 +1733,63 @@ class MobiWriter(object):
         else :
             tagx = TAGX['periodical']
 
-        tagx = align_block('TAGX' + pack('>I', 8 + len(tagx)) + tagx)
+        tagx = align_block(b'TAGX' + pack(b'>I', 8 + len(tagx)) + tagx)
         indx0_indices_pos = 0xc0 + len(tagx) + len(idxt0)
-        indx0_indices = align_block('IDXT' + pack('>H', 0xc0 + len(tagx)))
+        indx0_indices = align_block(b'IDXT' + pack(b'>H', 0xc0 + len(tagx)))
         # Generate record header
         header = StringIO()
 
-        header.write('INDX')
-        header.write(pack('>I', 0xc0)) # header length
+        header.write(b'INDX')
+        header.write(pack(b'>I', 0xc0)) # header length
 
         # 0x08 - 0x0b : Unknown
-        header.write('\0'*4)
+        header.write(b'\0'*4)
 
         # 0x0c - 0x0f : Header type
-        header.write(pack('>I', 0))
+        header.write(pack(b'>I', 0))
 
         # 0x10 - 0x13 : Generator ID
         # This value may impact the position of flagBits written in
         # write_article_node().  Change with caution.
-        header.write(pack('>I', 6))
+        header.write(pack(b'>I', 6))
 
         # 0x14 - 0x17 : IDXT offset
-        header.write(pack('>I', indx0_indices_pos))
+        header.write(pack(b'>I', indx0_indices_pos))
 
         # 0x18 - 0x1b : IDXT count
-        header.write(pack('>I', 1))
+        header.write(pack(b'>I', 1))
 
         # 0x1c - 0x1f : Text encoding ?
         # header.write(pack('>I', 650001))
         # GR: This needs to be either 0xFDE9 or 0x4E4
-        header.write(pack('>I', 0xFDE9))
+        header.write(pack(b'>I', 0xFDE9))
 
         # 0x20 - 0x23 : Language code?
         header.write(iana2mobi(str(self._oeb.metadata.language[0])))
 
         # 0x24 - 0x27 : Number of TOC entries in INDX1
-        header.write(pack('>I', indxt_count + 1))
+        header.write(pack(b'>I', indxt_count + 1))
 
         # 0x28 - 0x2b : ORDT Offset
-        header.write('\0'*4)
+        header.write(b'\0'*4)
 
         # 0x2c - 0x2f : LIGT offset
-        header.write('\0'*4)
+        header.write(b'\0'*4)
 
         # 0x30 - 0x33 : Number of LIGT entries
-        header.write('\0'*4)
+        header.write(b'\0'*4)
 
         # 0x34 - 0x37 : Number of ctoc[] blocks
-        header.write(pack('>I', len(self._ctoc_records)))
+        header.write(pack(b'>I', len(self._ctoc_records)))
 
         # 0x38 - 0xb3 : Unknown (pad?)
-        header.write('\0'*124)
+        header.write(b'\0'*124)
 
         # 0xb4 - 0xb7 : TAGX offset
-        header.write(pack('>I', 0xc0))
+        header.write(pack(b'>I', 0xc0))
 
         # 0xb8 - 0xbf : Unknown
-        header.write('\0'*8)
+        header.write(b'\0'*8)
 
         header = header.getvalue()
 
@@ -1817,35 +1818,35 @@ class MobiWriter(object):
 
             # generate secondary INDX0
             indx0 = StringIO()
-            indx0.write('INDX'+pack('>I', 0xc0)+'\0'*8)            # header + 8x00
-            indx0.write(pack('>I', 0x06))                          # generator ID
-            indx0.write(pack('>I', 0xe8))                          # IDXT offset
-            indx0.write(pack('>I', 1))                             # IDXT entries
-            indx0.write(pack('>I', 65001))                         # encoding
-            indx0.write('\xff'*4)                                  # language
-            indx0.write(pack('>I', 4))                             # IDXT Entries in INDX1
-            indx0.write('\0'*4)                                    # ORDT Offset
-            indx0.write('\0'*136)                                  # everything up to TAGX offset
-            indx0.write(pack('>I', 0xc0))                          # TAGX offset
-            indx0.write('\0'*8)                                    # unknowns
-            indx0.write('TAGX'+pack('>I', tagx_len)+tagx)          # TAGX
-            indx0.write('\x0D'+'mastheadImage' + '\x00\x04')       # mastheadImage
-            indx0.write('IDXT'+'\x00\xd8\x00\x00')                 # offset plus pad
+            indx0.write('INDX'+pack(b'>I', 0xc0)+b'\0'*8)            # header + 8x00
+            indx0.write(pack(b'>I', 0x06))                          # generator ID
+            indx0.write(pack(b'>I', 0xe8))                          # IDXT offset
+            indx0.write(pack(b'>I', 1))                             # IDXT entries
+            indx0.write(pack(b'>I', 65001))                         # encoding
+            indx0.write(b'\xff'*4)                                  # language
+            indx0.write(pack(b'>I', 4))                             # IDXT Entries in INDX1
+            indx0.write(b'\0'*4)                                    # ORDT Offset
+            indx0.write(b'\0'*136)                                  # everything up to TAGX offset
+            indx0.write(pack(b'>I', 0xc0))                          # TAGX offset
+            indx0.write(b'\0'*8)                                    # unknowns
+            indx0.write(b'TAGX'+pack(b'>I', tagx_len)+tagx)          # TAGX
+            indx0.write(b'\x0D'+b'mastheadImage' + '\x00\x04')       # mastheadImage
+            indx0.write(b'IDXT'+b'\x00\xd8\x00\x00')                 # offset plus pad
 
             # generate secondary INDX1
             indx1 = StringIO()
-            indx1.write('INDX' + pack('>I', 0xc0) + '\0'*4)         # header + 4x00
-            indx1.write(pack('>I', 1))                              # blockType 1
-            indx1.write(pack('>I', 0x00))                           # unknown
-            indx1.write('\x00\x00\x00\xF0')                         # IDXT offset
-            indx1.write(pack('>I', 4))                              # num of IDXT entries
-            indx1.write('\xff'*8)                                   # encoding, language
-            indx1.write('\0'*(0xc0-indx1.tell()))                   # 00 to IDXT Entries @ 0xC0
-            indx1.write('\0\x01\x80')                               # 1 - null
-            indx1.write('\x06'+'author' + '\x02\x80\x80\xc7')           # author
-            indx1.write('\x0B'+'description' + '\x02\x80\x80\xc6')    # description
-            indx1.write('\x0D'+'mastheadImage' + '\x02\x85\x80\xc5')  # mastheadImage
-            indx1.write('IDXT'+'\x00\xc0\x00\xc3\x00\xce\x00\xde')      # IDXT header
+            indx1.write(b'INDX' + pack(b'>I', 0xc0) + b'\0'*4)         # header + 4x00
+            indx1.write(pack(b'>I', 1))                              # blockType 1
+            indx1.write(pack(b'>I', 0x00))                           # unknown
+            indx1.write(b'\x00\x00\x00\xF0')                         # IDXT offset
+            indx1.write(pack(b'>I', 4))                              # num of IDXT entries
+            indx1.write(b'\xff'*8)                                   # encoding, language
+            indx1.write(b'\0'*(0xc0-indx1.tell()))                   # 00 to IDXT Entries @ 0xC0
+            indx1.write(b'\0\x01\x80')                               # 1 - null
+            indx1.write(b'\x06'+b'author' + b'\x02\x80\x80\xc7')           # author
+            indx1.write(b'\x0B'+b'description' + b'\x02\x80\x80\xc6')    # description
+            indx1.write(b'\x0D'+b'mastheadImage' + b'\x02\x85\x80\xc5')  # mastheadImage
+            indx1.write(b'IDXT'+b'\x00\xc0\x00\xc3\x00\xce\x00\xde')      # IDXT header
 
             # Write INDX0 and INDX1 to the stream
             indx0, indx1 = indx0.getvalue(), indx1.getvalue()
@@ -1861,7 +1862,7 @@ class MobiWriter(object):
     # Index nodes {{{
     def _write_periodical_node(self, indxt, indices, index, offset, length, count, firstSection, lastSection) :
         pos = 0xc0 + indxt.tell()
-        indices.write(pack('>H', pos))								# Save the offset for IDXTIndices
+        indices.write(pack(b'>H', pos))								# Save the offset for IDXTIndices
         name = "%04X"%count
         indxt.write(chr(len(name)) + name)							# Write the name
         indxt.write(INDXT['periodical'])                            # entryType [0x0F | 0xDF | 0xFF | 0x3F]
@@ -1880,7 +1881,7 @@ class MobiWriter(object):
 
     def _write_section_node(self, indxt, indices, myCtocMapIndex, index, offset, length, count, firstArticle, lastArticle, parentIndex) :
         pos = 0xc0 + indxt.tell()
-        indices.write(pack('>H', pos))								# Save the offset for IDXTIndices
+        indices.write(pack(b'>H', pos))								# Save the offset for IDXTIndices
         name = "%04X"%count
         indxt.write(chr(len(name)) + name)							# Write the name
         indxt.write(INDXT['section'])                               # entryType [0x0F | 0xDF | 0xFF | 0x3F]
@@ -1898,7 +1899,7 @@ class MobiWriter(object):
 
     def _write_article_node(self, indxt, indices, index, offset, length, count, parentIndex) :
         pos = 0xc0 + indxt.tell()
-        indices.write(pack('>H', pos))								# Save the offset for IDXTIndices
+        indices.write(pack(b'>H', pos))								# Save the offset for IDXTIndices
         name = "%04X"%count
         indxt.write(chr(len(name)) + name)							# Write the name
         indxt.write(INDXT['article'])                               # entryType [0x0F | 0xDF | 0xFF | 0x3F]
@@ -1912,7 +1913,7 @@ class MobiWriter(object):
         flagBits = 0
         if hasAuthor : flagBits |= 0x4
         if hasDescription : flagBits |= 0x2
-        indxt.write(pack('>B',flagBits))                            # Author/description flags
+        indxt.write(pack(b'>B',flagBits))                            # Author/description flags
         indxt.write(decint(offset, DECINT_FORWARD))					# offset
 
 
@@ -1939,7 +1940,7 @@ class MobiWriter(object):
             pass
 
         pos = 0xc0 + indxt.tell()
-        indices.write(pack('>H', pos))								# Save the offset for IDXTIndices
+        indices.write(pack(b'>H', pos))								# Save the offset for IDXTIndices
         name = "%04X"%count
         indxt.write(chr(len(name)) + name)							# Write the name
         indxt.write(INDXT['chapter'])								# entryType [0x0F | 0xDF | 0xFF | 0x3F]
@@ -2151,7 +2152,7 @@ class MobiWriter(object):
         toc = self._oeb.toc
         indxt, indices, c = StringIO(), StringIO(), 0
 
-        indices.write('IDXT')
+        indices.write(b'IDXT')
         last_name = None
 
         # 'book', 'periodical' or None

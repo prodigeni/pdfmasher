@@ -1,4 +1,3 @@
-from __future__ import with_statement
 # Copyright 2008, Kovid Goyal kovid@kovidgoyal.net
 # Copyright 2011 Hardcoded Software (http://www.hardcoded.net)
 # 
@@ -6,9 +5,8 @@ from __future__ import with_statement
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-'''
-Conversion to EPUB.
-'''
+from __future__ import unicode_literals
+
 from zipfile import ZipFile, ZIP_STORED
 
 def rules(stylesheets):
@@ -25,9 +23,9 @@ def initialize_container(path_to_container, opf_name='metadata.opf',
     '''
     rootfiles = ''
     for path, mimetype, _ in extra_entries:
-        rootfiles += u'<rootfile full-path="{0}" media-type="{1}"/>'.format(
+        rootfiles += '<rootfile full-path="{0}" media-type="{1}"/>'.format(
                 path, mimetype)
-    CONTAINER = u'''\
+    CONTAINER = '''\
 <?xml version="1.0"?>
 <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
    <rootfiles>

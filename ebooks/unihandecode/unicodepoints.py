@@ -7,6 +7,8 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
+from __future__ import unicode_literals
+
 '''
 Unicode code point dictionary.
 

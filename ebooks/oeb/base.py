@@ -1,7 +1,5 @@
-'''
-Basic support for manipulating OEB 1.x/2.0 content and metadata.
-'''
 from __future__ import with_statement
+from __future__ import unicode_literals
 
 # Copyright 2008, Marshall T. Vandegrift <llasram@gmail.com>
 # Copyright 2011 Hardcoded Software (http://www.hardcoded.net)
@@ -19,7 +17,6 @@ from urllib import unquote as urlunquote
 from lxml import etree, html
 
 from ..constants import filesystem_encoding, __version__
-# from calibre.translations.dynamic import translate
 from .entitydefs import ENTITYDEFS
 from ..conversion.preprocess import CSSPreProcessor
 from ..utils import isbytestring, as_unicode, get_types_map
@@ -1167,7 +1164,7 @@ class Manifest(object):
             if isinstance(data, etree._Element):
                 ans = xml2str(data, pretty_print=self.oeb.pretty_print)
                 if self.media_type in OEB_DOCS:
-                    ans = re.sub(r'<(div|a|span)([^>]*)/>', r'<\1\2></\1>', ans)
+                    ans = re.sub(br'<(div|a|span)([^>]*)/>', br'<\1\2></\1>', ans)
                 return ans
             if isinstance(data, unicode):
                 return data.encode('utf-8')

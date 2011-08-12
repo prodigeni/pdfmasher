@@ -1,14 +1,15 @@
-'''
-Transform XHTML/OPS-ish content into Mobipocket HTML 3.2.
-'''
-from __future__ import with_statement
-
 # Copyright 2008, Marshall T. Vandegrift <llasram@gmail.cam>
 # Copyright 2011 Hardcoded Software (http://www.hardcoded.net)
 # 
 # This software is licensed under the "GPL v3" License as described in the "LICENSE" file, 
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
+
+'''
+Transform XHTML/OPS-ish content into Mobipocket HTML 3.2.
+'''
+from __future__ import with_statement
+from __future__ import unicode_literals
 
 import copy
 import re
@@ -20,8 +21,6 @@ import logging
 from ..oeb.base import namespace, barename
 from ..oeb.base import XHTML, XHTML_NS, OEB_DOCS, urlnormalize
 from ..oeb.stylizer import Stylizer
-# from ..oeb.transforms.flatcss import KeyMapper
-# from calibre.utils.magick.draw import identify_data
 
 MBP_NS = 'http://mobipocket.com/ns/mbp'
 def MBP(name): return '{%s}%s' % (MBP_NS, name)

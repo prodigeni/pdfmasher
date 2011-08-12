@@ -6,6 +6,8 @@
 # http://www.hardcoded.net/licenses/gplv3_license
 
 from __future__ import with_statement
+from __future__ import unicode_literals
+
 import os, shutil, re, logging
 
 from ..ptempfile import TemporaryDirectory

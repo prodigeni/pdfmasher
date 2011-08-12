@@ -2,6 +2,7 @@
 Make strings safe for use as ASCII filenames, while trying to preserve as much
 meaning as possible.
 '''
+from __future__ import unicode_literals
 
 import os
 from math import ceil

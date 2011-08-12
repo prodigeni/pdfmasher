@@ -1,4 +1,3 @@
-#!/usr/bin/env  python
 # Copyright 2008, Kovid Goyal kovid@kovidgoyal.net
 # Copyright 2011 Hardcoded Software (http://www.hardcoded.net)
 # 
@@ -6,9 +5,8 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-"""
-Provides abstraction for metadata reading.writing from a variety of ebook formats.
-"""
+from __future__ import unicode_literals
+
 import os, sys, re
 from urllib import unquote, quote
 from urlparse import urlparse

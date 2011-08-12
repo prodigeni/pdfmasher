@@ -5,6 +5,8 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
+from __future__ import unicode_literals
+
 from . import cPalmdoc
 
 def decompress_doc(data):
@@ -12,6 +14,6 @@ def decompress_doc(data):
 
 def compress_doc(data):
     if not data:
-        return u''
+        return ''
     return cPalmdoc.compress(data)
 
