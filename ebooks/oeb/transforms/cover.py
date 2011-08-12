@@ -13,7 +13,6 @@ import logging
 
 from lxml import etree
 from ...utils import guess_type
-# from calibre.utils.magick.draw import identify_data
 
 class CoverManager(object):
 

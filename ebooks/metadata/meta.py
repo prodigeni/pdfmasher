@@ -116,9 +116,9 @@ def metadata_from_filename(name, pat=None):
         try:
             pubdate = match.group('published')
             if pubdate:
-                from calibre.utils.date import parse_date
+                from ...utils.date import parse_date
                 mi.pubdate = parse_date(pubdate)
-        except:
+        except Exception:
             pass
 
     if mi.is_null('title'):

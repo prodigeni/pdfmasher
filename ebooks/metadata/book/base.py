@@ -463,36 +463,6 @@ class Metadata(object):
         name, val, ign, ign = self.format_field_extended(key, series_with_index)
         return (name, val)
 
-    def to_html(self):
-        '''
-        A HTML representation of this object.
-        '''
-        from calibre.ebooks.metadata import authors_to_string
-        ans = [(_('Title'), unicode(self.title))]
-        ans += [(_('Author(s)'), (authors_to_string(self.authors) if self.authors else _('Unknown')))]
-        ans += [(_('Publisher'), unicode(self.publisher))]
-        ans += [(_('Producer'), unicode(self.book_producer))]
-        ans += [(_('Comments'), unicode(self.comments))]
-        ans += [('ISBN', unicode(self.isbn))]
-        ans += [(_('Tags'), u', '.join([unicode(t) for t in self.tags]))]
-        if self.series:
-            ans += [(_('Series'), unicode(self.series) + ' #%s'%self.format_series_index())]
-        ans += [(_('Language'), unicode(self.language))]
-        if self.timestamp is not None:
-            ans += [(_('Timestamp'), unicode(self.timestamp.isoformat(' ')))]
-        if self.pubdate is not None:
-            ans += [(_('Published'), unicode(self.pubdate.isoformat(' ')))]
-        if self.rights is not None:
-            ans += [(_('Rights'), unicode(self.rights))]
-        for key in self.custom_field_keys():
-            val = self.get(key, None)
-            if val:
-                (name, val) = self.format_field(key)
-                ans += [(name, val)]
-        for i, x in enumerate(ans):
-            ans[i] = '<tr><td><b>%s</b></td><td>%s</td></tr>'%x
-        return '<table>%s</table>'%u'\n'.join(ans)
-
     def __str__(self):
         return self.__unicode__().encode('utf-8')
 

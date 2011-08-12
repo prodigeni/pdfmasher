@@ -75,7 +75,7 @@ def _make_file(suffix, prefix, base):
         fd, name = tempfile.mkstemp(suffix, prefix, dir=base)
     except UnicodeDecodeError:
         global _base_dir
-        from calibre.constants import filesystem_encoding
+        from .constants import filesystem_encoding
         base_dir()
         if not isinstance(_base_dir, unicode):
             _base_dir = _base_dir.decode(filesystem_encoding)
@@ -88,7 +88,7 @@ def _make_dir(suffix, prefix, base):
         tdir = tempfile.mkdtemp(suffix, prefix, base)
     except ValueError:
         global _base_dir
-        from calibre.constants import filesystem_encoding
+        from .constants import filesystem_encoding
         base_dir()
         if not isinstance(_base_dir, unicode):
             _base_dir = _base_dir.decode(filesystem_encoding)
