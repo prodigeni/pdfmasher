@@ -9,6 +9,7 @@ from __future__ import with_statement
 import os, shutil, re, logging
 
 from ..ptempfile import TemporaryDirectory
+from ..utils.zipfile import zip_add_dir
 
 from lxml import etree
 
@@ -130,7 +131,7 @@ def convert(oeb, output_path, epub_flatten=False, dont_split_on_page_breaks=Fals
         from . import initialize_container
         with initialize_container(output_path, os.path.basename(opf),
                 extra_entries=extra_entries) as epub:
-            epub.add_dir(tdir)
+            zip_add_dir(epub, tdir)
             if metadata_xml is not None:
                 epub.writestr('META-INF/metadata.xml', metadata_xml.encode('utf-8'))
 

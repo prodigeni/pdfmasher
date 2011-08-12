@@ -9,7 +9,7 @@ from __future__ import with_statement
 '''
 Conversion to EPUB.
 '''
-from ..utils.zipfile import ZipFile, ZIP_STORED
+from zipfile import ZipFile, ZIP_STORED
 
 def rules(stylesheets):
     for s in stylesheets:
@@ -37,8 +37,8 @@ def initialize_container(path_to_container, opf_name='metadata.opf',
 </container>
     '''.format(opf_name, extra_entries=rootfiles).encode('utf-8')
     zf = ZipFile(path_to_container, 'w')
-    zf.writestr('mimetype', 'application/epub+zip', compression=ZIP_STORED)
-    zf.writestr('META-INF/', '', 0700)
+    zf.writestr('mimetype', 'application/epub+zip', ZIP_STORED)
+    zf.writestr('META-INF/', '')
     zf.writestr('META-INF/container.xml', CONTAINER)
     for path, _, data in extra_entries:
         zf.writestr(path, data)
