@@ -1,16 +1,11 @@
-from future_builtins import map
+# Copyright 2008, Kovid Goyal kovid@kovidgoyal.net
+# Copyright 2011 Hardcoded Software (http://www.hardcoded.net)
+# 
+# This software is licensed under the "GPL v3" License as described in the "LICENSE" file, 
+# which should be included with this package. The terms are also available at 
+# http://www.hardcoded.net/licenses/gplv3_license
 
-__license__   = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
-__docformat__ = 'restructuredtext en'
-__appname__   = u'pdfmasher'
-numeric_version = (0, 8, 13)
-__version__   = u'.'.join(map(unicode, numeric_version))
-__author__    = u"Kovid Goyal <kovid@kovidgoyal.net>"
-
-'''
-Various run time constants.
-'''
+from core import __appname__, __version__
 
 import sys, locale, codecs, os, importlib, collections
 

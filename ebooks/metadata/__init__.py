@@ -1,7 +1,10 @@
 #!/usr/bin/env  python
-__license__   = 'GPL v3'
-__copyright__ = '2008, Kovid Goyal kovid@kovidgoyal.net'
-__docformat__ = 'restructuredtext en'
+# Copyright 2008, Kovid Goyal kovid@kovidgoyal.net
+# Copyright 2011 Hardcoded Software (http://www.hardcoded.net)
+# 
+# This software is licensed under the "GPL v3" License as described in the "LICENSE" file, 
+# which should be included with this package. The terms are also available at 
+# http://www.hardcoded.net/licenses/gplv3_license
 
 """
 Provides abstraction for metadata reading.writing from a variety of ebook formats.
@@ -11,8 +14,6 @@ from urllib import unquote, quote
 from urlparse import urlparse
 
 from ..utils import relpath, guess_type, remove_bracketed_text
-
-from ..utils import tweaks
 
 _author_pat = re.compile(',?\s+(and|with)\s+', re.IGNORECASE)
 def string_to_authors(raw):
@@ -27,20 +28,12 @@ def authors_to_string(authors):
     else:
         return ''
 
-try:
-    _title_pat = re.compile(tweaks.__dict__.get('title_sort_articles',
-                                       r'^(A|The|An)\s+'), re.IGNORECASE)
-except:
-    print 'Error in title sort pattern'
-    import traceback
-    traceback.print_exc()
-    _title_pat = re.compile('^(A|The|An)\s+', re.IGNORECASE)
-
+_title_pat = re.compile(r'^(A|The|An)\s+', re.IGNORECASE)
 _ignore_starts = u'\'"'+u''.join(unichr(x) for x in range(0x2018, 0x201e)+[0x2032, 0x2033])
 
 def title_sort(title, order=None):
     if order is None:
-        order = tweaks.title_series_sorting
+        order = 'library_order'
     title = title.strip()
     if order == 'strictly_alphabetic':
         return title

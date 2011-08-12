@@ -3,9 +3,12 @@ Basic support for manipulating OEB 1.x/2.0 content and metadata.
 '''
 from __future__ import with_statement
 
-__license__   = 'GPL v3'
-__copyright__ = '2008, Marshall T. Vandegrift <llasram@gmail.com>'
-__docformat__ = 'restructuredtext en'
+# Copyright 2008, Marshall T. Vandegrift <llasram@gmail.com>
+# Copyright 2011 Hardcoded Software (http://www.hardcoded.net)
+# 
+# This software is licensed under the "GPL v3" License as described in the "LICENSE" file, 
+# which should be included with this package. The terms are also available at 
+# http://www.hardcoded.net/licenses/gplv3_license
 
 import os, re, uuid, logging
 from collections import defaultdict
@@ -387,7 +390,8 @@ def merge_multiple_html_heads_and_bodies(root):
     for b in bodies:
         for x in b:
             body.append(x)
-    map(root.append, (head, body))
+    root.append(head)
+    root.append(body)
     logging.warn('Merging multiple <head> and <body> sections')
     return root
 
