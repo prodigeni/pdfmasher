@@ -5,8 +5,8 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from __future__ import with_statement
-from __future__ import unicode_literals
+
+
 
 import os, re
 
@@ -14,7 +14,7 @@ from lxml import etree
 
 from ..utils import CurrentDir
 
-from urllib import unquote
+from urllib.parse import unquote
 
 class OEBOutput(object):
     def convert(self, oeb_book, output_path, input_plugin):
@@ -42,7 +42,7 @@ class OEBOutput(object):
                     if key == OPF_MIME:
                         # Needed as I can't get lxml to output opf:role and
                         # not output <opf:metadata> as well
-                        raw = re.sub(r'(<[/]{0,1})opf:', r'\1', raw)
+                        raw = re.sub(br'(<[/]{0,1})opf:', br'\1', raw)
                     with open(href, 'wb') as f:
                         f.write(raw)
 
@@ -51,7 +51,7 @@ class OEBOutput(object):
                 dir = os.path.dirname(path)
                 if not os.path.exists(dir):
                     os.makedirs(dir)
-                with open(path, 'wb') as f:
+                with open(path, 'wt', encoding='utf-8') as f:
                     f.write(str(item))
                 item.unload_data_from_memory(memory=path)
 

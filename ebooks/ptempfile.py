@@ -5,14 +5,14 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from __future__ import with_statement
-from __future__ import unicode_literals
+
+
 
 """
 Provides platform independent temporary files that persist even after
 being closed.
 """
-import tempfile, os, atexit, binascii, cPickle
+import tempfile, os, atexit, binascii, pickle
 
 from .constants import __version__, __appname__
 
@@ -47,14 +47,14 @@ def base_dir():
         td = os.environ.get('CALIBRE_WORKER_TEMP_DIR', None)
         if td is not None:
             try:
-                td = cPickle.loads(binascii.unhexlify(td))
+                td = pickle.loads(binascii.unhexlify(td))
             except:
                 td = None
         if td and os.path.exists(td):
             _base_dir = td
         else:
             base = os.environ.get('CALIBRE_TEMP_DIR', None)
-            prefix = app_prefix(u'tmp_')
+            prefix = app_prefix('tmp_')
             try:
                 # First try an ascii path as that is what was done historically
                 # and we dont want to break working code
@@ -77,7 +77,7 @@ def _make_file(suffix, prefix, base):
         global _base_dir
         from .constants import filesystem_encoding
         base_dir()
-        if not isinstance(_base_dir, unicode):
+        if not isinstance(_base_dir, str):
             _base_dir = _base_dir.decode(filesystem_encoding)
         base = base.decode(filesystem_encoding)
         fd, name = tempfile.mkstemp(suffix, prefix, dir=dir)
@@ -90,7 +90,7 @@ def _make_dir(suffix, prefix, base):
         global _base_dir
         from .constants import filesystem_encoding
         base_dir()
-        if not isinstance(_base_dir, unicode):
+        if not isinstance(_base_dir, str):
             _base_dir = _base_dir.decode(filesystem_encoding)
         base = base.decode(filesystem_encoding)
         tdir = tempfile.mkdtemp(suffix, prefix, base)

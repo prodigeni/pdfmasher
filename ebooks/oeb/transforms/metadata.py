@@ -5,8 +5,8 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from __future__ import with_statement
-from __future__ import unicode_literals
+
+
 
 import os
 from datetime import datetime
@@ -51,7 +51,7 @@ def meta_info_to_oeb_metadata(mi, m, override_input_metadata=False):
         m.clear('series')
     identifiers = mi.get_identifiers()
     set_isbn = False
-    for typ, val in identifiers.iteritems():
+    for typ, val in identifiers.items():
         has = False
         if typ.lower() == 'isbn':
             set_isbn = True

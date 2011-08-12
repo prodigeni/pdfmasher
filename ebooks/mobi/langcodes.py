@@ -6,7 +6,7 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from __future__ import unicode_literals
+
 
 from struct import pack
 
@@ -334,8 +334,8 @@ def iana2mobi(icode):
 
 def mobi2iana(langcode, sublangcode):
     prefix = suffix = None
-    for code, d in IANA_MOBI.items():
-        for subcode, t in d.items():
+    for code, d in list(IANA_MOBI.items()):
+        for subcode, t in list(d.items()):
             cc, cl = t
             if cc == langcode:
                 prefix = code

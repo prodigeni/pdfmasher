@@ -13,7 +13,7 @@ def compress_doc(data):
     ldata = len(data)
     while i < ldata:
         if i > 10 and (ldata - i) > 10:
-            chunk = ''
+            chunk = b''
             match = -1
             for j in range(10, 2, -1):
                 chunk = data[i:i+j]
@@ -31,11 +31,11 @@ def compress_doc(data):
                 out += pack(b'>H', code)
                 i += n
                 continue
-        ch = data[i]
-        och = ord(ch)
+        och = data[i]
+        ch = bytes([och])
         i += 1
         if ch == b' ' and (i + 1) < ldata:
-            onch = ord(data[i])
+            onch = data[i]
             if onch >= 0x40 and onch < 0x80:
                 out += pack(b'>B', onch ^ 0x80)
                 i += 1
@@ -46,8 +46,8 @@ def compress_doc(data):
             j = i
             binseq = [ch]
             while j < ldata and len(binseq) < 8:
-                ch = data[j]
-                och = ord(ch)
+                och = data[j]
+                ch = bytes([och])
                 if och == 0 or (och > 8 and och < 0x80):
                     break
                 binseq.append(ch)

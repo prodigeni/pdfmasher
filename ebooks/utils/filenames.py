@@ -2,7 +2,7 @@
 Make strings safe for use as ASCII filenames, while trying to preserve as much
 meaning as possible.
 '''
-from __future__ import unicode_literals
+
 
 import os
 from math import ceil
@@ -24,7 +24,7 @@ def ascii_text(orig):
     try:
         ascii = udc.decode(orig)
     except:
-        if isinstance(orig, unicode):
+        if isinstance(orig, str):
             ascii = orig.encode('ascii', 'replace')
         ascii = orig.decode(preferred_encoding,
                 'replace').encode('ascii', 'replace')

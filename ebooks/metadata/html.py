@@ -5,7 +5,7 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from __future__ import unicode_literals
+
 '''
 Try to read metadata from an HTML file.
 '''
@@ -23,7 +23,7 @@ def get_meta_regexp_(name):
     return re.compile('<meta name=[\'"]' + name + '[\'"] content=[\'"](.+?)[\'"]\s*/?>', re.IGNORECASE)
 
 def get_metadata_(src, encoding):
-    if not isinstance(src, unicode):
+    if not isinstance(src, str):
         assert encoding
         src = src.decode(encoding, 'replace')
 

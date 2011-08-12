@@ -5,11 +5,11 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from __future__ import unicode_literals
+
 
 import os, glob, re, functools
-from urlparse import urlparse
-from urllib import unquote
+from urllib.parse import urlparse
+from urllib.parse import unquote
 from uuid import uuid4
 
 from lxml import etree
@@ -162,7 +162,7 @@ class TOC(list):
                 text = ''
             elem = E.navPoint(
                     E.navLabel(E.text(re.sub(r'\s+', ' ', text))),
-                    E.content(src=unicode(np.href)+(('#' + unicode(np.fragment))
+                    E.content(src=str(np.href)+(('#' + str(np.fragment))
                         if np.fragment else '')),
                     id=str(uuid4()),
                     playOrder=str(np.play_order)

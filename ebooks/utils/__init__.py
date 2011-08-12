@@ -5,13 +5,13 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from __future__ import unicode_literals
+
 
 '''
 Miscelleaneous utilities.
 '''
 
-import __builtin__
+import builtins
 import sys
 import os
 import os.path
@@ -21,7 +21,7 @@ from functools import partial
 from . import resources
 from ..constants import preferred_encoding, filesystem_encoding
 
-__builtin__.__dict__['dynamic_property'] = lambda(func): func(None)
+builtins.__dict__['dynamic_property'] = lambda func: func(None)
 
 class CurrentDir(object):
 
@@ -42,7 +42,7 @@ class CurrentDir(object):
             pass
 
 def unicode_path(path, abs=False):
-    if not isinstance(path, unicode):
+    if not isinstance(path, str):
         path = path.decode(sys.getfilesystemencoding())
     if abs:
         path = os.path.abspath(path)
@@ -50,9 +50,9 @@ def unicode_path(path, abs=False):
 
 def my_unichr(num):
     try:
-        return unichr(num)
+        return chr(num)
     except (ValueError, OverflowError):
-        return u'?'
+        return '?'
 
 def entity_to_unicode(match, exceptions=[], encoding='cp1252',
         result_exceptions={}):
@@ -120,7 +120,7 @@ def prepare_string_for_xml(raw, attribute=False):
     return raw
 
 def isbytestring(obj):
-    return isinstance(obj, (str, bytes))
+    return isinstance(obj, bytes)
 
 def force_unicode(obj, enc=preferred_encoding):
     if isbytestring(obj):
@@ -142,7 +142,7 @@ def force_unicode(obj, enc=preferred_encoding):
 def as_unicode(obj, enc=preferred_encoding):
     if not isbytestring(obj):
         try:
-            obj = unicode(obj)
+            obj = str(obj)
         except:
             try:
                 obj = str(obj)
@@ -175,11 +175,8 @@ def get_types_map():
         _init_mimetypes()
     return mimetypes.types_map
 
-_filename_sanitize = re.compile(r'[\xae\0\\|\?\*<":>\+/]')
-_filename_sanitize_unicode = frozenset([u'\\', u'|', u'?', u'*', u'<',
-    u'"', u':', u'>', u'+', u'/'] + list(map(unichr, xrange(32))))
-
-def sanitize_file_name(name, substitute='_', as_unicode=False):
+_filename_sanitize = re.compile(br'[\xae\0\\|\?\*<":>\+/]')
+def sanitize_file_name(name, substitute=b'_', as_unicode=False):
     '''
     Sanitize the filename `name`. All invalid characters are replaced by `substitute`.
     The set of invalid characters is the union of the invalid characters in Windows,
@@ -189,33 +186,35 @@ def sanitize_file_name(name, substitute='_', as_unicode=False):
     *NOTE:* This function always returns byte strings, not unicode objects. The byte strings
     are encoded in the filesystem encoding of the platform, or UTF-8.
     '''
-    if isinstance(name, unicode):
+    if isinstance(name, str):
         name = name.encode(filesystem_encoding, 'ignore')
+    if isinstance(substitute, str):
+        substitute = substitute.encode(filesystem_encoding, 'ignore')
     one = _filename_sanitize.sub(substitute, name)
-    one = re.sub(r'\s', ' ', one).strip()
+    one = re.sub(br'\s', ' ', one).strip()
     bname, ext = os.path.splitext(one)
-    one = re.sub(r'^\.+$', '_', bname)
+    one = re.sub(br'^\.+$', '_', bname)
     if as_unicode:
         one = one.decode(filesystem_encoding)
-    one = one.replace('..', substitute)
+    one = one.replace(b'..', substitute)
     one += ext
     # Windows doesn't like path components that end with a period
-    if one and one[-1] in ('.', ' '):
-        one = one[:-1]+'_'
+    if one and one[-1] in (b'.', b' '):
+        one = one[:-1]+b'_'
     # Names starting with a period are hidden on Unix
-    if one.startswith('.'):
-        one = '_' + one[1:]
+    if one.startswith(b'.'):
+        one = b'_' + one[1:]
     return one
 
 relpath = os.path.relpath
 
 def remove_bracketed_text(src,
-        brackets={u'(':u')', u'[':u']', u'{':u'}'}):
+        brackets={'(':')', '[':']', '{':'}'}):
     from collections import Counter
     counts = Counter()
     buf = []
     src = force_unicode(src)
-    rmap = dict([(v, k) for k, v in brackets.iteritems()])
+    rmap = dict([(v, k) for k, v in brackets.items()])
     for char in src:
         if char in brackets:
             counts[char] += 1
@@ -223,9 +222,9 @@ def remove_bracketed_text(src,
             idx = rmap[char]
             if counts[idx] > 0:
                 counts[idx] -= 1
-        elif sum(counts.itervalues()) < 1:
+        elif sum(counts.values()) < 1:
             buf.append(char)
-    return u''.join(buf)
+    return ''.join(buf)
 
 def sanitize_file_name2(name, substitute='_'):
     '''

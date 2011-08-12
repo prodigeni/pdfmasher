@@ -5,18 +5,18 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from __future__ import with_statement
-from __future__ import unicode_literals
+
+
 
 '''
 Input plugin for HTML or OPF ebooks.
 '''
 
 import os, re, sys, uuid, tempfile
-from urlparse import urlparse, urlunparse
-from urllib import unquote
+from urllib.parse import urlparse, urlunparse
+from urllib.parse import unquote
 from functools import partial
-from itertools import izip
+
 import logging
 
 from ..oeb.base import OEBBook
@@ -49,7 +49,7 @@ class Link(object):
         :param base: The base directory that relative URLs are with respect to.
                      Must be a unicode string.
         '''
-        assert isinstance(url, unicode) and isinstance(base, unicode)
+        assert isinstance(url, str) and isinstance(base, str)
         self.url         = url
         self.parsed_url  = urlparse(self.url)
         self.is_local    = self.parsed_url.scheme in ('', 'file')
@@ -68,7 +68,7 @@ class Link(object):
         return self.path == getattr(other, 'path', other)
 
     def __str__(self):
-        return u'Link: %s --> %s'%(self.url, self.path)
+        return 'Link: %s --> %s'%(self.url, self.path)
 
 
 class IgnoreFile(Exception):
@@ -128,9 +128,12 @@ class HTMLFile(object):
 
     def __eq__(self, other):
         return self.path == getattr(other, 'path', other)
-
+    
+    def __hash__(self):
+        return object.__hash__(self)
+    
     def __str__(self):
-        return u'HTMLFile:%d:%s:%s'%(self.level, 'b' if self.is_binary else 'a', self.path)
+        return 'HTMLFile:%d:%s:%s'%(self.level, 'b' if self.is_binary else 'a', self.path)
 
     def __repr__(self):
         return str(self)
@@ -170,7 +173,7 @@ def depth_first(root, flat, visited=set([])):
                         visited.add(hf)
 
 
-def traverse(path_to_html_file, max_levels=sys.maxint, verbose=0, encoding=None):
+def traverse(path_to_html_file, max_levels=sys.maxsize, verbose=0, encoding=None):
     '''
     Recursively traverse all links in the HTML file.
 
@@ -202,7 +205,7 @@ def traverse(path_to_html_file, max_levels=sys.maxint, verbose=0, encoding=None)
                 except IgnoreFile as err:
                     rejects.append(link)
                     if not err.doesnt_exist or verbose > 1:
-                        print repr(err)
+                        print(repr(err))
             for link in rejects:
                 hf.links.remove(link)
 
@@ -294,15 +297,14 @@ class HTMLInput(object):
             path = f.path
             oeb.container = DirContainer(os.path.dirname(path), ignore_opf=True)
             bname = os.path.basename(path)
-            id, href = oeb.manifest.generate(id='html',
-                    href=ascii_filename(bname))
+            id, href = oeb.manifest.generate(id='html', href=bname)
             htmlfile_map[path] = href
             item = oeb.manifest.add(id, href, 'text/html')
             item.html_input_href = bname
             oeb.spine.add(item, True)
 
         self.added_resources = {}
-        for path, href in htmlfile_map.items():
+        for path, href in list(htmlfile_map.items()):
             if not self.is_case_sensitive(path):
                 path = path.lower()
             self.added_resources[path] = href
@@ -317,10 +319,10 @@ class HTMLInput(object):
             item = oeb.manifest.hrefs[htmlfile_map[path]]
             rewrite_links(item.data, partial(self.resource_adder, base=dpath))
 
-        for item in oeb.manifest.values():
+        for item in list(oeb.manifest.values()):
             if item.media_type in self.OEB_STYLES:
                 dpath = None
-                for path, href in self.added_resources.items():
+                for path, href in list(self.added_resources.items()):
                     if href == item.href:
                         dpath = os.path.dirname(path)
                         break
@@ -349,22 +351,22 @@ class HTMLInput(object):
         use = titles
         if len(titles) > len(set(titles)):
             use = headers
-        for title, item in izip(use, self.oeb.spine):
+        for title, item in zip(use, self.oeb.spine):
             if not item.linear: continue
             toc.add(title, item.href)
 
-        oeb.container = DirContainer(os.getcwdu(), ignore_opf=True)
+        oeb.container = DirContainer(os.getcwd(), ignore_opf=True)
         return oeb
 
     def link_to_local_path(self, link_, base=None):
-        if not isinstance(link_, unicode):
+        if not isinstance(link_, str):
             try:
                 link_ = link_.decode('utf-8', 'error')
             except:
                 logging.warn('Failed to decode link %r. Ignoring', link_)
                 return None, None
         try:
-            l = Link(link_, base if base else os.getcwdu())
+            l = Link(link_, base if base else os.getcwd())
         except:
             logging.exception('Failed to process link: %r', link_)
             return None, None

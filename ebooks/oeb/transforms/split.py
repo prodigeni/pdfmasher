@@ -5,8 +5,8 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from __future__ import with_statement
-from __future__ import unicode_literals
+
+
 
 '''
 Splitting of the XHTML flows. Splitting can happen on page boundaries or can be
@@ -116,8 +116,7 @@ class Split(object):
                 continue
 
         page_breaks = list(page_breaks)
-        page_breaks.sort(cmp=
-              lambda x,y : cmp(int(x.get('pb_order')), int(y.get('pb_order'))))
+        page_breaks.sort(key=lambda x: int(x.get('pb_order')))
         page_break_ids, page_breaks_ = [], []
         for i, x in enumerate(page_breaks):
             x.set('id', x.get('id', 'calibre_pb_%d'%i))
@@ -182,7 +181,12 @@ class FlowSplitter(object):
         self.base           = item.href
         self.csp_counter    = 0
 
-        base, ext = os.path.splitext(self.base)
+        # XXX quick str/bytes hackfix
+        if isinstance(self.base, bytes):
+            decoded_base = self.base.decode('utf-8')
+        else:
+            decoded_base = self.base
+        base, ext = os.path.splitext(decoded_base)
         self.base = base.replace('%', '%%')+'_split_%.3d'+ext
 
         self.trees = [self.item.data.getroottree()]
@@ -300,7 +304,7 @@ class FlowSplitter(object):
         tree, tree2  = copy.deepcopy(tree), copy.deepcopy(tree)
         root         = tree.getroot()
         root2        = tree2.getroot()
-        body, body2  = map(self.get_body, (root, root2))
+        body, body2  = list(map(self.get_body, (root, root2)))
         path = self.adjust_split_point(root, path)
         split_point  = root.xpath(path)[0]
         split_point2 = root2.xpath(path)[0]
@@ -347,7 +351,7 @@ class FlowSplitter(object):
         if body is None:
             return False
         txt = re.sub(r'\s+', '',
-                etree.tostring(body, method='text', encoding=unicode))
+                etree.tostring(body, method='text', encoding=str))
         if len(txt) > 4:
             return False
         for img in root.xpath('//h:img', namespaces=NAMESPACES):
@@ -360,7 +364,7 @@ class FlowSplitter(object):
         rest = text.replace('\r', '')
         parts = re.split('\n\n', rest)
         logging.debug('\t\t\t\tFound %d parts'%len(parts))
-        if max(map(len, parts)) > size:
+        if max(list(map(len, parts))) > size:
             raise SplitError('Cannot split as file contains a <pre> tag '
                 'with a very large paragraph', root)
         ans = []
@@ -379,7 +383,7 @@ class FlowSplitter(object):
         root = tree.getroot()
         # Split large <pre> tags
         for pre in list(XPath('//h:pre')(root)):
-            text = u''.join(pre.xpath('descendant::text()'))
+            text = ''.join(pre.xpath('descendant::text()'))
             pre.text = text
             for child in list(pre.iterchildren()):
                 pre.remove(child)
@@ -390,7 +394,7 @@ class FlowSplitter(object):
                 for frag in frags:
                     pre2 = copy.copy(pre)
                     pre2.text = frag
-                    pre2.tail = u''
+                    pre2.tail = ''
                     new_pres.append(pre2)
                 new_pres[-1].tail = pre.tail
                 p = pre.getparent()
@@ -492,7 +496,7 @@ class FlowSplitter(object):
 
         spine_pos = self.item.spine_position
 
-        for current, tree in zip(*map(reversed, (self.files, self.trees))):
+        for current, tree in zip(*list(map(reversed, (self.files, self.trees)))):
             for a in tree.getroot().xpath('//h:a[@href]', namespaces=NAMESPACES):
                 href = a.get('href').strip()
                 if href.startswith('#'):
@@ -508,7 +512,7 @@ class FlowSplitter(object):
             self.oeb.spine.insert(spine_pos, new_item, self.item.linear)
 
         if self.oeb.guide:
-            for ref in self.oeb.guide.values():
+            for ref in list(self.oeb.guide.values()):
                 href, frag = urldefrag(ref.href)
                 if href == self.item.href:
                     nhref = self.anchor_map[frag if frag else None]

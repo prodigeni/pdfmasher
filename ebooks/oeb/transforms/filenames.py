@@ -5,10 +5,10 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from __future__ import unicode_literals
+
 
 import posixpath
-from urlparse import urldefrag, urlparse
+from urllib.parse import urldefrag, urlparse
 
 from lxml import etree
 
@@ -37,7 +37,7 @@ class RenameFiles(object):
                 cssutils.replaceUrls(item.data, self.url_replacer)
 
         if self.oeb.guide:
-            for ref in self.oeb.guide.values():
+            for ref in list(self.oeb.guide.values()):
                 href = urlnormalize(ref.href)
                 href, frag = urldefrag(href)
                 replacement = self.rename_map.get(href, None)

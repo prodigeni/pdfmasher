@@ -5,15 +5,15 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from __future__ import unicode_literals
+
 
 from collections import defaultdict
 import random
 import re
 from struct import pack
 import time
-from urlparse import urldefrag
-from cStringIO import StringIO
+from urllib.parse import urldefrag
+from io import StringIO, BytesIO
 import logging
 
 from .. import normalize
@@ -92,18 +92,18 @@ DECINT_FORWARD = 0
 DECINT_BACKWARD = 1
 def decint(value, direction):
     # Encode vwi
-    bytes = []
+    result = []
     while True:
         b = value & 0x7f
         value >>= 7
-        bytes.append(b)
+        result.append(b)
         if value == 0:
             break
     if direction == DECINT_FORWARD:
-        bytes[0] |= 0x80
+        result[0] |= 0x80
     elif direction == DECINT_BACKWARD:
-        bytes[-1] |= 0x80
-    return b''.join(chr(b) for b in reversed(bytes))
+        result[-1] |= 0x80
+    return bytes(reversed(result))
 
 def align_block(raw, multiple=4, pad=b'\0'):
     extra = len(raw) % multiple
@@ -139,7 +139,7 @@ class Serializer(object): # {{{
         buffer = self.buffer
         hrefs = self.oeb.manifest.hrefs
         buffer.write('<guide>')
-        for ref in self.oeb.guide.values():
+        for ref in list(self.oeb.guide.values()):
             # The Kindle decides where to open a book based on the presence of
             # an item in the guide that looks like
             # <reference type="text" title="Start" href="chapter-one.xhtml"/>
@@ -210,7 +210,7 @@ class Serializer(object): # {{{
 
     def serialize_elem(self, elem, item, nsrmap=NSRMAP):
         buffer = self.buffer
-        if not isinstance(elem.tag, basestring) \
+        if not isinstance(elem.tag, str) \
             or namespace(elem.tag) not in nsrmap:
                 return
         tag = prefixname(elem.tag, nsrmap)
@@ -228,7 +228,7 @@ class Serializer(object): # {{{
         buffer.write('<')
         buffer.write(tag)
         if elem.attrib:
-            for attr, val in elem.attrib.items():
+            for attr, val in list(elem.attrib.items()):
                 if namespace(attr) not in nsrmap:
                     continue
                 attr = prefixname(attr, nsrmap)
@@ -262,15 +262,15 @@ class Serializer(object): # {{{
         text = text.replace('&', '&amp;')
         text = text.replace('<', '&lt;')
         text = text.replace('>', '&gt;')
-        text = text.replace(u'\u00AD', '') # Soft-hyphen
+        text = text.replace('\u00AD', '') # Soft-hyphen
         if quot:
             text = text.replace('"', '&quot;')
-        self.buffer.write(encode(text))
+        self.buffer.write(text)
 
     def fixup_links(self):
         buffer = self.buffer
         id_offsets = self.id_offsets
-        for href, hoffs in self.href_offsets.items():
+        for href, hoffs in list(self.href_offsets.items()):
             if href not in id_offsets:
                 logging.warn('Hyperlink target %r not found', href)
                 href, _ = urldefrag(href)
@@ -297,12 +297,12 @@ class MobiWriter(object):
         self._primary_index_record = None
         self._conforming_periodical_toc = False
         self._indexable = False
-        self._ctoc = ""
+        self._ctoc = b""
         self._ctoc_records = []
         self._ctoc_offset = 0
         self._ctoc_largest = 0
         self._HTMLRecords = []
-        self._tbSequence = ""
+        self._tbSequence = b""
         self._MobiDoc = None
         self._anchor_offset_kindle = 0
         self._initialIndexRecordFound = False
@@ -355,7 +355,7 @@ class MobiWriter(object):
             images[mh_href] = 1
             index += 1
 
-        for item in self._oeb.manifest.values():
+        for item in list(self._oeb.manifest.values()):
             if item.media_type in OEB_RASTER_IMAGES:
                 if item.href == mh_href: continue
                 images[item.href] = index
@@ -365,7 +365,7 @@ class MobiWriter(object):
         pos = text.tell()
         text.seek(0, 2)
         npos = min((pos + RECORD_SIZE, text.tell()))
-        last = ''
+        last = b''
         while not last.decode('utf-8', 'ignore'):
             size = len(last) + 1
             text.seek(npos - size)
@@ -680,7 +680,7 @@ class MobiWriter(object):
                                     (nrecords, lastrecord) )
         # Variables for trailing byte sequence
         tbsType = 0x00
-        tbSequence = ""
+        tbSequence = b""
 
         # Generate TBS for type 0x002 - mobi_book
         if self._initialIndexRecordFound == False :
@@ -704,7 +704,7 @@ class MobiWriter(object):
                 # Don't write a nodecount for opening type 2 record
                 if tbsType != 2 :
                     # Check that <> -1
-                    tbSequence += chr(self._HTMLRecords[nrecords].currentSectionNodeCount)
+                    tbSequence += bytes([self._HTMLRecords[nrecords].currentSectionNodeCount])
                 tbSequence += decint(len(tbSequence) + 1, DECINT_FORWARD)
 
         else :
@@ -733,7 +733,7 @@ class MobiWriter(object):
             tbSequence += decint(0x00, DECINT_FORWARD)
             # Don't write a nodecount for terminating type 2 record
             if tbsType != 2 :
-                tbSequence += chr(self._HTMLRecords[nrecords].currentSectionNodeCount)
+                tbSequence += bytes([self._HTMLRecords[nrecords].currentSectionNodeCount])
             tbSequence += decint(len(tbSequence) + 1, DECINT_FORWARD)
 
         self._tbSequence = tbSequence
@@ -762,7 +762,7 @@ class MobiWriter(object):
                 tbSequence = decint(tbsType, DECINT_FORWARD)
                 tbSequence += decint(0x00, DECINT_FORWARD)
                 # nodeCount = 0xDF + 0xFF + n(0x3F) - need to add 2 because we didn't count them earlier
-                tbSequence += chr(self._HTMLRecords[nrecords].currentSectionNodeCount + 2)
+                tbSequence += bytes([self._HTMLRecords[nrecords].currentSectionNodeCount + 2])
                 tbSequence += decint(len(tbSequence) + 1, DECINT_FORWARD)
                 if self._verbose > 2 :
                     logging.info("\nAssembling TBS for Flat Periodical: HTML record %03d of %03d, section %d" % \
@@ -786,7 +786,7 @@ class MobiWriter(object):
                 # Assemble the Type 6 TBS
                 tbSequence = decint(tbsType, DECINT_FORWARD)                            # Type
                 tbSequence += decint(0x00, DECINT_FORWARD)                              # arg1 = 0x80
-                tbSequence += chr(2)                                                    # arg2 = 0x02
+                tbSequence += bytes([2])                                                    # arg2 = 0x02
 
                 # Assemble arg3 - (article index +1) << 4  +  flag: 1 = article spans this record
                 arg3 = self._HTMLRecords[nrecords].continuingNode
@@ -796,7 +796,7 @@ class MobiWriter(object):
                 tbSequence += decint(arg3, DECINT_FORWARD)                              # arg3
 
 
-                # tbSequence += chr(self._HTMLRecords[nrecords].currentSectionNodeCount)  # nodeCount
+                # tbSequence += bytes([self._HTMLRecords[nrecords].currentSectionNodeCount])  # nodeCount
                 tbSequence += decint(len(tbSequence) + 1, DECINT_FORWARD)               # len
 
             elif self._HTMLRecords[nrecords].continuingNode > 0 and self._HTMLRecords[nrecords].openingNode == -1 :
@@ -808,7 +808,7 @@ class MobiWriter(object):
                 # Assemble the Type 6 TBS
                 tbSequence = decint(tbsType, DECINT_FORWARD)                            # Type
                 tbSequence += decint(0x00, DECINT_FORWARD)                              # arg1 = 0x80
-                tbSequence += chr(2)                                                    # arg2 = 0x02
+                tbSequence += bytes([2])                                                    # arg2 = 0x02
                 # Assemble arg3 - article index << 3  +  flag: 1 = article spans this record
                 arg3 = self._HTMLRecords[nrecords].continuingNode
                 # Add the index of the openingNodeParent to get the offset start
@@ -817,7 +817,7 @@ class MobiWriter(object):
                 arg3 <<= 4
                 arg3 |= 0x01
                 tbSequence += decint(arg3, DECINT_FORWARD)                              # arg3
-                tbSequence += chr(self._HTMLRecords[nrecords].currentSectionNodeCount)  # nodeCount
+                tbSequence += bytes([self._HTMLRecords[nrecords].currentSectionNodeCount])  # nodeCount
                 tbSequence += decint(len(tbSequence) + 1, DECINT_FORWARD)               # len
 
             else :
@@ -825,7 +825,7 @@ class MobiWriter(object):
                 # Assemble the Type 7 TBS
                 tbSequence = decint(tbsType, DECINT_FORWARD)                            # Type
                 tbSequence += decint(0x00, DECINT_FORWARD)                              # arg1 = 0x80
-                tbSequence += chr(2)                                                    # arg2 = 0x02
+                tbSequence += bytes([2])                                                    # arg2 = 0x02
                 tbSequence += decint(0x00, DECINT_FORWARD)                              # arg3 = 0x80
                 # Assemble arg4 - article index << 4  +  flag: 1 = article spans this record
                 arg4 = self._HTMLRecords[nrecords].continuingNode
@@ -835,7 +835,7 @@ class MobiWriter(object):
                 arg4 <<= 4
                 arg4 |= 0x04                                                            # 4: multiple nodes
                 tbSequence += decint(arg4, DECINT_FORWARD)                              # arg4
-                tbSequence += chr(self._HTMLRecords[nrecords].currentSectionNodeCount)  # nodeCount
+                tbSequence += bytes([self._HTMLRecords[nrecords].currentSectionNodeCount])  # nodeCount
                 tbSequence += decint(len(tbSequence) + 1, DECINT_FORWARD)               # len
 
         self._tbSequence = tbSequence
@@ -869,7 +869,7 @@ class MobiWriter(object):
                 # Assemble the Type 6 TBS
                 tbSequence = decint(tbsType, DECINT_FORWARD)                            # Type
                 tbSequence += decint(0x00, DECINT_FORWARD)                              # arg1 = 0x80
-                tbSequence += chr(2)                                                    # arg2 = 0x02
+                tbSequence += bytes([2])                                                    # arg2 = 0x02
                 # Assemble arg3: (section jump + article index) << 4  +  flag: 1 = article spans this record
                 arg3 = self._sectionCount                      # Jump over the section group
                 arg3 += 0                                      # First article index = 0
@@ -878,7 +878,7 @@ class MobiWriter(object):
                 tbSequence += decint(arg3, DECINT_FORWARD)                              # arg3
 
                 # Structured periodicals don't count periodical, section in nodeCount
-                tbSequence += chr(self._HTMLRecords[nrecords].currentSectionNodeCount)  # nodeCount
+                tbSequence += bytes([self._HTMLRecords[nrecords].currentSectionNodeCount])  # nodeCount
                 tbSequence += decint(len(tbSequence) + 1, DECINT_FORWARD)               # len
         else :
             if self._firstSectionConcluded == False :
@@ -900,14 +900,14 @@ class MobiWriter(object):
                         # Assemble the Type 6 TBS
                         tbSequence = decint(tbsType, DECINT_FORWARD)                            # Type
                         tbSequence += decint(0x00, DECINT_FORWARD)                              # arg1 = 0x80
-                        tbSequence += chr(2)                                                    # arg2 = 0x02
+                        tbSequence += bytes([2])                                                    # arg2 = 0x02
                         # Assemble arg3: (section jump + article index) << 4  +  flag: 1 = article spans this record
                         arg3 = self._sectionCount
                         arg3 += self._HTMLRecords[nrecords].continuingNode
                         arg3 <<= 4
                         arg3 |= 0x04
                         tbSequence += decint(arg3, DECINT_FORWARD)                              # arg3
-                        tbSequence += chr(self._HTMLRecords[nrecords].currentSectionNodeCount)  # nodeCount
+                        tbSequence += bytes([self._HTMLRecords[nrecords].currentSectionNodeCount])  # nodeCount
                         tbSequence += decint(len(tbSequence) + 1, DECINT_FORWARD)               # len
 
                     elif self._HTMLRecords[nrecords].continuingNode > 0 and self._HTMLRecords[nrecords].openingNode == -1 :
@@ -919,14 +919,14 @@ class MobiWriter(object):
                         # Assemble the Type 6 TBS
                         tbSequence = decint(tbsType, DECINT_FORWARD)                            # Type
                         tbSequence += decint(0x00, DECINT_FORWARD)                              # arg1 = 0x80
-                        tbSequence += chr(2)                                                    # arg2 = 0x02
+                        tbSequence += bytes([2])                                                    # arg2 = 0x02
                         # Assemble arg3: (section jump + article index) << 4  +  flag: 1 = article spans this record
                         arg3 = self._sectionCount
                         arg3 += self._HTMLRecords[nrecords].continuingNode
                         arg3 <<= 4
                         arg3 |= 0x01
                         tbSequence += decint(arg3, DECINT_FORWARD)                              # arg3
-                        tbSequence += chr(self._HTMLRecords[nrecords].currentSectionNodeCount)  # nodeCount
+                        tbSequence += bytes([self._HTMLRecords[nrecords].currentSectionNodeCount])  # nodeCount
                         tbSequence += decint(len(tbSequence) + 1, DECINT_FORWARD)               # len
 
                     else :
@@ -934,7 +934,7 @@ class MobiWriter(object):
                         # Assemble the Type 7 TBS
                         tbSequence = decint(tbsType, DECINT_FORWARD)                            # Type
                         tbSequence += decint(0x00, DECINT_FORWARD)                              # arg1 = 0x80
-                        tbSequence += chr(2)                                                    # arg2 = 0x02
+                        tbSequence += bytes([2])                                                    # arg2 = 0x02
                         tbSequence += decint(0x00, DECINT_FORWARD)                              # arg3 = 0x80
                         # Assemble arg4: (section jump + article index) << 4  +  flag: 1 = article spans this record
                         arg4 = self._sectionCount
@@ -942,7 +942,7 @@ class MobiWriter(object):
                         arg4 <<= 4
                         arg4 |= 0x04                                                            # 4: multiple nodes
                         tbSequence += decint(arg4, DECINT_FORWARD)                              # arg4
-                        tbSequence += chr(self._HTMLRecords[nrecords].currentSectionNodeCount)  # nodeCount
+                        tbSequence += bytes([self._HTMLRecords[nrecords].currentSectionNodeCount])  # nodeCount
                         tbSequence += decint(len(tbSequence) + 1, DECINT_FORWARD)               # len
 
 
@@ -987,7 +987,7 @@ class MobiWriter(object):
                     if arg4Flags == 4 :                                                      # arg4a
                         nodeCountValue = self._HTMLRecords[nrecords].currentSectionNodeCount
                         nodeCountValue = 0x80 if nodeCountValue == 0 else nodeCountValue
-                        tbSequence += chr(nodeCountValue)
+                        tbSequence += bytes([nodeCountValue])
 
                     # Write article2: not completely understood
                     arg5 = sectionDelta + articleOffset
@@ -1014,7 +1014,7 @@ class MobiWriter(object):
                     if arg6Flags == 4 :                                                      # arg4a
                         nodeCountValue = self._HTMLRecords[nrecords].nextSectionNodeCount
                         nodeCountValue = 0x80 if nodeCountValue == 0 else nodeCountValue
-                        tbSequence += chr(nodeCountValue)
+                        tbSequence += bytes([nodeCountValue])
 
                     tbSequence += decint(len(tbSequence) + 1, DECINT_FORWARD)               # len
 
@@ -1056,7 +1056,7 @@ class MobiWriter(object):
                     if arg3Flags == 4 :
                         nodeCountValue = self._HTMLRecords[nrecords].currentSectionNodeCount
                         nodeCountValue = 0x80 if nodeCountValue == 0 else nodeCountValue
-                        tbSequence += chr(nodeCountValue)
+                        tbSequence += bytes([nodeCountValue])
                     else :
                         tbSequence += decint(0x00, DECINT_FORWARD)                              # arg1 = 0x80
 
@@ -1103,7 +1103,7 @@ class MobiWriter(object):
                     if arg4Flags == 4 :                                                      # arg4a
                         nodeCountValue = self._HTMLRecords[nrecords].currentSectionNodeCount
                         nodeCountValue = 0x80 if nodeCountValue == 0 else nodeCountValue
-                        tbSequence += chr(nodeCountValue)
+                        tbSequence += bytes([nodeCountValue])
 
                     # Write article2: not completely understood
                     arg5 = sectionDelta + articleOffset
@@ -1128,7 +1128,7 @@ class MobiWriter(object):
                     if arg6Flags == 4 :                                                      # arg4a
                         nodeCountValue = self._HTMLRecords[nrecords].nextSectionNodeCount
                         nodeCountValue = 0x80 if nodeCountValue == 0 else nodeCountValue
-                        tbSequence += chr(nodeCountValue)
+                        tbSequence += bytes([nodeCountValue])
 
                     tbSequence += decint(len(tbSequence) + 1, DECINT_FORWARD)               # len
 
@@ -1178,12 +1178,12 @@ class MobiWriter(object):
         serializer = Serializer(self._oeb, self._images,
                 write_page_breaks_after_item=self.write_page_breaks_after_item)
         breaks = serializer.breaks
-        text = serializer.text
+        text = encode(serializer.text)
         self._anchor_offset_kindle = serializer.anchor_offset_kindle
         self._id_offsets = serializer.id_offsets
         self._content_length = len(text)
         self._text_length = len(text)
-        text = StringIO(text)
+        text = BytesIO(text)
         buf = []
         nrecords = 0
         lastrecord = (self._content_length // RECORD_SIZE )
@@ -1223,7 +1223,7 @@ class MobiWriter(object):
         while len(data) > 0:
             if self._compression == PALMDOC:
                 data = compress_doc(data)
-            record = StringIO()
+            record = BytesIO()
             record.write(data)
             # Write trailing muti-byte sequence if any
             record.write(overlap)
@@ -1276,7 +1276,7 @@ class MobiWriter(object):
             extra = sum(map(len, buf))%4
             if extra == 0:
                 extra = 4
-            self._records.append('\0'*(4-extra))
+            self._records.append(b'\0'*(4-extra))
             nrecords += 1
         self._text_nrecords = nrecords
 
@@ -1327,13 +1327,13 @@ class MobiWriter(object):
         '''
         self._generate_end_records()
 
-        record0 = StringIO()
+        record0 = BytesIO()
         # The PalmDOC Header
         record0.write(pack(b'>HHIHHHH', self._compression, 0,
             self._text_length,
             self._text_nrecords-1, RECORD_SIZE, 0, 0)) # 0 - 15 (0x0 - 0xf)
         uid = random.randint(0, 0xffffffff)
-        title = normalize(unicode(metadata.title[0])).encode('utf-8')
+        title = normalize(str(metadata.title[0])).encode('utf-8')
         # The MOBI Header
 
         # 0x0 - 0x3
@@ -1483,7 +1483,7 @@ class MobiWriter(object):
 
     def _build_exth(self):
         oeb = self._oeb
-        exth = StringIO()
+        exth = BytesIO()
         nrecs = 0
         for term in oeb.metadata:
             if term not in EXTH_CODES: continue
@@ -1491,12 +1491,12 @@ class MobiWriter(object):
             items = oeb.metadata[term]
             if term == 'creator':
                 if self._prefer_author_sort:
-                    creators = [normalize(unicode(c.file_as or c)) for c in items]
+                    creators = [normalize(str(c.file_as or c)) for c in items]
                 else:
-                    creators = [normalize(unicode(c)) for c in items]
+                    creators = [normalize(str(c)) for c in items]
                 items = ['; '.join(creators)]
             for item in items:
-                data = self.COLLAPSE_RE.sub(' ', normalize(unicode(item)))
+                data = self.COLLAPSE_RE.sub(' ', normalize(str(item)))
                 if term == 'identifier':
                     if data.lower().startswith('urn:isbn:'):
                         data = data[9:]
@@ -1510,7 +1510,7 @@ class MobiWriter(object):
                 nrecs += 1
             if term == 'rights' :
                 try:
-                    rights = normalize(unicode(oeb.metadata.rights[0])).encode('utf-8')
+                    rights = normalize(str(oeb.metadata.rights[0])).encode('utf-8')
                 except:
                     rights = 'Unknown'
                 exth.write(pack(b'>II', EXTH_CODES['rights'], len(rights) + 8))
@@ -1521,14 +1521,14 @@ class MobiWriter(object):
         uuid = None
         from ..oeb.base import OPF
         for x in oeb.metadata['identifier']:
-            if x.get(OPF('scheme'), None).lower() == 'uuid' or unicode(x).startswith('urn:uuid:'):
-                uuid = unicode(x).split(':')[-1]
+            if x.get(OPF('scheme'), None).lower() == 'uuid' or str(x).startswith('urn:uuid:'):
+                uuid = str(x).split(':')[-1]
                 break
         if uuid is None:
             from uuid import uuid4
             uuid = str(uuid4())
 
-        if isinstance(uuid, unicode):
+        if isinstance(uuid, str):
             uuid = uuid.encode('utf-8')
         exth.write(pack(b'>II', 113, len(uuid) + 8))
         exth.write(uuid)
@@ -1543,9 +1543,9 @@ class MobiWriter(object):
 
         # Add a publication date entry
         if oeb.metadata['date'] != [] :
-            datestr = str(oeb.metadata['date'][0])
+            datestr = encode(str(oeb.metadata['date'][0]))
         elif oeb.metadata['timestamp'] != [] :
-            datestr = str(oeb.metadata['timestamp'][0])
+            datestr = encode(str(oeb.metadata['timestamp'][0]))
 
         if datestr is not None:
             exth.write(pack(b'>II',EXTH_CODES['pubdate'], len(datestr) + 8))
@@ -1555,19 +1555,19 @@ class MobiWriter(object):
             raise NotImplementedError("missing date or timestamp needed for mobi_periodical")
 
         if oeb.metadata.cover and \
-                unicode(oeb.metadata.cover[0]) in oeb.manifest.ids:
-            id = unicode(oeb.metadata.cover[0])
+                str(oeb.metadata.cover[0]) in oeb.manifest.ids:
+            id = str(oeb.metadata.cover[0])
             item = oeb.manifest.ids[id]
             href = item.href
-            if href in self._images:
-                index = self._images[href] - 1
-                exth.write(pack(b'>III', 0xc9, 0x0c, index))
-                exth.write(pack(b'>III', 0xcb, 0x0c, 0))
-                nrecs += 2
-                index = self._add_thumbnail(item)
-                if index is not None:
-                    exth.write(pack(b'>III', 0xca, 0x0c, index - 1))
-                    nrecs += 1
+            # if href in self._images:
+            #     index = self._images[href] - 1
+            #     exth.write(pack(b'>III', 0xc9, 0x0c, index))
+            #     exth.write(pack(b'>III', 0xcb, 0x0c, 0))
+            #     nrecs += 2
+            #     index = self._add_thumbnail(item)
+            #     if index is not None:
+            #         exth.write(pack(b'>III', 0xca, 0x0c, index - 1))
+            #         nrecs += 1
 
         exth = exth.getvalue()
         trail = len(exth) % 4
@@ -1575,24 +1575,24 @@ class MobiWriter(object):
         exth = [b'EXTH', pack(b'>II', len(exth) + 12, nrecs), exth, pad]
         return b''.join(exth)
 
-    def _add_thumbnail(self, item):
-        try:
-            data = rescale_image(item.data, MAX_THUMB_SIZE, MAX_THUMB_DIMEN)
-        except IOError:
-            logging.warn('Bad image file %r' % item.href)
-            return None
-        manifest = self._oeb.manifest
-        id, href = manifest.generate('thumbnail', 'thumbnail.jpeg')
-        manifest.add(id, href, 'image/jpeg', data=data)
-        index = len(self._images) + 1
-        self._images[href] = index
-        self._records.append(data)
-        return index
+    # def _add_thumbnail(self, item):
+    #     try:
+    #         data = rescale_image(item.data, MAX_THUMB_SIZE, MAX_THUMB_DIMEN)
+    #     except IOError:
+    #         logging.warn('Bad image file %r' % item.href)
+    #         return None
+    #     manifest = self._oeb.manifest
+    #     id, href = manifest.generate('thumbnail', 'thumbnail.jpeg')
+    #     manifest.add(id, href, 'image/jpeg', data=data)
+    #     index = len(self._images) + 1
+    #     self._images[href] = index
+    #     self._records.append(data)
+    #     return index
 
     def _write_header(self):
-        title = str(self._oeb.metadata.title[0])
-        title = re.sub('[^-A-Za-z0-9]+', '_', title)[:31]
-        title = title + ('\0' * (32 - len(title)))
+        title = encode(str(self._oeb.metadata.title[0]))
+        title = re.sub(b'[^-A-Za-z0-9]+', b'_', title)[:31]
+        title = title + (b'\0' * (32 - len(title)))
         now = int(time.time())
         nrecords = len(self._records)
         self._write(title, pack(b'>HHIIIIII', 0, 0, now, now, 0, 0, 0, 0),
@@ -1610,7 +1610,7 @@ class MobiWriter(object):
     def _clean_text_value(self, text):
         if text is not None and text.strip() :
             text = text.strip()
-            if not isinstance(text, unicode):
+            if not isinstance(text, str):
                 text = text.decode('utf-8', 'replace')
             text = normalize(text).encode('utf-8')
         else :
@@ -1698,7 +1698,7 @@ class MobiWriter(object):
             return
 
         # Assemble the INDX0[0] and INDX1[0] output streams
-        indx1 = StringIO()
+        indx1 = BytesIO()
         indx1.write(b'INDX'+pack(b'>I', 0xc0)) # header length
 
         # 0x8 - 0xb : Unknown
@@ -1724,9 +1724,9 @@ class MobiWriter(object):
         indx1.write(indices)
         indx1 = indx1.getvalue()
 
-        idxt0 = chr(len(last_name)) + last_name + pack(b'>H', indxt_count + 1)
+        idxt0 = bytes([len(last_name)]) + encode(last_name) + pack(b'>H', indxt_count + 1)
         idxt0 = align_block(idxt0)
-        indx0 = StringIO()
+        indx0 = BytesIO()
 
         if self._MobiDoc.mobiType == 0x002 :
             tagx = TAGX['chapter']
@@ -1737,7 +1737,7 @@ class MobiWriter(object):
         indx0_indices_pos = 0xc0 + len(tagx) + len(idxt0)
         indx0_indices = align_block(b'IDXT' + pack(b'>H', 0xc0 + len(tagx)))
         # Generate record header
-        header = StringIO()
+        header = BytesIO()
 
         header.write(b'INDX')
         header.write(pack(b'>I', 0xc0)) # header length
@@ -1817,7 +1817,7 @@ class MobiWriter(object):
             tagx_len = 8 + len(tagx)
 
             # generate secondary INDX0
-            indx0 = StringIO()
+            indx0 = BytesIO()
             indx0.write('INDX'+pack(b'>I', 0xc0)+b'\0'*8)            # header + 8x00
             indx0.write(pack(b'>I', 0x06))                          # generator ID
             indx0.write(pack(b'>I', 0xe8))                          # IDXT offset
@@ -1834,7 +1834,7 @@ class MobiWriter(object):
             indx0.write(b'IDXT'+b'\x00\xd8\x00\x00')                 # offset plus pad
 
             # generate secondary INDX1
-            indx1 = StringIO()
+            indx1 = BytesIO()
             indx1.write(b'INDX' + pack(b'>I', 0xc0) + b'\0'*4)         # header + 4x00
             indx1.write(pack(b'>I', 1))                              # blockType 1
             indx1.write(pack(b'>I', 0x00))                           # unknown
@@ -1864,9 +1864,9 @@ class MobiWriter(object):
         pos = 0xc0 + indxt.tell()
         indices.write(pack(b'>H', pos))								# Save the offset for IDXTIndices
         name = "%04X"%count
-        indxt.write(chr(len(name)) + name)							# Write the name
+        indxt.write(bytes([len(name)]) + name)							# Write the name
         indxt.write(INDXT['periodical'])                            # entryType [0x0F | 0xDF | 0xFF | 0x3F]
-        indxt.write(chr(1))                                         # subType 1
+        indxt.write(bytes([1]))                                         # subType 1
         indxt.write(decint(offset, DECINT_FORWARD))					# offset
         indxt.write(decint(length, DECINT_FORWARD))					# length
         indxt.write(decint(self._ctoc_map[index]['titleOffset'], DECINT_FORWARD))	# vwi title offset in CNCX
@@ -1883,9 +1883,9 @@ class MobiWriter(object):
         pos = 0xc0 + indxt.tell()
         indices.write(pack(b'>H', pos))								# Save the offset for IDXTIndices
         name = "%04X"%count
-        indxt.write(chr(len(name)) + name)							# Write the name
+        indxt.write(bytes([len(name)]) + name.encode('ascii'))							# Write the name
         indxt.write(INDXT['section'])                               # entryType [0x0F | 0xDF | 0xFF | 0x3F]
-        indxt.write(chr(0))                                         # subType 0
+        indxt.write(bytes([0]))                                         # subType 0
         indxt.write(decint(offset, DECINT_FORWARD))					# offset
         indxt.write(decint(length, DECINT_FORWARD))					# length
         indxt.write(decint(self._ctoc_map[myCtocMapIndex]['titleOffset'], DECINT_FORWARD))	# vwi title offset in CNCX
@@ -1901,7 +1901,7 @@ class MobiWriter(object):
         pos = 0xc0 + indxt.tell()
         indices.write(pack(b'>H', pos))								# Save the offset for IDXTIndices
         name = "%04X"%count
-        indxt.write(chr(len(name)) + name)							# Write the name
+        indxt.write(bytes([len(name)]) + name.encode('ascii'))							# Write the name
         indxt.write(INDXT['article'])                               # entryType [0x0F | 0xDF | 0xFF | 0x3F]
 
         hasAuthor = True if self._ctoc_map[index]['authorOffset'] else False
@@ -1942,7 +1942,7 @@ class MobiWriter(object):
         pos = 0xc0 + indxt.tell()
         indices.write(pack(b'>H', pos))								# Save the offset for IDXTIndices
         name = "%04X"%count
-        indxt.write(chr(len(name)) + name)							# Write the name
+        indxt.write(bytes([len(name)]) + name.encode('ascii'))							# Write the name
         indxt.write(INDXT['chapter'])								# entryType [0x0F | 0xDF | 0xFF | 0x3F]
         indxt.write(decint(offset, DECINT_FORWARD))					# offset
         indxt.write(decint(length, DECINT_FORWARD))					# length
@@ -2150,7 +2150,7 @@ class MobiWriter(object):
         sectionParents = []
         currentSection = 0      # Starting section number
         toc = self._oeb.toc
-        indxt, indices, c = StringIO(), StringIO(), 0
+        indxt, indices, c = BytesIO(), BytesIO(), 0
 
         indices.write(b'IDXT')
         last_name = None
@@ -2241,7 +2241,7 @@ class MobiWriter(object):
             # pad with 00
             pad = 0xfbf8 - self._ctoc.tell()
             # print "padding %d bytes of 00" % pad
-            self._ctoc.write('\0' * (pad))
+            self._ctoc.write(b'\0' * (pad))
             self._ctoc_records.append(self._ctoc.getvalue())
             self._ctoc.truncate(0)
             self._ctoc_offset += 0x10000
@@ -2389,8 +2389,8 @@ class MobiWriter(object):
         reduced_toc = []
         self._ctoc_map = []				# per node dictionary of {class/title/desc/author} offsets
         self._last_toc_entry = None
-        #ctoc = StringIO()
-        self._ctoc = StringIO()
+        #ctoc = BytesIO()
+        self._ctoc = BytesIO()
 
         # Track the individual node types
         self._periodicalCount = 0
@@ -2431,7 +2431,7 @@ class MobiWriter(object):
                         continue
                     if h not in self._id_offsets:
                         logging.warn('  Ignoring missing TOC entry:',
-                                unicode(child))
+                                str(child))
                         continue
 
                     currentOffset = self._id_offsets[h]
@@ -2459,7 +2459,7 @@ class MobiWriter(object):
         elif self._periodicalCount:
             pt = None
             if self._oeb.metadata.publication_type:
-                x = unicode(self._oeb.metadata.publication_type[0]).split(':')
+                x = str(self._oeb.metadata.publication_type[0]).split(':')
                 if len(x) > 1:
                     pt = x[1]
             mobiType = {'newspaper':0x101}.get(pt, 0x103)
@@ -2480,7 +2480,7 @@ class MobiWriter(object):
                 logging.info("chapterCount: %d" % self._chapterCount)
 
         # Apparently the CTOC must end with a null byte
-        self._ctoc.write('\0')
+        self._ctoc.write(b'\0')
 
         ctoc = self._ctoc.getvalue()
         rec_count = len(self._ctoc_records)
@@ -2610,14 +2610,14 @@ class MobiBook(object):
         self._chapters.append(value)
 
     def dumpInfo(self):
-        print "%20s:" % ("Book")
-        print "%20s: %d" % ("Number of chapters", len(self._chapters))
+        print("%20s:" % ("Book"))
+        print("%20s: %d" % ("Number of chapters", len(self._chapters)))
         for (count, chapter) in enumerate(self._chapters):
-            print "%20s: %d"    % ("myCtocMapIndex",chapter.myCtocMapIndex)
-            print "%20s: %d"    % ("Chapter",count)
-            print "%20s: 0x%X"  % ("startAddress", chapter.startAddress)
-            print "%20s: 0x%X"  % ("length", chapter.length)
-            print
+            print("%20s: %d"    % ("myCtocMapIndex",chapter.myCtocMapIndex))
+            print("%20s: %d"    % ("Chapter",count))
+            print("%20s: 0x%X"  % ("startAddress", chapter.startAddress))
+            print("%20s: 0x%X"  % ("length", chapter.length))
+            print()
 
 class MobiChapter(object):
     """ A container for Mobi chapters """
@@ -2719,33 +2719,33 @@ class MobiPeriodical(object):
         return newSection
 
     def dumpInfo(self):
-        print "%20s:" % ("Periodical")
-        print "%20s: 0x%X" % ("myIndex", self.myIndex)
-        print "%20s: 0x%X" % ("startAddress", self.startAddress)
-        print "%20s: 0x%X" % ("length", self.length)
-        print "%20s: 0x%X" % ("myCtocMapIndex", self.myCtocMapIndex)
-        print "%20s: 0x%X" % ("firstSectionIndex", self.firstSectionIndex)
-        print "%20s: 0x%X" % ("lastSectionIndex", self.lastSectionIndex)
-        print "%20s: %d" % ("Number of Sections", len(self._sectionParents))
+        print("%20s:" % ("Periodical"))
+        print("%20s: 0x%X" % ("myIndex", self.myIndex))
+        print("%20s: 0x%X" % ("startAddress", self.startAddress))
+        print("%20s: 0x%X" % ("length", self.length))
+        print("%20s: 0x%X" % ("myCtocMapIndex", self.myCtocMapIndex))
+        print("%20s: 0x%X" % ("firstSectionIndex", self.firstSectionIndex))
+        print("%20s: 0x%X" % ("lastSectionIndex", self.lastSectionIndex))
+        print("%20s: %d" % ("Number of Sections", len(self._sectionParents)))
         for (count, section) in enumerate(self._sectionParents):
-            print "\t%20s: %d"    % ("Section",count)
-            print "\t%20s: 0x%X"  % ("startAddress", section.startAddress)
-            print "\t%20s: 0x%X"  % ("length", section.sectionLength)
-            print "\t%20s: 0x%X"  % ("parentIndex", section.parentIndex)
-            print "\t%20s: 0x%X"  % ("myIndex", section.myIndex)
-            print "\t%20s: 0x%X"  % ("firstArticleIndex", section.firstArticleIndex)
-            print "\t%20s: 0x%X"  % ("lastArticleIndex", section.lastArticleIndex)
-            print "\t%20s: 0x%X"  % ("articles", len(section.articles) )
-            print "\t%20s: 0x%X"  % ("myCtocMapIndex", section.myCtocMapIndex )
-            print
+            print("\t%20s: %d"    % ("Section",count))
+            print("\t%20s: 0x%X"  % ("startAddress", section.startAddress))
+            print("\t%20s: 0x%X"  % ("length", section.sectionLength))
+            print("\t%20s: 0x%X"  % ("parentIndex", section.parentIndex))
+            print("\t%20s: 0x%X"  % ("myIndex", section.myIndex))
+            print("\t%20s: 0x%X"  % ("firstArticleIndex", section.firstArticleIndex))
+            print("\t%20s: 0x%X"  % ("lastArticleIndex", section.lastArticleIndex))
+            print("\t%20s: 0x%X"  % ("articles", len(section.articles) ))
+            print("\t%20s: 0x%X"  % ("myCtocMapIndex", section.myCtocMapIndex ))
+            print()
             for (artCount, article) in enumerate(section.articles) :
-                print "\t\t%20s: %d"    % ("Article",artCount)
-                print "\t\t%20s: 0x%X"  % ("startAddress", article.startAddress)
-                print "\t\t%20s: 0x%X"  % ("length", article.articleLength)
-                print "\t\t%20s: 0x%X"  % ("sectionIndex", article.sectionParentIndex)
-                print "\t\t%20s: 0x%X"  % ("myIndex", article.myIndex)
-                print "\t\t%20s: 0x%X"  % ("myCtocMapIndex", article.myCtocMapIndex)
-                print
+                print("\t\t%20s: %d"    % ("Article",artCount))
+                print("\t\t%20s: 0x%X"  % ("startAddress", article.startAddress))
+                print("\t\t%20s: 0x%X"  % ("length", article.articleLength))
+                print("\t\t%20s: 0x%X"  % ("sectionIndex", article.sectionParentIndex))
+                print("\t\t%20s: 0x%X"  % ("myIndex", article.myIndex))
+                print("\t\t%20s: 0x%X"  % ("myCtocMapIndex", article.myCtocMapIndex))
+                print()
 
 class MobiSection(object):
     """ A container for periodical sections """

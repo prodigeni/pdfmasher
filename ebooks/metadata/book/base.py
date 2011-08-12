@@ -5,7 +5,7 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from __future__ import unicode_literals
+
 
 import copy, traceback
 
@@ -14,6 +14,7 @@ from . import SC_FIELDS_COPY_NOT_NULL
 from . import STANDARD_METADATA_FIELDS
 from . import TOP_LEVEL_IDENTIFIERS
 from . import ALL_METADATA_FIELDS
+import collections
 
 NULL_VALUES = {
                 'user_metadata': {},
@@ -124,7 +125,7 @@ class Metadata(object):
             if val is None:
                 val = copy.copy(NULL_VALUES.get(field, None))
             _data[field] = val
-        elif field in _data['user_metadata'].iterkeys():
+        elif field in iter(_data['user_metadata'].keys()):
             _data['user_metadata'][field]['#value#'] = val
             _data['user_metadata'][field]['#extra#'] = extra
         else:
@@ -134,7 +135,7 @@ class Metadata(object):
             self.__dict__[field] = val
 
     def __iter__(self):
-        return object.__getattribute__(self, '_data').iterkeys()
+        return iter(object.__getattribute__(self, '_data').keys())
 
     def has_key(self, key):
         return key in object.__getattribute__(self, '_data')
@@ -158,7 +159,7 @@ class Metadata(object):
 
     def get_extra(self, field, default=None):
         _data = object.__getattribute__(self, '_data')
-        if field in _data['user_metadata'].iterkeys():
+        if field in iter(_data['user_metadata'].keys()):
             try:
                 return _data['user_metadata'][field]['#extra#']
             except:
@@ -195,7 +196,7 @@ class Metadata(object):
         this method will delete it.
         '''
         cleaned = {}
-        for key, val in identifiers.iteritems():
+        for key, val in identifiers.items():
             key, val = self._clean_identifier(key, val)
             if key and val:
                 cleaned[key] = val
@@ -230,14 +231,14 @@ class Metadata(object):
         '''
         return a list of the custom fields in this book
         '''
-        return object.__getattribute__(self, '_data')['user_metadata'].iterkeys()
+        return iter(object.__getattribute__(self, '_data')['user_metadata'].keys())
 
     def all_field_keys(self):
         '''
         All field keys known by this instance, even if their value is None
         '''
         _data = object.__getattribute__(self, '_data')
-        return frozenset(ALL_METADATA_FIELDS.union(_data['user_metadata'].iterkeys()))
+        return frozenset(ALL_METADATA_FIELDS.union(iter(_data['user_metadata'].keys())))
 
     def metadata_for_field(self, key):
         '''
@@ -263,7 +264,7 @@ class Metadata(object):
             v = self.get(attr, None)
             if v is not None:
                 result[attr] = v
-        for attr in _data['user_metadata'].iterkeys():
+        for attr in _data['user_metadata'].keys():
             v = self.get(attr, None)
             if v is not None:
                 result[attr] = v
@@ -371,7 +372,7 @@ class Metadata(object):
             self.set_all_user_metadata(other.get_all_user_metadata(make_copy=True))
             for x in SC_FIELDS_COPY_NOT_NULL:
                 copy_not_none(self, other, x)
-            if callable(getattr(other, 'get_identifiers', None)):
+            if isinstance(getattr(other, 'get_identifiers', None), collections.Callable):
                 self.set_identifiers(other.get_identifiers())
             # language is handled below
         else:
@@ -384,7 +385,7 @@ class Metadata(object):
                 # Case-insensitive but case preserving merging
                 lotags = [t.lower() for t in other.tags]
                 lstags = [t.lower() for t in self.tags]
-                ot, st = map(frozenset, (lotags, lstags))
+                ot, st = list(map(frozenset, (lotags, lstags)))
                 for t in st.intersection(ot):
                     sidx = lstags.index(t)
                     oidx = lotags.index(t)
@@ -399,7 +400,7 @@ class Metadata(object):
                 if len(other_cover) > len(self_cover):
                     self.cover_data = other.cover_data
 
-            if callable(getattr(other, 'custom_field_keys', None)):
+            if isinstance(getattr(other, 'custom_field_keys', None), collections.Callable):
                 for x in other.custom_field_keys():
                     meta = other.get_user_metadata(x, make_copy=True)
                     if meta is not None:
@@ -410,7 +411,7 @@ class Metadata(object):
                             # Case-insensitive but case preserving merging
                             lotags = [t.lower() for t in other_tags]
                             lstags = [t.lower() for t in self_tags]
-                            ot, st = map(frozenset, (lotags, lstags))
+                            ot, st = list(map(frozenset, (lotags, lstags)))
                             for t in st.intersection(ot):
                                 sidx = lstags.index(t)
                                 oidx = lotags.index(t)
@@ -428,10 +429,10 @@ class Metadata(object):
                 self.comments = other_comments
 
             # Copy all the non-none identifiers
-            if callable(getattr(other, 'get_identifiers', None)):
+            if isinstance(getattr(other, 'get_identifiers', None), collections.Callable):
                 d = self.get_identifiers()
                 s = other.get_identifiers()
-                d.update([v for v in s.iteritems() if v[1] is not None])
+                d.update([v for v in s.items() if v[1] is not None])
                 self.set_identifiers(d)
             else:
                 # other structure not Metadata. Copy the top-level identifiers
@@ -445,15 +446,15 @@ class Metadata(object):
             self.series_index = None
 
     def format_tags(self):
-        return ', '.join([unicode(t) for t in self.tags])
+        return ', '.join([str(t) for t in self.tags])
         # return u', '.join([unicode(t) for t in sorted(self.tags, key=sort_key)])
 
     def format_rating(self, v=None, divide_by=1.0):
         if v is None:
             if self.rating is not None:
-                return unicode(self.rating/divide_by)
+                return str(self.rating/divide_by)
             return 'None'
-        return unicode(v/divide_by)
+        return str(v/divide_by)
 
     def format_field(self, key, series_with_index=True):
         '''
@@ -462,9 +463,6 @@ class Metadata(object):
         name, val, ign, ign = self.format_field_extended(key, series_with_index)
         return (name, val)
 
-    def __str__(self):
-        return self.__unicode__().encode('utf-8')
-
-    def __nonzero__(self):
+    def __bool__(self):
         return bool(self.title or self.author or self.comments or self.tags)
 

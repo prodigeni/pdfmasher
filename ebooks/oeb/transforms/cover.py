@@ -5,10 +5,10 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from __future__ import unicode_literals
+
 
 import textwrap
-from urllib import unquote
+from urllib.parse import unquote
 import logging
 
 from lxml import etree
@@ -91,13 +91,13 @@ class CoverManager(object):
         if self.no_default_cover:
             return None
         m = self.oeb.metadata
-        title = unicode(m.title[0])
-        authors = [unicode(x) for x in m.creator if x.role == 'aut']
+        title = str(m.title[0])
+        authors = [str(x) for x in m.creator if x.role == 'aut']
         series_string = None
         if m.series and m.series_index:
             series_string = _('Book %(sidx)s of %(series)s')%dict(
                     sidx=fmt_sidx(m.series_index[0], use_roman=True),
-                    series=unicode(m.series[0]))
+                    series=str(m.series[0]))
 
         # try:
         #     from calibre.ebooks import calibre_cover

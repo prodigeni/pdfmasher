@@ -4,10 +4,10 @@
 # This software is licensed under the "GPL v3" License as described in the "LICENSE" file, 
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
-from __future__ import with_statement
-from __future__ import unicode_literals
 
-import __builtin__, sys, os
+
+
+import builtins, sys, os
 
 
 class PathResolver(object):
@@ -62,4 +62,4 @@ def get_path(path, data=False, allow_user_override=True):
             return f.read()
     return fpath
 
-__builtin__.__dict__['P'] = get_path
+builtins.__dict__['P'] = get_path

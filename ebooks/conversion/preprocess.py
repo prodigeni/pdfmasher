@@ -5,7 +5,7 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from __future__ import unicode_literals
+
 
 import functools, re
 import logging
@@ -26,13 +26,13 @@ convert_entities = functools.partial(entity_to_unicode,
         })
 
 LIGATURES = {
-        '\uFB00': u'ff',
-        '\uFB01': u'fi',
-        '\uFB02': u'fl',
-        '\uFB03': u'ffi',
-        '\uFB04': u'ffl',
-        '\uFB05': u'ft',
-        '\uFB06': u'st',
+        '\uFB00': 'ff',
+        '\uFB01': 'fi',
+        '\uFB02': 'fl',
+        '\uFB03': 'ffi',
+        '\uFB04': 'ffl',
+        '\uFB05': 'ft',
+        '\uFB06': 'st',
         }
 
 _ligpat = re.compile('|'.join(LIGATURES))
@@ -74,7 +74,7 @@ class CSSPreProcessor(object):
                 namespaced = True
             ans.append(line)
 
-        return u'\n'.join(ans)
+        return '\n'.join(ans)
 
 class HTMLPreProcessor(object):
 

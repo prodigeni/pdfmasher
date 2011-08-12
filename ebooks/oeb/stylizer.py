@@ -1,4 +1,3 @@
-# -*- encoding: utf-8 -*-
 # Copyright 2008, Marshall T. Vandegrift <llasram@gmail.com>
 # Copyright 2011 Hardcoded Software (http://www.hardcoded.net)
 # 
@@ -6,13 +5,10 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from __future__ import with_statement
-from __future__ import unicode_literals
-
-
 import os, itertools, re, logging, copy, unicodedata
 from weakref import WeakKeyDictionary
 from xml.dom import SyntaxErr as CSSSyntaxError
+
 from cssutils.css import (CSSStyleRule, CSSPageRule, CSSStyleDeclaration,
     CSSFontFaceRule, cssproperties)
 from cssutils.css import PropertyValue as CSSValueList
@@ -80,7 +76,7 @@ DEFAULTS = {'azimuth': 'center', 'background-attachment': 'scroll',
             'page-break-after': 'auto', 'page-break-before': 'auto',
             'page-break-inside': 'auto', 'pause-after': 0, 'pause-before':
             0, 'pitch': 'medium', 'pitch-range': '50', 'play-during': 'auto',
-            'position': 'static', 'quotes': u"'“' '”' '‘' '’'", 'richness':
+            'position': 'static', 'quotes': "'“' '”' '‘' '’'", 'richness':
             '50', 'right': 'auto', 'speak': 'normal', 'speak-header': 'once',
             'speak-numeral': 'continuous', 'speak-punctuation': 'none',
             'speech-rate': 'medium', 'stress': '50', 'table-layout': 'auto',
@@ -101,7 +97,7 @@ class CSSSelector(etree.XPath):
 
     def __init__(self, css, namespaces=XPNSMAP):
         css = self.MIN_SPACE_RE.sub(r'\1', css)
-        if isinstance(css, unicode):
+        if isinstance(css, str):
             # Workaround for bug in lxml on windows/OS X that causes a massive
             # memory leak with non ASCII selectors
             css = css.encode('ascii', 'ignore').decode('ascii')
@@ -128,11 +124,16 @@ class Stylizer(object):
     def __init__(self, tree, path, oeb, profile, extra_css='', user_css='',
             change_justification='left'):
         assert profile is not None
+        # XXX str/bytes hackfix
+        if isinstance(path, bytes):
+            decoded_path = path.decode('utf-8')
+        else:
+            decoded_path = path
         self.oeb = oeb
         self.profile = profile
         self.change_justification = change_justification
         item = oeb.manifest.hrefs[path]
-        basename = os.path.basename(path)
+        basename = os.path.basename(decoded_path)
         cssname = os.path.splitext(basename)[0] + '.css'
         stylesheets = [html_css_stylesheet()]
         head = xpath(tree, '/h:html/h:head')
@@ -147,14 +148,14 @@ class Stylizer(object):
         for elem in head:
             if (elem.tag == XHTML('style') and
                 elem.get('type', CSS_MIME) in OEB_STYLES):
-                text = elem.text if elem.text else u''
+                text = elem.text if elem.text else ''
                 for x in elem:
                     t = getattr(x, 'text', None)
                     if t:
-                        text += u'\n\n' + force_unicode(t, u'utf-8')
+                        text += '\n\n' + force_unicode(t, 'utf-8')
                     t = getattr(x, 'tail', None)
                     if t:
-                        text += u'\n\n' + force_unicode(t, u'utf-8')
+                        text += '\n\n' + force_unicode(t, 'utf-8')
                 if text:
                     text = XHTML_CSS_NAMESPACE + elem.text
                     text = oeb.css_preprocessor(text)
@@ -179,7 +180,7 @@ class Stylizer(object):
                     continue
                 stylesheets.append(sitem.data)
         csses = {'extra_css':extra_css, 'user_css':user_css}
-        for w, x in csses.items():
+        for w, x in list(csses.items()):
             if x:
                 try:
                     text = XHTML_CSS_NAMESPACE + x
@@ -200,7 +201,8 @@ class Stylizer(object):
             for rule in stylesheet.cssRules:
                 rules.extend(self.flatten_rule(rule, href, index))
                 index = index + 1
-        rules.sort()
+        # XXX had to fix crash about unsortable type, so that's why we only sort by first item of tuple
+        rules.sort(key=lambda tup: tup[:1])
         self.rules = rules
         self._styles = {}
         class_sel_pat = re.compile(r'\.[a-z]+', re.IGNORECASE)
@@ -243,15 +245,15 @@ class Stylizer(object):
                     for x in elem.iter():
                         if x.text:
                             punctuation_chars = []
-                            text = unicode(x.text)
+                            text = str(x.text)
                             while text:
                                 if not unicodedata.category(text[0]).startswith('P'):
                                     break
                                 punctuation_chars.append(text[0])
                                 text = text[1:]
 
-                            special_text = u''.join(punctuation_chars) + \
-                                    (text[0] if text else u'')
+                            special_text = ''.join(punctuation_chars) + \
+                                    (text[0] if text else '')
                             span = E.span(special_text)
                             span.tail = text[1:]
                             x.text = None
@@ -353,7 +355,7 @@ class Stylizer(object):
         else:
             values = primitives[:4]
         edges = ('top', 'right', 'bottom', 'left')
-        for edge, value in itertools.izip(edges, values):
+        for edge, value in zip(edges, values):
             style["%s-%s" % (name, edge)] = value
         return style
 
@@ -434,7 +436,7 @@ class Stylizer(object):
                 style = copy.copy(style)
                 size = float(style['font-size'][:-2])
                 style['font-size'] = "%.2fpt" % (size * font_scale)
-            style = ';\n    '.join(': '.join(item) for item in style.items())
+            style = ';\n    '.join(': '.join(item) for item in list(style.items()))
             rules.append('%s {\n    %s;\n}' % (selector, style))
         return '\n'.join(rules)
 
@@ -465,7 +467,7 @@ class Style(object):
         if 'style' not in attrib:
             return
         css = attrib['style'].split(';')
-        css = filter(None, (x.strip() for x in css))
+        css = [_f for _f in (x.strip() for x in css) if _f]
         css = [x.strip() for x in css]
         css = [x for x in css if self.MS_PAT.match(x) is None]
         try:
@@ -578,7 +580,7 @@ class Style(object):
                     result = size
             else:
                 result = self._unit_convert(value, base=base, font=base)
-                if not isinstance(result, (int, float, long)):
+                if not isinstance(result, (int, float)):
                     return base
                 if result < 0:
                     result = normalize_fontsize("smaller", base)
@@ -618,12 +620,12 @@ class Style(object):
                 result = base
             else:
                 result = self._unit_convert(width, base=base)
-            if isinstance(result, (unicode, str, bytes)):
+            if isinstance(result, (str, bytes)):
                 result = self._profile.width
             self._width = result
             if 'max-width' in self._style:
                 result = self._unit_convert(self._style['max-width'], base=base)
-                if isinstance(result, (unicode, str, bytes)):
+                if isinstance(result, (str, bytes)):
                     result = self._width
                 if result < self._width:
                     self._width = result
@@ -648,12 +650,12 @@ class Style(object):
                 result = base
             else:
                 result = self._unit_convert(height, base=base)
-            if isinstance(result, (unicode, str, bytes)):
+            if isinstance(result, (str, bytes)):
                 result = self._profile.height
             self._height = result
             if 'max-height' in self._style:
                 result = self._unit_convert(self._style['max-height'], base=base)
-                if isinstance(result, (unicode, str, bytes)):
+                if isinstance(result, (str, bytes)):
                     result = self._height
                 if result < self._height:
                     self._height = result
@@ -702,7 +704,7 @@ class Style(object):
             self._get('padding-bottom'), base=self.height)
 
     def __str__(self):
-        items = self._style.items()
+        items = list(self._style.items())
         items.sort()
         return '; '.join("%s: %s" % (key, val) for key, val in items)
 

@@ -4,12 +4,12 @@
 # This software is licensed under the "GPL v3" License as described in the "LICENSE" file, 
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
-from __future__ import with_statement, unicode_literals
+
 
 import traceback, os, re
 
 def normalize(x):
-    if isinstance(x, unicode):
+    if isinstance(x, str):
         import unicodedata
         x = unicodedata.normalize('NFKC', x)
     return x
@@ -18,7 +18,7 @@ UNIT_RE = re.compile(r'^(-*[0-9]*[.]?[0-9]*)\s*(%|em|ex|en|px|mm|cm|in|pt|pc)$')
 
 def unit_convert(value, base, font, dpi):
     ' Return value in pts'
-    if isinstance(value, (int, long, float)):
+    if isinstance(value, (int, float)):
         return value
     try:
         return float(value) * 72.0 / dpi

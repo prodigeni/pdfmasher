@@ -5,19 +5,19 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from __future__ import unicode_literals
+
 
 import os, sys, re
-from urllib import unquote, quote
-from urlparse import urlparse
+from urllib.parse import unquote, quote
+from urllib.parse import urlparse
 
 from ..utils import relpath, guess_type, remove_bracketed_text
 
 _author_pat = re.compile(',?\s+(and|with)\s+', re.IGNORECASE)
 def string_to_authors(raw):
-    raw = raw.replace('&&', u'\uffff')
+    raw = raw.replace('&&', '\uffff')
     raw = _author_pat.sub('&', raw)
-    authors = [a.strip().replace(u'\uffff', '&') for a in raw.split('&')]
+    authors = [a.strip().replace('\uffff', '&') for a in raw.split('&')]
     return [a for a in authors if a]
 
 def authors_to_string(authors):
@@ -27,7 +27,7 @@ def authors_to_string(authors):
         return ''
 
 _title_pat = re.compile(r'^(A|The|An)\s+', re.IGNORECASE)
-_ignore_starts = u'\'"'+u''.join(unichr(x) for x in range(0x2018, 0x201e)+[0x2032, 0x2033])
+_ignore_starts = '\'"'+''.join(chr(x) for x in list(range(0x2018, 0x201e))+[0x2032, 0x2033])
 
 def title_sort(title, order=None):
     if order is None:
@@ -43,10 +43,10 @@ def title_sort(title, order=None):
         title = title[len(prep):] + ', ' + prep
     return title.strip()
 
-coding = zip(
+coding = list(zip(
 [1000,900,500,400,100,90,50,40,10,9,5,4,1],
 ["M","CM","D","CD","C","XC","L","XL","X","IX","V","IV","I"]
-)
+))
 
 
 
@@ -109,7 +109,7 @@ class Resource(object):
                 self._href = href_or_path
             else:
                 pc = url[2]
-                if isinstance(pc, unicode):
+                if isinstance(pc, str):
                     pc = pc.encode('utf-8')
                 pc = unquote(pc).decode('utf-8')
                 self.path = os.path.abspath(os.path.join(basedir, pc.replace('/', os.sep)))
@@ -131,7 +131,7 @@ class Resource(object):
                 basedir = os.getcwd()
         if self.path is None:
             return self._href
-        f = self.fragment.encode('utf-8') if isinstance(self.fragment, unicode) else self.fragment
+        f = self.fragment.encode('utf-8') if isinstance(self.fragment, str) else self.fragment
         frag = '#'+quote(f) if self.fragment else ''
         if self.path == basedir:
             return ''+frag
@@ -139,7 +139,7 @@ class Resource(object):
             rpath = relpath(self.path, basedir)
         except OSError: # On windows path and basedir could be on different drives
             rpath = self.path
-        if isinstance(rpath, unicode):
+        if isinstance(rpath, str):
             rpath = rpath.encode('utf-8')
         return quote(rpath.replace(os.sep, '/'))+frag
 
@@ -172,7 +172,7 @@ class ResourceCollection(object):
         return len(self._resources) > 0
 
     def __str__(self):
-        resources = map(repr, self)
+        resources = list(map(repr, self))
         return '[%s]'%', '.join(resources)
 
     def __repr__(self):

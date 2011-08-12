@@ -5,7 +5,7 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from __future__ import unicode_literals
+
 
 __all__ = ["Unihandecoder"]
 
@@ -34,10 +34,10 @@ class Unihandecoder(object):
 
     def decode(self, text):
         try:
-            unicode # python2
-            if not isinstance(text, unicode):
+            str # python2
+            if not isinstance(text, str):
                 try:
-                    text = unicode(text)
+                    text = str(text)
                 except:
                     try:
                         text = text.decode(self.preferred_encoding)
