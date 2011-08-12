@@ -113,14 +113,7 @@ def metadata_from_filename(name, pat=None):
             mi.publisher = publisher
         except (IndexError, ValueError):
             pass
-        try:
-            pubdate = match.group('published')
-            if pubdate:
-                from ...utils.date import parse_date
-                mi.pubdate = parse_date(pubdate)
-        except Exception:
-            pass
-
+    
     if mi.is_null('title'):
         mi.title = name
     return mi

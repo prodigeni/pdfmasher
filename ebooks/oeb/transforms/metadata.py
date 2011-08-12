@@ -9,7 +9,7 @@ from __future__ import with_statement
 from __future__ import unicode_literals
 
 import os
-from ...utils.date import isoformat, now
+from datetime import datetime
 from ...utils import guess_type
 
 def meta_info_to_oeb_metadata(mi, m, override_input_metadata=False):
@@ -84,10 +84,10 @@ def meta_info_to_oeb_metadata(mi, m, override_input_metadata=False):
         m.clear('subject')
     if not mi.is_null('pubdate'):
         m.clear('date')
-        m.add('date', isoformat(mi.pubdate))
+        m.add('date', mi.pubdate.isoformat())
     if not mi.is_null('timestamp'):
         m.clear('timestamp')
-        m.add('timestamp', isoformat(mi.timestamp))
+        m.add('timestamp', mi.timestamp.isoformat())
     if not mi.is_null('rights'):
         m.clear('rights')
         m.add('rights', mi.rights)
@@ -96,4 +96,4 @@ def meta_info_to_oeb_metadata(mi, m, override_input_metadata=False):
         m.add('publication_type', mi.publication_type)
 
     if not m.timestamp:
-        m.add('timestamp', isoformat(now()))
+        m.add('timestamp', datetime.now().isoformat())

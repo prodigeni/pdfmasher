@@ -14,7 +14,6 @@ from . import SC_FIELDS_COPY_NOT_NULL
 from . import STANDARD_METADATA_FIELDS
 from . import TOP_LEVEL_IDENTIFIERS
 from . import ALL_METADATA_FIELDS
-from ...utils.date import isoformat, format_date
 
 NULL_VALUES = {
                 'user_metadata': {},
