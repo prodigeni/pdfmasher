@@ -1,5 +1,3 @@
-
-
 import os
 from zipfile import ZipInfo
 

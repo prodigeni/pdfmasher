@@ -8,6 +8,9 @@ http://www.hardcoded.net/licenses/gplv3_license
 
 #import "PMBuildPane.h"
 
+#define PMEbookTypeMOBI 1
+#define PMEbookTypeEPUB 2
+
 @implementation PMBuildPane
 - (id)initWithPyParent:(id)aPyParent
 {
@@ -47,6 +50,38 @@ http://www.hardcoded.net/licenses/gplv3_license
     [[self py] viewHTML];
 }
 
+- (IBAction)createEbook:(id)sender
+{
+    NSSavePanel *sp = [NSSavePanel savePanel];
+    [sp setTitle:@"Select a destination for the e-book"];
+    NSString *ext;
+    if ([[self py] selectedEbookType] == PMEbookTypeEPUB) {
+        ext = @"epub";
+    }
+    else {
+        ext = @"mobi";
+    }
+    [sp setAllowedFileTypes:[NSArray arrayWithObject:ext]];
+    [sp setAllowsOtherFileTypes:YES];
+    if ([sp runModal] == NSOKButton) {
+        NSString *filename = [[sp URL] path];
+        [[self py] createEbookAtPath:filename];
+    }
+}
+
+- (IBAction)selectEbookType:(id)sender
+{
+    NSInteger newtype;
+    NSInteger col = [ebookTypeRadioButtons selectedColumn];
+    if (col == 1) {
+        newtype = PMEbookTypeEPUB;
+    }
+    else {
+        newtype = PMEbookTypeMOBI;
+    }
+    [[self py] setSelectedEbookType:newtype];
+}
+
 /* model --> view */
 - (void)refresh
 {
@@ -55,5 +90,6 @@ http://www.hardcoded.net/licenses/gplv3_license
     [editMarkdownButton setEnabled:enabled];
     [revealMarkdownButton setEnabled:enabled];
     [viewHTMLButton setEnabled:enabled];
+    [createEbookButton setEnabled:enabled];
 }
 @end

@@ -10,9 +10,16 @@ import os.path as op
 from datetime import datetime
 
 import markdown
+from ebooks.html.input import HTMLInput
+from ebooks.mobi.output import convert as convert2mobi
+from ebooks.epub.output import convert as convert2epub
 
 from ..output import generate_markdown, wrap_html
 from .base import GUIObject
+
+class EbookType:
+    MOBI = 1
+    EPUB = 2
 
 FAIRWARE_NOTICE = """
 Fairware Notice
@@ -45,6 +52,7 @@ class BuildPane(GUIObject):
         GUIObject.__init__(self, view, app)
         self.lastgen_desc = ''
         self.post_processing_enabled = False
+        self.selected_ebook_type = EbookType.MOBI
     
     def connect(self):
         GUIObject.connect(self)
@@ -84,6 +92,16 @@ class BuildPane(GUIObject):
         with open(dest_path, 'wt', encoding='utf-8') as fp:
             fp.write(wrap_html(html_body, 'utf-8'))
         self.app.open_path(dest_path)
+    
+    def create_ebook(self, path):
+        hi = HTMLInput()
+        html_path = self._current_path('htm')
+        fp = open(html_path, 'rb')
+        oeb = hi.convert(fp)
+        if self.selected_ebook_type == EbookType.EPUB:
+            convert2epub(oeb, path)
+        else:
+            convert2mobi(oeb, path)
     
     #--- Events
     def file_opened(self):

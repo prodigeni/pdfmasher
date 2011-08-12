@@ -23,7 +23,6 @@ from ..oeb.base import OEBBook
 from ..conversion.preprocess import HTMLPreProcessor
 from ..constants import islinux, isbsd, iswindows
 from ..utils import unicode_path, as_unicode
-from ..utils.filenames import ascii_filename
 
 class Link(object):
     '''

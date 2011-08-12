@@ -20,6 +20,14 @@ class PyBuildPane(PyGUIObject):
     def postProcessingEnabled(self):
         return self.py.post_processing_enabled
     
+    @signature('i@:')
+    def selectedEbookType(self):
+        return self.py.selected_ebook_type
+    
+    @signature('v@:i')
+    def setSelectedEbookType_(self, value):
+        self.py.selected_ebook_type = value
+    
     def generateMarkdown(self):
         self.py.generate_markdown()
     
@@ -31,4 +39,7 @@ class PyBuildPane(PyGUIObject):
     
     def viewHTML(self):
         self.py.view_html()
+    
+    def createEbookAtPath_(self, path):
+        self.py.create_ebook(path)
     
