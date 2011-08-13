@@ -5,7 +5,7 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-import os, itertools, re, logging, copy, unicodedata
+import os, re, logging, copy, unicodedata
 from weakref import WeakKeyDictionary
 from xml.dom import SyntaxErr as CSSSyntaxError
 
@@ -16,10 +16,10 @@ from cssutils import (profile as cssprofiles, parseString, parseStyle, log as
         cssutils_log, CSSParser, profiles)
 from lxml import etree
 from lxml.cssselect import css_to_xpath, ExpressionError, SelectorSyntaxError
-from ..utils import force_unicode
 from .. import unit_convert
 from .base import XHTML, XHTML_NS, CSS_MIME, OEB_STYLES
 from .base import XPNSMAP, xpath, urlnormalize
+from .htmlcss import HTML_CSS
 
 cssutils_log.setLevel(logging.WARN)
 
@@ -28,8 +28,7 @@ _html_css_stylesheet = None
 def html_css_stylesheet():
     global _html_css_stylesheet
     if _html_css_stylesheet is None:
-        html_css = open(P('templates/html.css'), 'rb').read()
-        _html_css_stylesheet = parseString(html_css)
+        _html_css_stylesheet = parseString(HTML_CSS)
         _html_css_stylesheet.namespaces['h'] = XHTML_NS
     return _html_css_stylesheet
 

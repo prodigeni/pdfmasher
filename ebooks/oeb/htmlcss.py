@@ -1,3 +1,4 @@
+HTML_CSS = """
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -406,3 +407,4 @@ img, object, svg|svg {
 
 a { text-decoration: inherit; color: inherit; cursor: inherit }
 a[href] { text-decoration: underline; color: blue; cursor: pointer }
+"""

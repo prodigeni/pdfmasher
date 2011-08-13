@@ -16,7 +16,8 @@ from lxml import etree, html
 from ..constants import filesystem_encoding, __version__
 from .entitydefs import ENTITYDEFS
 from ..conversion.preprocess import CSSPreProcessor
-from ..utils import isbytestring, as_unicode, get_types_map
+from ..utils import isbytestring, as_unicode
+from ..utils.mimetypes import get_types_map
 import collections
 
 RECOVER_PARSER = etree.XMLParser(recover=True, no_network=True)

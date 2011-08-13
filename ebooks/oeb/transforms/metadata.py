@@ -5,12 +5,9 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-
-
-
 import os
 from datetime import datetime
-from ...utils import guess_type
+from ...utils.mimetypes import guess_type
 
 def meta_info_to_oeb_metadata(mi, m, override_input_metadata=False):
     from ..base import OPF

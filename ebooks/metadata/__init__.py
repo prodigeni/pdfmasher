@@ -11,7 +11,8 @@ import os, sys, re
 from urllib.parse import unquote, quote
 from urllib.parse import urlparse
 
-from ..utils import relpath, guess_type, remove_bracketed_text
+from ..utils import relpath, remove_bracketed_text
+from ..utils.mimetypes import guess_type
 
 _author_pat = re.compile(',?\s+(and|with)\s+', re.IGNORECASE)
 def string_to_authors(raw):

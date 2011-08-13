@@ -5,12 +5,6 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-
-
-'''
-Miscelleaneous utilities.
-'''
-
 import builtins
 import sys
 import os
@@ -18,7 +12,6 @@ import os.path
 import re
 from functools import partial
 
-from . import resources
 from ..constants import preferred_encoding, filesystem_encoding
 
 builtins.__dict__['dynamic_property'] = lambda func: func(None)
@@ -150,31 +143,6 @@ def as_unicode(obj, enc=preferred_encoding):
                 obj = repr(obj)
     return force_unicode(obj, enc=enc)
 
-_mt_inited = False
-def _init_mimetypes():
-    global _mt_inited
-    import mimetypes
-    mimetypes.init([P('mime.types')])
-    _mt_inited = True
-
-def guess_type(*args, **kwargs):
-    import mimetypes
-    if not _mt_inited:
-        _init_mimetypes()
-    return mimetypes.guess_type(*args, **kwargs)
-
-def guess_all_extensions(*args, **kwargs):
-    import mimetypes
-    if not _mt_inited:
-        _init_mimetypes()
-    return mimetypes.guess_all_extensions(*args, **kwargs)
-
-def get_types_map():
-    import mimetypes
-    if not _mt_inited:
-        _init_mimetypes()
-    return mimetypes.types_map
-
 _filename_sanitize = re.compile(br'[\xae\0\\|\?\*<":>\+/]')
 def sanitize_file_name(name, substitute=b'_', as_unicode=False):
     '''
@@ -225,12 +193,3 @@ def remove_bracketed_text(src,
         elif sum(counts.values()) < 1:
             buf.append(char)
     return ''.join(buf)
-
-def sanitize_file_name2(name, substitute='_'):
-    '''
-    Sanitize filenames removing invalid chars. Keeps unicode names as unicode
-    and bytestrings as bytestrings
-    '''
-    if isbytestring(name):
-        return sanitize_file_name(name, substitute=substitute)
-    return sanitize_file_name_unicode(name, substitute=substitute)

@@ -243,7 +243,7 @@ class HTMLInput(object):
     def create_oebbook(self, htmlpath, mi, encoding='utf-8', pretty_print=False):
         from ..oeb.base import (DirContainer, rewrite_links, urlnormalize, urldefrag, BINARY_MIME,
             OEB_STYLES, xpath)
-        from ..utils import guess_type
+        from ..utils.mimetypes import guess_type
         from ..oeb.transforms.metadata import meta_info_to_oeb_metadata
         import cssutils, logging
         cssutils.log.setLevel(logging.WARN)

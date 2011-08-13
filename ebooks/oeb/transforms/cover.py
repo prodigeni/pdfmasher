@@ -12,7 +12,7 @@ from urllib.parse import unquote
 import logging
 
 from lxml import etree
-from ...utils import guess_type
+from ...utils.mimetypes import guess_type
 
 class CoverManager(object):
 
