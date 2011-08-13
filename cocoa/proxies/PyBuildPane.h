@@ -7,6 +7,8 @@
 
 - (NSInteger)selectedEbookType;
 - (void)setSelectedEbookType:(NSInteger)type;
+- (void)setEbookTitle:(NSString *)title;
+- (void)setEbookAuthor:(NSString *)author;
 
 - (void)generateMarkdown;
 - (void)editMarkdown;

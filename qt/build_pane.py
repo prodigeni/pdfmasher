@@ -6,8 +6,9 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
+from PyQt4.QtCore import Qt
 from PyQt4.QtGui import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QSizePolicy,
-    QRadioButton, QFileDialog)
+    QRadioButton, QFileDialog, QFormLayout, QLineEdit)
 from qtlib.util import verticalSpacer
 
 from core.gui.build_pane import BuildPane as BuildPaneModel, EbookType
@@ -24,8 +25,6 @@ class BuildPane(QWidget):
         self.editMarkdownButton.clicked.connect(self.model.edit_markdown)
         self.revealMarkdownButton.clicked.connect(self.model.reveal_markdown)
         self.viewHtmlButton.clicked.connect(self.model.view_html)
-        for radio in {self.mobiRadio, self.epubRadio}:
-            radio.toggled.connect(self.ebookTypeToggled)
         self.createEbookButton.clicked.connect(self.createEbookClicked)
     
     def _setupUi(self):
@@ -55,18 +54,24 @@ class BuildPane(QWidget):
         self.radioLayout.addWidget(self.epubRadio)
         self.mobiRadio.setChecked(True)
         self.mainLayout.addLayout(self.radioLayout)
+        self.metadataLayout = QFormLayout()
+        self.metadataLayout.setFormAlignment(Qt.AlignLeft|Qt.AlignTop)
+        self.titleEdit = QLineEdit()
+        self.metadataLayout.addRow("Title:", self.titleEdit)
+        self.authorEdit = QLineEdit()
+        self.metadataLayout.addRow("Author:", self.authorEdit)
+        self.mainLayout.addLayout(self.metadataLayout)
         self.createEbookButton = QPushButton("Create e-book")
         self.mainLayout.addWidget(self.createEbookButton)
         self.mainLayout.addItem(verticalSpacer())
     
     #--- Signals
-    def ebookTypeToggled(self, checked):
-        if not checked:
-            return # we don't care about unchecking
-        newtype = EbookType.EPUB if self.epubRadio.isChecked() else EbookType.MOBI
-        self.model.selected_ebook_type = newtype
         
     def createEbookClicked(self):
+        ebook_type = EbookType.EPUB if self.epubRadio.isChecked() else EbookType.MOBI
+        self.model.selected_ebook_type = ebook_type
+        self.model.ebook_title = self.titleEdit.text()
+        self.model.ebook_author = self.authorEdit.text()
         title = "Select a destination for the e-book"
         if self.model.selected_ebook_type == EbookType.EPUB:
             myfilter = "EPUB file (*.epub)"

@@ -52,6 +52,8 @@ http://www.hardcoded.net/licenses/gplv3_license
 
 - (IBAction)createEbook:(id)sender
 {
+    [[self py] setEbookTitle:[ebookTitleTextField stringValue]];
+    [[self py] setEbookAuthor:[ebookAuthorTextField stringValue]];
     NSSavePanel *sp = [NSSavePanel savePanel];
     [sp setTitle:@"Select a destination for the e-book"];
     NSString *ext;

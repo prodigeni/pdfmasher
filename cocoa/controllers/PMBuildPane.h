@@ -20,6 +20,8 @@ http://www.hardcoded.net/licenses/gplv3_license
     IBOutlet NSButton *revealMarkdownButton;
     IBOutlet NSButton *viewHTMLButton;
     IBOutlet NSButton *createEbookButton;
+    IBOutlet NSTextField *ebookTitleTextField;
+    IBOutlet NSTextField *ebookAuthorTextField;
     IBOutlet NSMatrix *ebookTypeRadioButtons;
 }
 - (id)initWithPyParent:(id)aPyParent;

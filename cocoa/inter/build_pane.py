@@ -28,6 +28,12 @@ class PyBuildPane(PyGUIObject):
     def setSelectedEbookType_(self, value):
         self.py.selected_ebook_type = value
     
+    def setEbookTitle_(self, value):
+        self.py.ebook_title = value
+    
+    def setEbookAuthor_(self, value):
+        self.py.ebook_author = value
+    
     def generateMarkdown(self):
         self.py.generate_markdown()
     

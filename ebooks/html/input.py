@@ -5,9 +5,6 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-
-
-
 '''
 Input plugin for HTML or OPF ebooks.
 '''
@@ -234,20 +231,6 @@ def get_filelist(htmlfile, dir, encoding='utf-8', max_levels=999, breadth_first=
 
 
 class HTMLInput(object):
-    def convert(self, stream, encoding='utf-8', pretty_print=False):
-        self._is_case_sensitive = None
-        basedir = os.getcwd()
-
-        basedir = os.path.dirname(stream.name)
-        fname = os.path.basename(stream.name)
-
-        from ..metadata.html import get_metadata
-        from ..metadata.meta import metadata_from_filename
-        mi = get_metadata(stream)
-        fmi = metadata_from_filename(fname)
-        fmi.smart_update(mi)
-        return self.create_oebbook(stream.name, basedir, fmi, encoding, pretty_print)
-
     def is_case_sensitive(self, path):
         if getattr(self, '_is_case_sensitive', None) is not None:
             return self._is_case_sensitive
@@ -257,15 +240,15 @@ class HTMLInput(object):
                 and os.path.exists(path.upper()))
         return self._is_case_sensitive
 
-    def create_oebbook(self, htmlpath, basedir, mi, encoding, pretty_print):
-        from ..oeb.base import (DirContainer,
-            rewrite_links, urlnormalize, urldefrag, BINARY_MIME, OEB_STYLES,
-            xpath)
+    def create_oebbook(self, htmlpath, mi, encoding='utf-8', pretty_print=False):
+        from ..oeb.base import (DirContainer, rewrite_links, urlnormalize, urldefrag, BINARY_MIME,
+            OEB_STYLES, xpath)
         from ..utils import guess_type
         from ..oeb.transforms.metadata import meta_info_to_oeb_metadata
         import cssutils, logging
         cssutils.log.setLevel(logging.WARN)
         self.OEB_STYLES = OEB_STYLES
+        basedir = os.path.dirname(htmlpath)
         html_preprocessor = HTMLPreProcessor()
         assert encoding
         oeb = OEBBook(html_preprocessor, pretty_print=pretty_print, input_encoding=encoding)
@@ -325,8 +308,7 @@ class HTMLInput(object):
                     if href == item.href:
                         dpath = os.path.dirname(path)
                         break
-                cssutils.replaceUrls(item.data,
-                        partial(self.resource_adder, base=dpath))
+                cssutils.replaceUrls(item.data, partial(self.resource_adder, base=dpath))
 
         toc = self.oeb.toc
         self.oeb.auto_generated_toc = True
