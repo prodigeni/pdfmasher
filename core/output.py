@@ -61,6 +61,8 @@ def generate_markdown(elements):
         return (footnoteorder, e.page, e.order)
     
     elements = [e for e in elements if e.state != ElementState.Ignored]
+    for elem in elements:
+        elem.modified_text = None
     link_footnotes(elements)
     elements.sort(key=keyfunc)
     paragraphs = []
