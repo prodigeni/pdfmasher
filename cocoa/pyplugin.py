@@ -13,3 +13,6 @@ from inter.opened_file_label import PyOpenedFileLabel
 from inter.element_table import PyElementTable
 from inter.page_repr import PyPageRepr
 from inter.page_controller import PyPageController
+
+# py2plugin workarounds
+import lxml._elementpath

@@ -1,3 +1,9 @@
+=== 0.5.0 (2011-08-18)
+
+* Added the ability to generate MOBI and EPUB documents (using code from Calibre).
+* Changed the license from BSD to GPL (Calibre is GPL).
+* Fixed a memory usage problem.
+
 === 0.4.0 (2011-08-09)
 
 * Added a new Page View feature, which is really cool.
