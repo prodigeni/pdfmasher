@@ -67,6 +67,18 @@ class BuildPane(GUIObject):
         without_ext, _ = op.splitext(self.app.current_path)
         return without_ext + '.' + ext
     
+    def _generate_html(self):
+        md_path = self._current_path('txt')
+        with open(md_path, 'rt', encoding='utf-8') as fp:
+            md_contents = fp.read()
+        if not self.app.registered and self.app.unpaid_hours >= 1:
+            md_contents = FAIRWARE_NOTICE + md_contents
+        html_body = markdown.markdown(md_contents)
+        dest_path = self._current_path('htm')
+        with open(dest_path, 'wt', encoding='utf-8') as fp:
+            fp.write(wrap_html(html_body, 'utf-8'))
+        return dest_path
+    
     #--- Public
     def generate_markdown(self):
         dest_path = self._current_path('txt')
@@ -85,20 +97,11 @@ class BuildPane(GUIObject):
         self.app.reveal_path(md_path)
     
     def view_html(self):
-        md_path = self._current_path('txt')
-        with open(md_path, 'rt', encoding='utf-8') as fp:
-            md_contents = fp.read()
-        if not self.app.registered and self.app.unpaid_hours >= 1:
-            md_contents = FAIRWARE_NOTICE + md_contents
-        html_body = markdown.markdown(md_contents)
-        dest_path = self._current_path('htm')
-        with open(dest_path, 'wt', encoding='utf-8') as fp:
-            fp.write(wrap_html(html_body, 'utf-8'))
-        self.app.open_path(dest_path)
+        self.app.open_path(self._generate_html())
     
     def create_ebook(self, path):
         hi = HTMLInput()
-        html_path = self._current_path('htm')
+        html_path = self._generate_html()
         mi = MetaInformation(self.ebook_title, [self.ebook_author])
         oeb = hi.create_oebbook(html_path, mi)
         if self.selected_ebook_type == EbookType.EPUB:
