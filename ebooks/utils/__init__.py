@@ -11,6 +11,7 @@ import os
 import os.path
 import re
 from functools import partial
+from html.entities import name2codepoint
 
 from ..constants import preferred_encoding, filesystem_encoding
 
