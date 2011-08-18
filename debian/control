@@ -8,5 +8,5 @@ Homepage: http://www.hardcoded.net
 
 Package: pdfmasher
 Architecture: any
-Depends: python3, libqtgui4
+Depends: python3 (>= 3.2), libqtgui4, python3-lxml
 Description: PdfMasher
