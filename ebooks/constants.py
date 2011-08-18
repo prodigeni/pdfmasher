@@ -9,7 +9,7 @@
 
 from core import __appname__, __version__
 
-import sys, locale, codecs, os, importlib, collections
+import sys, locale, codecs, os, collections
 
 _plat = sys.platform.lower()
 iswindows = 'win32' in _plat or 'win64' in _plat
@@ -26,11 +26,6 @@ try:
     codecs.lookup(preferred_encoding)
 except:
     preferred_encoding = 'utf-8'
-
-win32event = importlib.import_module('win32event') if iswindows else None
-winerror   = importlib.import_module('winerror') if iswindows else None
-win32api   = importlib.import_module('win32api') if iswindows else None
-fcntl      = None if iswindows else importlib.import_module('fcntl')
 
 filesystem_encoding = sys.getfilesystemencoding()
 if filesystem_encoding is None: filesystem_encoding = 'utf-8'
