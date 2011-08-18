@@ -14,13 +14,17 @@ EXTRA_TYPES = {
     'application/x-koboreader-ebook': ['kobo'],
     'image/wmf': ['wmf'],
     'application/ereader': ['pdb'],
+    'application/epub+zip': ['epub'],
+    'application/xhtml+xml': ['xhtml'],
+    'application/x-dtbncx+xml': ['ncx'],
+    'application/oebps-package+xml': ['opf'],
 }
 
 mimetypes.init()
 
 for t, exts in EXTRA_TYPES.items():
     for ext in exts:
-        mimetypes.add_type(t, ext, strict=False)
+        mimetypes.add_type(t, '.'+ext)
 
 guess_type = mimetypes.guess_type
 guess_all_extensions = mimetypes.guess_all_extensions
