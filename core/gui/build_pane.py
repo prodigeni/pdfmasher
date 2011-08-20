@@ -13,7 +13,7 @@ import markdown
 from ebooks.html.input import HTMLInput
 from ebooks.mobi.output import convert as convert2mobi
 from ebooks.epub.output import convert as convert2epub
-from ebooks.metadata import MetaInformation
+from ebooks.metadata.book import Metadata
 
 from ..output import generate_markdown, wrap_html
 from .base import GUIObject
@@ -102,7 +102,7 @@ class BuildPane(GUIObject):
     def create_ebook(self, path):
         hi = HTMLInput()
         html_path = self._generate_html()
-        mi = MetaInformation(self.ebook_title, [self.ebook_author])
+        mi = Metadata(self.ebook_title, [self.ebook_author])
         oeb = hi.create_oebbook(html_path, mi)
         if self.selected_ebook_type == EbookType.EPUB:
             convert2epub(oeb, path)

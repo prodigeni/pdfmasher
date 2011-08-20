@@ -13,15 +13,18 @@ import os, re, sys, uuid, tempfile
 from urllib.parse import urlparse, urlunparse
 from urllib.parse import unquote
 from functools import partial
-
+import cssutils
 import logging
 
-from ..oeb.base import OEBBook
+from ..oeb.base import (OEBBook, DirContainer, rewrite_links, urlnormalize, urldefrag, BINARY_MIME,
+    OEB_STYLES, xpath)
 from ..conversion.preprocess import HTMLPreProcessor
 from ..constants import islinux, isbsd, iswindows
 from ..utils import unicode_path, as_unicode
+from ..utils.mimetypes import guess_type
+from ..oeb.transforms.metadata import meta_info_to_oeb_metadata
 
-class Link(object):
+class Link:
     '''
     Represents a link in a HTML file.
     '''
@@ -68,13 +71,12 @@ class Link(object):
 
 
 class IgnoreFile(Exception):
-
     def __init__(self, msg, errno):
         Exception.__init__(self, msg)
         self.doesnt_exist = errno == 2
         self.errno = errno
 
-class HTMLFile(object):
+class HTMLFile:
     '''
     Contains basic information about an HTML file. This
     includes a list of links to other files as well as
@@ -150,7 +152,7 @@ class HTMLFile(object):
         return Link(url, self.base)
 
 
-def depth_first(root, flat, visited=set([])):
+def depth_first(root, flat, visited=set()):
     yield root
     visited.add(root)
     for link in root.links:
@@ -230,7 +232,7 @@ def get_filelist(htmlfile, dir, encoding='utf-8', max_levels=999, breadth_first=
     return filelist
 
 
-class HTMLInput(object):
+class HTMLInput:
     def is_case_sensitive(self, path):
         if getattr(self, '_is_case_sensitive', None) is not None:
             return self._is_case_sensitive
@@ -241,11 +243,6 @@ class HTMLInput(object):
         return self._is_case_sensitive
 
     def create_oebbook(self, htmlpath, mi, encoding='utf-8', pretty_print=False):
-        from ..oeb.base import (DirContainer, rewrite_links, urlnormalize, urldefrag, BINARY_MIME,
-            OEB_STYLES, xpath)
-        from ..utils.mimetypes import guess_type
-        from ..oeb.transforms.metadata import meta_info_to_oeb_metadata
-        import cssutils, logging
         cssutils.log.setLevel(logging.WARN)
         self.OEB_STYLES = OEB_STYLES
         basedir = os.path.dirname(htmlpath)
@@ -343,12 +340,12 @@ class HTMLInput(object):
         if not isinstance(link_, str):
             try:
                 link_ = link_.decode('utf-8', 'error')
-            except:
+            except Exception:
                 logging.warn('Failed to decode link %r. Ignoring', link_)
                 return None, None
         try:
             l = Link(link_, base if base else os.getcwd())
-        except:
+        except Exception:
             logging.exception('Failed to process link: %r', link_)
             return None, None
         if l.path is None:

@@ -5,20 +5,16 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-
-
-
 import logging
 
 from ..base import XML, XHTML, XHTML_NS
 from ..base import XHTML_MIME, CSS_MIME
 from ..base import element
-
-__ = _ = lambda s:s
+from ..base import urlnormalize
 
 __all__ = ['HTMLTOCAdder']
 
-DEFAULT_TITLE = __('Table of Contents')
+DEFAULT_TITLE = 'Table of Contents'
 
 STYLE_CSS = {
     'nested': """
@@ -50,23 +46,15 @@ body > .calibre_toc_block {
 """
     }
 
-class HTMLTOCAdder(object):
+class HTMLTOCAdder:
     def __init__(self, title=None, style='nested', position='end'):
         self.title = title
         self.style = style
         self.position = position
-
-    @classmethod
-    def config(cls, cfg):
-        group = cfg.add_group('htmltoc', _('HTML TOC generation options.'))
-        group('toc_title', ['--toc-title'], default=None,
-              help=_('Title for any generated in-line table of contents.'))
-        return cfg
-
+    
     def __call__(self, oeb):
         if 'toc' in oeb.guide:
             # Ensure toc pointed to in <guide> is in spine
-            from ..base import urlnormalize
             href = urlnormalize(oeb.guide['toc'].href)
             if href in oeb.manifest.hrefs:
                 item = oeb.manifest.hrefs[href]

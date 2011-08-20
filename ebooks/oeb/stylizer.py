@@ -16,7 +16,6 @@ from cssutils import (profile as cssprofiles, parseString, parseStyle, log as
         cssutils_log, CSSParser, profiles)
 from lxml import etree
 from lxml.cssselect import css_to_xpath, ExpressionError, SelectorSyntaxError
-from .. import unit_convert
 from .base import XHTML, XHTML_NS, CSS_MIME, OEB_STYLES
 from .base import XPNSMAP, xpath, urlnormalize
 from .htmlcss import HTML_CSS
@@ -34,17 +33,14 @@ def html_css_stylesheet():
 
 XHTML_CSS_NAMESPACE = '@namespace "%s";\n' % XHTML_NS
 
-INHERITED = set(['azimuth', 'border-collapse', 'border-spacing',
-                 'caption-side', 'color', 'cursor', 'direction', 'elevation',
-                 'empty-cells', 'font-family', 'font-size', 'font-style',
-                 'font-variant', 'font-weight', 'letter-spacing',
-                 'line-height', 'list-style-image', 'list-style-position',
-                 'list-style-type', 'orphans', 'page-break-inside',
-                 'pitch-range', 'pitch', 'quotes', 'richness', 'speak-header',
-                 'speak-numeral', 'speak-punctuation', 'speak', 'speech-rate',
-                 'stress', 'text-align', 'text-indent', 'text-transform',
-                 'visibility', 'voice-family', 'volume', 'white-space',
-                 'widows', 'word-spacing'])
+INHERITED = {'azimuth', 'border-collapse', 'border-spacing', 'caption-side', 'color', 'cursor',
+    'direction', 'elevation', 'empty-cells', 'font-family', 'font-size', 'font-style', 'font-variant',
+    'font-weight', 'letter-spacing', 'line-height', 'list-style-image', 'list-style-position',
+    'list-style-type', 'orphans', 'page-break-inside', 'pitch-range', 'pitch', 'quotes', 'richness',
+    'speak-header', 'speak-numeral', 'speak-punctuation', 'speak', 'speech-rate', 'stress',
+    'text-align', 'text-indent', 'text-transform', 'visibility', 'voice-family', 'volume',
+    'white-space', 'widows', 'word-spacing',
+}
 
 DEFAULTS = {'azimuth': 'center', 'background-attachment': 'scroll',
             'background-color': 'transparent', 'background-image': 'none',
@@ -86,9 +82,45 @@ DEFAULTS = {'azimuth': 'center', 'background-attachment': 'scroll',
             'normal', 'widows': '2', 'width': 'auto', 'word-spacing': 'normal',
             'z-index': 'auto'}
 
-FONT_SIZE_NAMES = set(['xx-small', 'x-small', 'small', 'medium', 'large',
-                       'x-large', 'xx-large'])
+FONT_SIZE_NAMES = {'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'}
 
+
+UNIT_RE = re.compile(r'^(-*[0-9]*[.]?[0-9]*)\s*(%|em|ex|en|px|mm|cm|in|pt|pc)$')
+def unit_convert(value, base, font, dpi):
+    ' Return value in pts'
+    if isinstance(value, (int, float)):
+        return value
+    try:
+        return float(value) * 72.0 / dpi
+    except:
+        pass
+    result = value
+    m = UNIT_RE.match(value)
+    if m is not None and m.group(1):
+        value = float(m.group(1))
+        unit = m.group(2)
+        if unit == '%':
+            result = (value / 100.0) * base
+        elif unit == 'px':
+            result = value * 72.0 / dpi
+        elif unit == 'in':
+            result = value * 72.0
+        elif unit == 'pt':
+            result = value
+        elif unit == 'em':
+            result = value * font
+        elif unit in ('ex', 'en'):
+            # This is a hack for ex since we have no way to know
+            # the x-height of the font
+            font = font
+            result = value * font * 0.5
+        elif unit == 'pc':
+            result = value * 12.0
+        elif unit == 'mm':
+            result = value * 0.04
+        elif unit == 'cm':
+            result = value * 0.40
+    return result
 
 class CSSSelector(etree.XPath):
     MIN_SPACE_RE = re.compile(r' *([>~+]) *')
@@ -117,7 +149,7 @@ class CSSSelector(etree.XPath):
             self.css)
 
 
-class Stylizer(object):
+class Stylizer:
     STYLESHEETS = WeakKeyDictionary()
 
     def __init__(self, tree, path, oeb, profile, extra_css='', user_css='',
@@ -440,7 +472,7 @@ class Stylizer(object):
         return '\n'.join(rules)
 
 
-class Style(object):
+class Style:
     MS_PAT = re.compile(r'^\s*(mso-|panose-|text-underline|tab-interval)')
 
     def __init__(self, element, stylizer):

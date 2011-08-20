@@ -5,8 +5,6 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-
-
 from collections import defaultdict
 import random
 import re
@@ -15,8 +13,9 @@ import time
 from urllib.parse import urldefrag
 from io import StringIO, BytesIO
 import logging
+import unicodedata
+from uuid import uuid4
 
-from .. import normalize
 from .langcodes import iana2mobi
 from .mobiml import MBP_NS
 from ..oeb.base import OEB_DOCS
@@ -65,27 +64,29 @@ MAX_THUMB_DIMEN = (180, 240)
 
 
 TAGX = {
-        'chapter' :
-        b'\x00\x00\x00\x01\x01\x01\x01\x00\x02\x01\x02\x00\x03\x01\x04\x00\x04\x01\x08\x00\x00\x00\x00\x01',
-        'subchapter' :
-        b'\x00\x00\x00\x01\x01\x01\x01\x00\x02\x01\x02\x00\x03\x01\x04\x00\x04\x01\x08\x00\x05\x01\x10\x00\x15\x01\x10\x00\x16\x01\x20\x00\x17\x01\x40\x00\x00\x00\x00\x01',
-        'periodical' :
-        b'\x00\x00\x00\x02\x01\x01\x01\x00\x02\x01\x02\x00\x03\x01\x04\x00\x04\x01\x08\x00\x05\x01\x10\x00\x15\x01\x20\x00\x16\x01\x40\x00\x17\x01\x80\x00\x00\x00\x00\x01\x45\x01\x01\x00\x46\x01\x02\x00\x47\x01\x04\x00\x00\x00\x00\x01',
-        'secondary_book':b'\x00\x00\x00\x01\x01\x01\x01\x00\x00\x00\x00\x01',
-        'secondary_periodical':b'\x00\x00\x00\x01\x01\x01\x01\x00\x0b\x03\x02\x00\x00\x00\x00\x01'
-        }
+    'chapter': b'\x00\x00\x00\x01\x01\x01\x01\x00\x02\x01\x02\x00\x03\x01\x04\x00\x04\x01\x08\x00\x00\x00\x00\x01',
+    'subchapter': b'\x00\x00\x00\x01\x01\x01\x01\x00\x02\x01\x02\x00\x03\x01\x04\x00\x04\x01\x08\x00\x05\x01\x10\x00\x15\x01\x10\x00\x16\x01\x20\x00\x17\x01\x40\x00\x00\x00\x00\x01',
+    'periodical' : b'\x00\x00\x00\x02\x01\x01\x01\x00\x02\x01\x02\x00\x03\x01\x04\x00\x04\x01\x08\x00\x05\x01\x10\x00\x15\x01\x20\x00\x16\x01\x40\x00\x17\x01\x80\x00\x00\x00\x00\x01\x45\x01\x01\x00\x46\x01\x02\x00\x47\x01\x04\x00\x00\x00\x00\x01',
+    'secondary_book': b'\x00\x00\x00\x01\x01\x01\x01\x00\x00\x00\x00\x01',
+    'secondary_periodical': b'\x00\x00\x00\x01\x01\x01\x01\x00\x0b\x03\x02\x00\x00\x00\x00\x01'
+}
 
 INDXT = {
-        'chapter' : b'\x0f',
-        'subchapter' : b'\x1f',
-        'article'    : b'\x3f',
-        'chapter with subchapters': b'\x6f',
-        'periodical' : b'\xdf',
-        'section' : b'\xff',
-        }
+    'chapter': b'\x0f',
+    'subchapter': b'\x1f',
+    'article': b'\x3f',
+    'chapter with subchapters': b'\x6f',
+    'periodical': b'\xdf',
+    'section': b'\xff',
+}
 
 def encode(data):
     return data.encode('utf-8')
+
+def normalize(x):
+    if isinstance(x, str):
+        x = unicodedata.normalize('NFKC', x)
+    return x
 
 # Almost like the one for MS LIT, but not quite.
 DECINT_FORWARD = 0
@@ -110,7 +111,7 @@ def align_block(raw, multiple=4, pad=b'\0'):
     if extra == 0: return raw
     return raw + pad*(multiple - extra)
 
-class Serializer(object): # {{{
+class Serializer:
     NSRMAP = {'': None, XML_NS: 'xml', XHTML_NS: '', MBP_NS: 'mbp'}
 
     def __init__(self, oeb, images, write_page_breaks_after_item=True):
@@ -280,9 +281,7 @@ class Serializer(object): # {{{
                     buffer.seek(hoff)
                     buffer.write('%010d' % ioff)
 
-    # }}}
-
-class MobiWriter(object):
+class MobiWriter:
     COLLAPSE_RE = re.compile(r'[ \t\r\n\v]+')
 
     def __init__(self, write_page_breaks_after_item=True, dont_compress=False,
@@ -391,7 +390,6 @@ class MobiWriter(object):
         text.seek(npos)
         return data, overlap
 
-    # TBS {{{
     def _generate_flat_indexed_navpoints(self):
         # Assemble a HTMLRecordData instance for each HTML record
         # Return True if valid, False if invalid
@@ -1134,8 +1132,6 @@ class MobiWriter(object):
 
         self._tbSequence = tbSequence
 
-    # }}}
-
     def _evaluate_periodical_toc(self):
         '''
         Periodical:
@@ -1211,13 +1207,13 @@ class MobiWriter(object):
         toc = self._oeb.toc
         entries = list(toc.iter())[1:]
 
-        if len(entries) :
+        if len(entries):
             self._indexable = self._generate_indexed_navpoints()
-        else :
+        else:
             logging.info('  No entries found in TOC ...')
             self._indexable = False
 
-        if not self._indexable :
+        if not self._indexable:
             logging.info('  Writing unindexed mobi ...')
 
         while len(data) > 0:
@@ -1299,7 +1295,7 @@ class MobiWriter(object):
     #             self._first_image_record = len(self._records)-1
 
     def _generate_end_records(self):
-        if FCIS_FLIS :
+        if FCIS_FLIS:
             # This adds the binary blobs of FLIS and FCIS, which don't seem to be necessary
             self._flis_number = len(self._records)
             self._records.append(
@@ -1311,8 +1307,7 @@ class MobiWriter(object):
             self._fcis_number = len(self._records)
             self._records.append(fcis)
             self._records.append(b'\xE9\x8E\x0D\x0A')
-
-        else :
+        else:
             self._flis_number = len(self._records)
             self._records.append(b'\xE9\x8E\x0D\x0A')
 
@@ -1321,10 +1316,8 @@ class MobiWriter(object):
         exth = self._build_exth()
         last_content_record = len(self._records) - 1
 
-        '''
-        if INDEXING and self._indexable:
-            self._generate_end_records()
-        '''
+        # if INDEXING and self._indexable:
+        #     self._generate_end_records()
         self._generate_end_records()
 
         record0 = BytesIO()
@@ -1425,7 +1418,7 @@ class MobiWriter(object):
         record0.write(b'\0\0\0\x01')
 
         # 0xb8 - 0xbb : FCIS record number
-        if FCIS_FLIS :
+        if FCIS_FLIS:
             # Write these if FCIS/FLIS turned on
             # 0xb8 - 0xbb : FCIS record number
             record0.write(pack(b'>I', self._fcis_number))
@@ -1438,7 +1431,7 @@ class MobiWriter(object):
 
             # 0xc4 - 0xc7 : Unknown (FLIS record count?)
             record0.write(pack(b'>I', 1))
-        else :
+        else:
             # 0xb8 - 0xbb : FCIS record number
             record0.write(pack(b'>I', 0xffffffff))
 
@@ -1466,9 +1459,9 @@ class MobiWriter(object):
         # Setting bit 2 (0x4) disables <guide><reference type="start"> functionality
 
         trailingDataFlags = 1
-        if self._indexable :
+        if self._indexable:
             trailingDataFlags |= 2
-        if WRITE_PBREAKS :
+        if WRITE_PBREAKS:
             trailingDataFlags |= 4
         record0.write(pack(b'>I', trailingDataFlags))
 
@@ -1486,7 +1479,8 @@ class MobiWriter(object):
         exth = BytesIO()
         nrecs = 0
         for term in oeb.metadata:
-            if term not in EXTH_CODES: continue
+            if term not in EXTH_CODES:
+                continue
             code = EXTH_CODES[term]
             items = oeb.metadata[term]
             if term == 'creator':
@@ -1525,7 +1519,6 @@ class MobiWriter(object):
                 uuid = str(x).split(':')[-1]
                 break
         if uuid is None:
-            from uuid import uuid4
             uuid = str(uuid4())
 
         if isinstance(uuid, str):
@@ -1554,8 +1547,7 @@ class MobiWriter(object):
         else:
             raise NotImplementedError("missing date or timestamp needed for mobi_periodical")
 
-        if oeb.metadata.cover and \
-                str(oeb.metadata.cover[0]) in oeb.manifest.ids:
+        if oeb.metadata.cover and str(oeb.metadata.cover[0]) in oeb.manifest.ids:
             id = str(oeb.metadata.cover[0])
             item = oeb.manifest.ids[id]
             href = item.href
@@ -2490,9 +2482,7 @@ class MobiWriter(object):
 
         return align_block(ctoc)
 
-    # }}}
-
-class HTMLRecordData(object):
+class HTMLRecordData:
     """ A data structure containing indexing/navigation data for an HTML record """
     def __init__(self):
         self._continuingNode = -1
@@ -2563,7 +2553,7 @@ class HTMLRecordData(object):
         oeb.logger.info( "    nextSectionOpeningNode: %03d" % self.nextSectionOpeningNode )
         oeb.logger.info( "      nextSectionNodeCount: %03d" % self.nextSectionNodeCount )
 
-class MobiDocument(object):
+class MobiDocument:
     """ Hierarchical description of a Mobi document """
 
     # Counter to assign index values as new nodes are created
@@ -2592,7 +2582,7 @@ class MobiDocument(object):
     def dumpInfo(self):
         self._documentStructure.dumpInfo()
 
-class MobiBook(object):
+class MobiBook:
     """ A container for a flat chapter-to-chapter Mobi book """
     def __init__(self):
         self._chapters = []
@@ -2619,7 +2609,7 @@ class MobiBook(object):
             print("%20s: 0x%X"  % ("length", chapter.length))
             print()
 
-class MobiChapter(object):
+class MobiChapter:
     """ A container for Mobi chapters """
     def __init__(self, myIndex, startAddress, length, ctoc_map_index):
         self._myIndex = myIndex
@@ -2649,7 +2639,7 @@ class MobiChapter(object):
         self._length = value
     length = property(getLength, setLength, None, None)
 
-class MobiPeriodical(object):
+class MobiPeriodical:
     """ A container for a structured periodical """
     def __init__(self, myIndex):
         self._myIndex = myIndex
@@ -2747,7 +2737,7 @@ class MobiPeriodical(object):
                 print("\t\t%20s: 0x%X"  % ("myCtocMapIndex", article.myCtocMapIndex))
                 print()
 
-class MobiSection(object):
+class MobiSection:
     """ A container for periodical sections """
     def __init__(self, myMobiDoc):
         self._myMobiDoc = myMobiDoc
@@ -2851,7 +2841,7 @@ class MobiSection(object):
         if len(self.articles) > 1 :
             self.sectionLength += article.articleLength
 
-class MobiArticle(object):
+class MobiArticle:
     """ A container for periodical articles """
     def __init__(self, sectionParent, startAddress, length, ctocMapIndex):
         self._mySectionParent = sectionParent

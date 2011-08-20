@@ -5,7 +5,6 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-import builtins
 import sys
 import os
 import os.path
@@ -15,7 +14,7 @@ from html.entities import name2codepoint
 
 from ..constants import preferred_encoding, filesystem_encoding
 
-builtins.__dict__['dynamic_property'] = lambda func: func(None)
+dynamic_property = lambda func: func(None)
 
 class CurrentDir(object):
 

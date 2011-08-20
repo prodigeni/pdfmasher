@@ -16,7 +16,7 @@ from lxml import etree, html
 from ..constants import filesystem_encoding, __version__
 from .entitydefs import ENTITYDEFS
 from ..conversion.preprocess import CSSPreProcessor
-from ..utils import isbytestring, as_unicode
+from ..utils import isbytestring, as_unicode, dynamic_property
 from ..utils.mimetypes import get_types_map
 import collections
 
@@ -27,11 +27,11 @@ XHTML_NS     = 'http://www.w3.org/1999/xhtml'
 OEB_DOC_NS   = 'http://openebook.org/namespaces/oeb-document/1.0/'
 OPF1_NS      = 'http://openebook.org/namespaces/oeb-package/1.0/'
 OPF2_NS      = 'http://www.idpf.org/2007/opf'
-OPF_NSES     = set([OPF1_NS, OPF2_NS])
+OPF_NSES     = {OPF1_NS, OPF2_NS}
 DC09_NS      = 'http://purl.org/metadata/dublin_core'
 DC10_NS      = 'http://purl.org/dc/elements/1.0/'
 DC11_NS      = 'http://purl.org/dc/elements/1.1/'
-DC_NSES      = set([DC09_NS, DC10_NS, DC11_NS])
+DC_NSES      = {DC09_NS, DC10_NS, DC11_NS}
 XSI_NS       = 'http://www.w3.org/2001/XMLSchema-instance'
 DCTERMS_NS   = 'http://purl.org/dc/terms/'
 NCX_NS       = 'http://www.daisy.org/z3986/2005/ncx/'
@@ -47,11 +47,8 @@ XPNSMAP      = {'h'  : XHTML_NS, 'o1' : OPF1_NS,    'o2' : OPF2_NS,
                 'svg': SVG_NS,   'xl' : XLINK_NS,   're': RE_NS,
                 'mbp': MBP_NS, 'calibre': CALIBRE_NS }
 
-OPF1_NSMAP   = {'dc': DC11_NS, 'oebpackage': OPF1_NS}
 OPF2_NSMAP   = {'opf': OPF2_NS, 'dc': DC11_NS, 'dcterms': DCTERMS_NS,
                 'xsi': XSI_NS, 'calibre': CALIBRE_NS}
-
-_ = __ = lambda s:s
 
 def XML(name):
     return '{%s}%s' % (XML_NS, name)
@@ -411,7 +408,7 @@ class NotHTML(OEBError):
     '''Raised when a file that should be HTML (as per manifest) is not'''
     pass
 
-class NullContainer(object):
+class NullContainer:
     """An empty container.
 
     For use with book formats which do not support container-like access.
@@ -429,7 +426,7 @@ class NullContainer(object):
     def namelist(self):
         return []
 
-class DirContainer(object):
+class DirContainer:
     """Filesystem directory container."""
 
     def __init__(self, path, ignore_opf=False):
@@ -489,7 +486,7 @@ class DirContainer(object):
         return names
 
 
-class Metadata(object):
+class Metadata:
     """A collection of OEB data model metadata.
 
     Provides access to the list of items associated with a particular metadata
@@ -498,20 +495,27 @@ class Metadata(object):
     metadata items.
     """
 
-    DC_TERMS      = set(['contributor', 'coverage', 'creator', 'date',
-                         'description', 'format', 'identifier', 'language',
-                         'publisher', 'relation', 'rights', 'source',
-                         'subject', 'title', 'type'])
-    CALIBRE_TERMS = set(['series', 'series_index', 'rating', 'timestamp',
-                         'publication_type', 'title_sort'])
-    OPF_ATTRS     = {'role': OPF('role'), 'file-as': OPF('file-as'),
-                     'scheme': OPF('scheme'), 'event': OPF('event'),
-                     'type': XSI('type'), 'lang': XML('lang'), 'id': 'id'}
-    OPF1_NSMAP    = {'dc': DC11_NS, 'oebpackage': OPF1_NS}
-    OPF2_NSMAP    = {'opf': OPF2_NS, 'dc': DC11_NS, 'dcterms': DCTERMS_NS,
-                     'xsi': XSI_NS, 'calibre': CALIBRE_NS}
+    DC_TERMS = {'contributor', 'coverage', 'creator', 'date', 'description', 'format', 'identifier',
+        'language', 'publisher', 'relation', 'rights', 'source', 'subject', 'title', 'type'}
+    CALIBRE_TERMS = {'series', 'series_index', 'rating', 'timestamp', 'publication_type', 'title_sort'}
+    OPF_ATTRS = {
+        'role': OPF('role'),
+        'file-as': OPF('file-as'),
+        'scheme': OPF('scheme'),
+        'event': OPF('event'),
+        'type': XSI('type'),
+        'lang': XML('lang'),
+        'id': 'id',
+    }
+    OPF2_NSMAP = {
+        'opf': OPF2_NS,
+        'dc': DC11_NS,
+        'dcterms': DCTERMS_NS,
+        'xsi': XSI_NS,
+        'calibre': CALIBRE_NS,
+    }
 
-    class Item(object):
+    class Item:
         """An item of OEB data model metadata.
 
         The metadata term or name may be accessed via the :attr:`term` or
@@ -524,7 +528,7 @@ class Metadata(object):
         their local names using Python attribute syntax.  Only attributes
         allowed by the OPF 2.0 specification are supported.
         """
-        class Attribute(object):
+        class Attribute:
             """Smart accessor for allowed OEB metadata item attributes."""
 
             def __init__(self, attr, allowed=None):
@@ -716,7 +720,7 @@ class Metadata(object):
         return elem
 
 
-class Manifest(object):
+class Manifest:
     """Collection of files composing an OEB data model book.
 
     Provides access to the content of the files composing the book and
@@ -732,7 +736,7 @@ class Manifest(object):
         manifest items and the values are the items themselves.
     """
 
-    class Item(object):
+    class Item:
         """An OEB data model book content file.
 
         Provides the following data members for accessing the file content and
@@ -1027,7 +1031,7 @@ class Manifest(object):
             if title:
                 title = str(title[0])
             else:
-                title = _('Unknown')
+                title = 'Unknown'
 
             return self._parse_xhtml(convert_markdown(data, title=title))
 
@@ -1168,9 +1172,8 @@ class Manifest(object):
             return object.__hash__(self)
 
         def __lt__(self, other):
-            result = cmp(self.spine_position, other.spine_position)
-            if result != 0:
-                return result < 0
+            if self.spine_position != other.spine_position:
+                return self.spine_position < other.spine_position
             smatch = self.NUM_RE.search(self.href)
             sref = smatch.group(1) if smatch else self.href
             snum = float(smatch.group(2)) if smatch else 0.0
@@ -1179,7 +1182,7 @@ class Manifest(object):
             oref = omatch.group(1) if omatch else other.href
             onum = float(omatch.group(2)) if omatch else 0.0
             okey = (oref, onum, other.id)
-            return cmp(skey, okey) < 0
+            return skey < okey
 
         def relhref(self, href):
             """Convert the URL provided in :param:`href` from a book-absolute
@@ -1321,7 +1324,7 @@ class Manifest(object):
         return elem
 
 
-class Spine(object):
+class Spine:
     """Collection of manifest items composing an OEB data model book's main
     textual content.
 
@@ -1395,7 +1398,7 @@ class Spine(object):
         return elem
 
 
-class Guide(object):
+class Guide:
     """Collection of references to standard frequently-occurring sections
     within an OEB data model book.
 
@@ -1403,7 +1406,7 @@ class Guide(object):
     type identifiers and the values are `Reference` objects.
     """
 
-    class Reference(object):
+    class Reference:
         """Reference to a standard book section.
 
         Provides the following instance data members:
@@ -1414,24 +1417,24 @@ class Guide(object):
         :attr:`href`: Book-internal URL of the referenced section.  May include
             a fragment identifier.
         """
-        _TYPES_TITLES = [('cover', __('Cover')),
-                         ('title-page', __('Title Page')),
-                         ('toc', __('Table of Contents')),
-                         ('index', __('Index')),
-                         ('glossary', __('Glossary')),
-                         ('acknowledgements', __('Acknowledgements')),
-                         ('bibliography', __('Bibliography')),
-                         ('colophon', __('Colophon')),
-                         ('copyright-page', __('Copyright')),
-                         ('dedication', __('Dedication')),
-                         ('epigraph', __('Epigraph')),
-                         ('foreword', __('Foreword')),
-                         ('loi', __('List of Illustrations')),
-                         ('lot', __('List of Tables')),
-                         ('notes', __('Notes')),
-                         ('preface', __('Preface')),
-                         ('text', __('Main Text'))]
-        TYPES = set(t for t, _ in _TYPES_TITLES)
+        _TYPES_TITLES = [('cover', 'Cover'),
+                         ('title-page', 'Title Page'),
+                         ('toc', 'Table of Contents'),
+                         ('index', 'Index'),
+                         ('glossary', 'Glossary'),
+                         ('acknowledgements', 'Acknowledgements'),
+                         ('bibliography', 'Bibliography'),
+                         ('colophon', 'Colophon'),
+                         ('copyright-page', 'Copyright'),
+                         ('dedication', 'Dedication'),
+                         ('epigraph', 'Epigraph'),
+                         ('foreword', 'Foreword'),
+                         ('loi', 'List of Illustrations'),
+                         ('lot', 'List of Tables'),
+                         ('notes', 'Notes'),
+                         ('preface', 'Preface'),
+                         ('text', 'Main Text')]
+        TYPES = {t for t, _ in _TYPES_TITLES}
         TITLES = dict(_TYPES_TITLES)
         ORDER = dict((t, i) for i, (t, _) in enumerate(_TYPES_TITLES))
 
@@ -1461,7 +1464,7 @@ class Guide(object):
         def __lt__(self, other):
             if not isinstance(other, Guide.Reference):
                 return NotImplemented
-            return cmp(self._order, other._order) < 0
+            return self._order < other._order
 
         @dynamic_property
         def item(self):
@@ -1519,7 +1522,7 @@ class Guide(object):
         return elem
 
 
-class TOC(object):
+class TOC:
     """Represents a hierarchical table of contents or navigation tree for
     accessing arbitrary semantic sections within an OEB data model book.
 
@@ -1655,14 +1658,14 @@ class TOC(object):
             node.to_ncx(point)
         return parent
 
-class PageList(object):
+class PageList:
     """Collection of named "pages" to mapped positions within an OEB data model
     book's textual content.
 
     Provides list-like access to the pages.
     """
 
-    class Page(object):
+    class Page:
         """Represents a mapping between a page name and a position within
         the book content.
 
@@ -1678,7 +1681,7 @@ class PageList(object):
         :attr:`klass`: Optional semantic class of this page.
         :attr:`id`: Optional unique identifier for this page.
         """
-        TYPES = set(['front', 'normal', 'special'])
+        TYPES = {'front', 'normal', 'special'}
 
         def __init__(self, name, href, type='normal', klass=None, id=None):
             self.name = str(name)
@@ -1735,7 +1738,7 @@ class PageList(object):
         return pmap
 
 
-class OEBBook(object):
+class OEBBook:
     """Representation of a book in the IDPF OEB data model."""
 
     COVER_SVG_XP    = XPath('h:body//svg:svg[position() = 1]')

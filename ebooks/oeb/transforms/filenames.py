@@ -5,16 +5,17 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-
-
 import posixpath
 from urllib.parse import urldefrag, urlparse
+import logging
+from pprint import pformat
 
+import cssutils
 from lxml import etree
 
 from ..base import rewrite_links, urlnormalize
 
-class RenameFiles(object):
+class RenameFiles:
 
     '''
     Rename files and adjust all links pointing to them. Note that the spine
@@ -26,7 +27,6 @@ class RenameFiles(object):
         self.renamed_items_map = renamed_items_map
 
     def __call__(self, oeb):
-        import cssutils
         self.oeb = oeb
 
         for item in oeb.manifest.items:
@@ -83,7 +83,7 @@ class RenameFiles(object):
             replacement += '#' + frag
         return replacement
 
-class UniqueFilenames(object):
+class UniqueFilenames:
 
     'Ensure that every item in the manifest has a unique filename'
 
@@ -115,7 +115,6 @@ class UniqueFilenames(object):
         if self.rename_map:
             logging.info('Found non-unique filenames, renaming to support broken'
                     ' EPUB readers like FBReader, Aldiko and Stanza...')
-            from pprint import pformat
             logging.debug(pformat(self.rename_map))
 
             renamer = RenameFiles(self.rename_map)
@@ -131,9 +130,8 @@ class UniqueFilenames(object):
             candidate = base + suffix + ext
             if candidate not in self.seen_filenames:
                 return suffix
-# }}}
 
-class FlatFilenames(object):
+class FlatFilenames:
 
     'Ensure that every item in the manifest has a unique filename without subdirectories.'
 
@@ -166,7 +164,6 @@ class FlatFilenames(object):
         if self.rename_map:
             logging.info('Found non-flat filenames, renaming to support broken'
                     ' EPUB readers like FBReader...')
-            from pprint import pformat
             logging.debug(pformat(self.rename_map))
             logging.debug(pformat(self.renamed_items_map))
 

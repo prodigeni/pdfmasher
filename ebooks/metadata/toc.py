@@ -5,24 +5,21 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-
-
-import os, glob, re, functools
-from urllib.parse import urlparse
-from urllib.parse import unquote
+import os, re
 from uuid import uuid4
 
 from lxml import etree
 from lxml.builder import ElementMaker
 
 from ..constants import __appname__, __version__
+from ..utils import dynamic_property
 
 NCX_NS = "http://www.daisy.org/z3986/2005/ncx/"
 CALIBRE_NS = "http://calibre.kovidgoyal.net/2009/metadata"
 NSMAP = {
-            None: NCX_NS,
-            'calibre':CALIBRE_NS
-            }
+    None: NCX_NS,
+    'calibre': CALIBRE_NS,
+}
 
 
 E = ElementMaker(namespace=NCX_NS, nsmap=NSMAP)

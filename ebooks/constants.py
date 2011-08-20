@@ -5,11 +5,9 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-
-
 from core import __appname__, __version__
 
-import sys, locale, codecs, os, collections
+import sys, locale, codecs
 
 _plat = sys.platform.lower()
 iswindows = 'win32' in _plat or 'win64' in _plat
@@ -24,9 +22,10 @@ isunix = isosx or islinux
 try:
     preferred_encoding = locale.getpreferredencoding()
     codecs.lookup(preferred_encoding)
-except:
+except Exception:
     preferred_encoding = 'utf-8'
 
 filesystem_encoding = sys.getfilesystemencoding()
-if filesystem_encoding is None: filesystem_encoding = 'utf-8'
+if filesystem_encoding is None:
+    filesystem_encoding = 'utf-8'
 

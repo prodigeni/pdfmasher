@@ -5,14 +5,39 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-
-
 import textwrap
 from urllib.parse import unquote
 import logging
 
 from lxml import etree
 from ...utils.mimetypes import guess_type
+
+coding = list(zip(
+[1000,900,500,400,100,90,50,40,10,9,5,4,1],
+["M","CM","D","CD","C","XC","L","XL","X","IX","V","IV","I"]
+))
+
+def roman(num):
+    if num <= 0 or num >= 4000 or int(num) != num:
+        return str(num)
+    result = []
+    for d, r in coding:
+        while num >= d:
+            result.append(r)
+            num -= d
+    return ''.join(result)
+
+
+def fmt_sidx(i, fmt='%.2f', use_roman=False):
+    if i is None or i == '':
+        i = 1
+    try:
+        i = float(i)
+    except TypeError:
+        return str(i)
+    if int(i) == float(i):
+        return roman(int(i)) if use_roman else '%d'%int(i)
+    return fmt%i
 
 class CoverManager(object):
 
@@ -87,7 +112,6 @@ class CoverManager(object):
         '''
         Create a generic cover for books that dont have a cover
         '''
-        from ...metadata import authors_to_string, fmt_sidx
         if self.no_default_cover:
             return None
         m = self.oeb.metadata
@@ -95,7 +119,7 @@ class CoverManager(object):
         authors = [str(x) for x in m.creator if x.role == 'aut']
         series_string = None
         if m.series and m.series_index:
-            series_string = _('Book %(sidx)s of %(series)s')%dict(
+            series_string = 'Book %(sidx)s of %(series)s' % dict(
                     sidx=fmt_sidx(m.series_index[0], use_roman=True),
                     series=str(m.series[0]))
 

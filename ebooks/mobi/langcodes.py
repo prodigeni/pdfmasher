@@ -1,12 +1,9 @@
-#!/usr/bin/env  python
 # Copyright 2008, Kovid Goyal kovid@kovidgoyal.net
 # Copyright 2011 Hardcoded Software (http://www.hardcoded.net)
 # 
 # This software is licensed under the "GPL v3" License as described in the "LICENSE" file, 
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
-
-
 
 from struct import pack
 
@@ -164,8 +161,8 @@ sub_language = {
     2 : "UZBEK_CYRILLIC",
 }
 
-IANA_MOBI = \
-    {None: {None: (0, 0)},
+IANA_MOBI = {
+     None: {None: (0, 0)},
      'af': {None: (54, 0)},
      'ar': {None: (1, 0),
             'AE': (1, 56),
@@ -308,7 +305,8 @@ IANA_MOBI = \
             'HK': (4, 12),
             'SG': (4, 16),
             'TW': (4, 4)},
-     'zu': {None: (53, 0)}}
+     'zu': {None: (53, 0)}
+}
 
 def iana2mobi(icode):
     langdict, subtags = IANA_MOBI[None], []

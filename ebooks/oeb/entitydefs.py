@@ -7,8 +7,8 @@
 
 
 
-ENTITYDEFS = \
-    {'AElig': '&#198;',
+ENTITYDEFS = {
+     'AElig': '&#198;',
      'Aacute': '&#193;',
      'Acirc': '&#194;',
      'Agrave': '&#192;',
@@ -255,4 +255,5 @@ ENTITYDEFS = \
      'yuml': '&#255;',
      'zeta': '&#950;',
      'zwj': '&#8205;',
-     'zwnj': '&#8204;'}
+     'zwnj': '&#8204;'
+}

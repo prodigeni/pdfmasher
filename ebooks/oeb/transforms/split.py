@@ -5,9 +5,6 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-
-
-
 '''
 Splitting of the XHTML flows. Splitting can happen on page boundaries or can be
 forced at "likely" locations to conform to size limitations. This transform
@@ -31,15 +28,14 @@ def tostring(root):
     return etree.tostring(root, encoding='utf-8')
 
 class SplitError(ValueError):
-
     def __init__(self, path, root):
         size = len(tostring(root))/1024.
         ValueError.__init__(self,
-            _('Could not find reasonable point at which to split: '
+            'Could not find reasonable point at which to split: '
                 '%(path)s Sub-tree size: %(size)d KB')%dict(
-                            path=path, size=size))
+                            path=path, size=size)
 
-class Split(object):
+class Split:
 
     def __init__(self, split_on_page_breaks=True, page_breaks_xpath=None,
             max_flow_size=0, remove_css_pagebreaks=True):
@@ -168,7 +164,7 @@ class Split(object):
 
 
 
-class FlowSplitter(object):
+class FlowSplitter:
     'The actual splitting logic'
 
     def __init__(self, item, page_breaks, page_break_ids, max_flow_size, oeb, verbose=0):

@@ -5,22 +5,21 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-
-
-
 import os, re
+import logging
+import uuid
 
 from lxml import etree
 
 from ..utils import CurrentDir
+from .base import OPF_MIME, NCX_MIME, PAGE_MAP_MIME
 
 from urllib.parse import unquote
 
-class OEBOutput(object):
+class OEBOutput:
     def convert(self, oeb_book, output_path, input_plugin):
         if not os.path.exists(output_path):
             os.makedirs(output_path)
-        from .base import OPF_MIME, NCX_MIME, PAGE_MAP_MIME
         with CurrentDir(output_path):
             results = oeb_book.to_opf2(page_map=True)
             for key in (OPF_MIME, NCX_MIME, PAGE_MAP_MIME):
@@ -69,13 +68,10 @@ class OEBOutput(object):
 
             if covid:
                 manifest_item = manifest_items_with_id(covid)
-                if len(manifest_item) == 1 and \
-                        manifest_item[0].get('media-type',
-                                '').startswith('image/'):
+                if len(manifest_item) == 1 and manifest_item[0].get('media-type', '').startswith('image/'):
                     logging.warn('The cover image has an id != "cover". Renaming'
                             ' to work around bug in Nook Color')
 
-                    import uuid
                     newid = str(uuid.uuid4())
 
                     for item in manifest_items_with_id('cover'):
