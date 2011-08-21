@@ -10,6 +10,7 @@ from collections import defaultdict
 from itertools import count
 from urllib.parse import urldefrag, urlparse, urlunparse, urljoin
 from urllib.parse import unquote as urlunquote
+import logging
 
 from lxml import etree, html
 
@@ -792,7 +793,7 @@ class Manifest:
             for match in re.finditer(r'xmlns:(\S+?)=".*?microsoft.*?"', data):
                 prefixes.append(match.group(1))
             if prefixes:
-                self.oeb.log.warn('Found microsoft markup, cleaning...')
+                logging.warn('Found microsoft markup, cleaning...')
                 # Remove empty tags as they are not rendered by browsers
                 # but can become renderable HTML tags like <p/> if the
                 # document is parsed by an HTML parser
@@ -842,7 +843,7 @@ class Manifest:
                 try:
                     data = etree.fromstring(data, parser=parser)
                 except etree.XMLSyntaxError as err:
-                    self.oeb.log.exception('Initial parse failed:')
+                    logging.exception('Initial parse failed:')
                     repl = lambda m: ENTITYDEFS.get(m.group(1), m.group(0))
                     data = ENTITY_RE.sub(repl, data)
                     try:
@@ -887,7 +888,7 @@ class Manifest:
             if barename(data.tag) != 'html':
                 if barename(data.tag) == 'ncx':
                     return self._parse_xml(orig_data)
-                self.oeb.log.warn('File %r does not appear to be (X)HTML'%self.href)
+                logging.warn('File %r does not appear to be (X)HTML'%self.href)
                 nroot = etree.fromstring('<html></html>')
                 has_body = False
                 for child in list(data):
@@ -896,7 +897,7 @@ class Manifest:
                         break
                 parent = nroot
                 if not has_body:
-                    self.oeb.log.warn('File %r appears to be a HTML fragment'%self.href)
+                    logging.warn('File %r appears to be a HTML fragment'%self.href)
                     nroot = etree.fromstring('<html><body/></html>')
                     parent = nroot[0]
                 for child in list(data.iter()):
@@ -1023,7 +1024,7 @@ class Manifest:
             if '<html>' in data:
                 return self._parse_xhtml(data)
 
-            self.oeb.log.debug('Converting', self.href, '...')
+            logging.debug('Converting', self.href, '...')
 
             from ..txt.processor import convert_markdown
 
@@ -1118,8 +1119,7 @@ class Manifest:
                 elif self.media_type.lower() in OEB_STYLES:
                     data = self._parse_css(data)
                 elif self.media_type.lower() == 'text/plain':
-                    self.oeb.log.warn('%s contains data in TXT format'%self.href,
-                            'converting to HTML')
+                    logging.warn('%s contains data in TXT format\nconverting to HTML', self.href)
                     data = self._parse_txt(data)
                     self.media_type = XHTML_MIME
                 self._data = data
