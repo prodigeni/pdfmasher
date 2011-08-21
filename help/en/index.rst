@@ -1,11 +1,11 @@
 PdfMasher Help
 ==============
 
-PdfMasher is a tool to convert PDF files containing text in a ready-for-ebook HTML files. Most 
-ebook readers support PDF files natively, but it's often a real pain to read those documents
-because we don't have font size control over the document like we have with native ebooks. In many
-cases, we have to use the zooming feature and it's just a pain. Another drawback of PDFs on ebook 
-readers is that annotations are not supported.
+PdfMasher is a tool to convert PDF files containing text to MOBI or EPUB. Most ebook readers support
+PDF files natively, but it's often a real pain to read those documents because we don't have font
+size control over the document like we have with native ebooks. In many cases, we have to use the
+zooming feature and it's just a pain. Another drawback of PDFs on ebook readers is that annotations
+are not supported.
 
 There are already tools to convert PDFs to ebooks like `Calibre`_, but what they do is that they try
 to guess the role of each piece of text in the PDF. I think that in all but the simplest cases, it's
