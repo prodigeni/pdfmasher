@@ -94,6 +94,7 @@ h1 {
   font-size: 2em;
   font-weight: bold;
   margin: .67em 0;
+  page-break-before: always;
 }
 
 h2 {
@@ -101,6 +102,7 @@ h2 {
   font-size: 1.5em;
   font-weight: bold;
   margin: .83em 0;
+  page-break-before: always;
 }
 
 h3 {
