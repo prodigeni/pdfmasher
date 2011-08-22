@@ -27,4 +27,7 @@ A few things to know
 **Page breaks:** Titles of level 1 and 2 will generate page breaks. So if you don't want your title
 to generate a page break, select a level of 3 or more.
 
+**Table of contents:** A table of contents (TOC) will automatically be generated from your titles
+of level 1 and 2.
+
 .. _Markdown: http://daringfireball.net/projects/markdown/

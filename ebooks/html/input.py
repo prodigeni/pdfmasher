@@ -5,10 +5,6 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-'''
-Input plugin for HTML or OPF ebooks.
-'''
-
 import os, re, sys, uuid, tempfile
 from urllib.parse import urlparse, urlunparse
 from urllib.parse import unquote
@@ -231,6 +227,12 @@ def get_filelist(htmlfile, dir, encoding='utf-8', max_levels=999, breadth_first=
             logging.debug('\t\t%s', f)
     return filelist
 
+def find_headers(html, header_tags=('h1', 'h2')):
+    result = []
+    predicate = ' or '.join('name()=\'{}\''.format(tag) for tag in header_tags)
+    expr = '/h:html/h:body//h:*[{}]'.format(predicate)
+    result = xpath(html, expr)
+    return result
 
 class HTMLInput:
     def is_case_sensitive(self, path):
@@ -308,31 +310,20 @@ class HTMLInput:
                 cssutils.replaceUrls(item.data, partial(self.resource_adder, base=dpath))
 
         toc = self.oeb.toc
-        self.oeb.auto_generated_toc = True
-        titles = []
         headers = []
         for item in self.oeb.spine:
-            if not item.linear: continue
+            if not item.linear:
+                continue
             html = item.data
-            title = ''.join(xpath(html, '/h:html/h:head/h:title/text()'))
-            title = re.sub(r'\s+', ' ', title.strip())
-            if title:
-                titles.append(title)
-            headers.append('(unlabled)')
-            for tag in ('h1', 'h2', 'h3', 'h4', 'h5', 'strong'):
-                expr = '/h:html/h:body//h:%s[position()=1]/text()'
-                header = ''.join(xpath(html, expr % tag))
-                header = re.sub(r'\s+', ' ', header.strip())
-                if header:
-                    headers[-1] = header
-                    break
-        use = titles
-        if len(titles) > len(set(titles)):
-            use = headers
-        for title, item in zip(use, self.oeb.spine):
-            if not item.linear: continue
-            toc.add(title, item.href)
-
+            for header in find_headers(html):
+                headers.append((item, header))
+        for i, (item, header) in enumerate(headers):
+            if not item.linear:
+                continue
+            tocid = 'tocid{}'.format(i)
+            header.attrib['id'] = tocid
+            link = '{}#{}'.format(item.href, tocid)
+            toc.add(header.text, link)
         oeb.container = DirContainer(os.getcwd(), ignore_opf=True)
         return oeb
 

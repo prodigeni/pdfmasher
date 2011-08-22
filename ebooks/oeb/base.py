@@ -1787,7 +1787,6 @@ class OEBBook:
         self.guide = Guide(self)
         self.toc = TOC()
         self.pages = PageList()
-        self.auto_generated_toc = True
         self._temp_files = []
 
     def clean_temp_files(self):

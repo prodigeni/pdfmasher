@@ -79,10 +79,8 @@ class HTMLTOCAdder:
         head = element(contents, XHTML('head'))
         htitle = element(head, XHTML('title'))
         htitle.text = title
-        element(head, XHTML('link'), rel='stylesheet', type=CSS_MIME,
-                href=css_href)
-        body = element(contents, XHTML('body'),
-                       attrib={'class': 'calibre_toc'})
+        element(head, XHTML('link'), rel='stylesheet', type=CSS_MIME, href=css_href)
+        body = element(contents, XHTML('body'), attrib={'class': 'calibre_toc'})
         h1 = element(body, XHTML('h1'),
                      attrib={'class': 'calibre_toc_header'})
         h1.text = title
@@ -97,10 +95,7 @@ class HTMLTOCAdder:
 
     def add_toc_level(self, elem, toc):
         for node in toc:
-            block = element(elem, XHTML('div'),
-                            attrib={'class': 'calibre_toc_block'})
-            line = element(block, XHTML('a'),
-                           attrib={'href': node.href,
-                                   'class': 'calibre_toc_line'})
+            block = element(elem, XHTML('div'), attrib={'class': 'calibre_toc_block'})
+            line = element(block, XHTML('a'), attrib={'href': node.href, 'class': 'calibre_toc_line'})
             line.text = node.title
             self.add_toc_level(block, node)

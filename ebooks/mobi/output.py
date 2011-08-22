@@ -5,14 +5,13 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-
-
 from .writer import MobiWriter
+from .mobiml import MobiMLizer
+from ..oeb.transforms.htmltoc import HTMLTOCAdder
 
 def convert(oeb, output_path, toc_title=None, mobi_toc_at_start=False):
-    from .mobiml import MobiMLizer
-    from ..oeb.transforms.htmltoc import HTMLTOCAdder
-    tocadder = HTMLTOCAdder(title=toc_title, position='start' if mobi_toc_at_start else 'end')
+    tocpos = 'start' if mobi_toc_at_start else 'end'
+    tocadder = HTMLTOCAdder(title=toc_title, position=tocpos)
     tocadder(oeb)
     mobimlizer = MobiMLizer()
     mobimlizer(oeb)
