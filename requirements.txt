@@ -1,4 +1,4 @@
-pdfminer3k>=1.2.1
+pdfminer3k>=1.2.2
 jobprogress>=1.0.2
 pytest>=2.0.3
 pytest-monkeyplus>=1.0.0
