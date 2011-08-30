@@ -1,3 +1,10 @@
+=== 0.6.1 (2011-08-30)
+
+* Fixed bugs preventing some PDFs to be read.
+* Fixed a crash on clicking the page view.
+* Fixed a crash on ebook generation.
+* Fixed a bug causing the first character(s) of each line to be removed when reading a PDF.
+
 === 0.6.0 (2011-08-22)
 
 * Added automatic page breaks for title elements (level 1 and 2).
