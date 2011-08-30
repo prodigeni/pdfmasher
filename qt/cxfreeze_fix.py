@@ -3,6 +3,7 @@
 
 import os
 import markdown.etree_loader
+import lxml._elementpath
 
 # Normally, cmap files are directly in pdfminer/cmap, but
 # with cx_freeze, pdfminer is in a zip file and it confuses
