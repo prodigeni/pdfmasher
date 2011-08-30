@@ -252,7 +252,10 @@ class PageRepresentation:
         self.view.refresh()
     
     def mouse_up(self):
-        if self.page is not None:
+        # It's possible to get a call to mouse_up() with a corresponding call to mouse_down().
+        # All you need to do is to click outside the page repr, then drag into it, then release the
+        # mouse. We don't want to crash in these situations.
+        if all(x is not None for x in {self.page, self._last_mouse_down, self._last_mouse_pos}):
             self._handle_drag_completion()
         self._last_mouse_down = None
         self._last_mouse_pos = None
