@@ -35,6 +35,14 @@ from .const import ElementState
 # multiple lines in a text container), so for now I took a more heuristic road, that is to ask the
 # user which elements are footnotes and then look for the leading numbers/symbols of that footnote
 # on the rest of the page.
+#
+#--- detect_vertical
+#
+# We used to set the 'detect_vertical' flag on in LAParams so that annoying vertical text, sometimes
+# present next to photos in newspaper (to credit the photograph) would be automatically ignored.
+# This, however, caused problems in some PDFs where the first letter of each line would mistakenly
+# be detected as a vertical line. So, we don't use that flag anymore. The user of PdfMasher can
+# easily weed these out by sorting by text length and removeing all text elements of 1 character.
 
 class TextElement:
     def __init__(self, rect, fontsize, text):
@@ -71,7 +79,7 @@ def extract_text_elements_from_pdf(path, j=nulljob):
     doc.set_parser(parser)
     doc.initialize()
     rsrcmgr = PDFResourceManager()
-    laparams = LAParams(all_texts=True, paragraph_indent=5, detect_vertical=True, heuristic_word_margin=True)
+    laparams = LAParams(all_texts=True, paragraph_indent=5, heuristic_word_margin=True)
     device = PDFPageAggregator(rsrcmgr, laparams=laparams)
     interpreter = PDFPageInterpreter(rsrcmgr, device)
     pages = []
