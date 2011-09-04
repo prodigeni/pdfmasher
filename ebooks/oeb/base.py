@@ -1130,26 +1130,13 @@ class Manifest:
                 self._data = None
             return property(fget, fset, fdel, doc=doc)
 
-        def unload_data_from_memory(self, memory=None):
+        def unload_data_from_memory(self, memory):
             if isinstance(self._data, (str, bytes)):
-                if memory is None:
-                    from ..ptempfile import PersistentTemporaryFile
-                    pt = PersistentTemporaryFile(suffix='_oeb_base_mem_unloader.img')
-                    with pt:
-                        pt.write(self._data)
-                    self.oeb._temp_files.append(pt.name)
-                    def loader(*args):
-                        with open(pt.name, 'rb') as f:
-                            ans = f.read()
-                        os.remove(pt.name)
-                        return ans
-                    self._loader = loader
-                else:
-                    def loader2(*args):
-                        with open(memory, 'rb') as f:
-                            ans = f.read()
-                        return ans
-                    self._loader = loader2
+                def loader2(*args):
+                    with open(memory, 'rb') as f:
+                        ans = f.read()
+                    return ans
+                self._loader = loader2
                 self._data = None
 
         def __str__(self):
@@ -1787,14 +1774,6 @@ class OEBBook:
         self.guide = Guide(self)
         self.toc = TOC()
         self.pages = PageList()
-        self._temp_files = []
-
-    def clean_temp_files(self):
-        for path in self._temp_files:
-            try:
-                os.remove(path)
-            except:
-                pass
 
     @classmethod
     def generate(cls, opts):

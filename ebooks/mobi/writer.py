@@ -11,7 +11,7 @@ import re
 from struct import pack
 import time
 from urllib.parse import urldefrag
-from io import StringIO, BytesIO
+from io import BytesIO
 import logging
 import unicodedata
 from uuid import uuid4
@@ -121,25 +121,27 @@ class Serializer:
         self.id_offsets = {}
         self.href_offsets = defaultdict(list)
         self.breaks = []
-        buffer = self.buffer = StringIO()
-        buffer.write('<html>')
+        # We need to write to a BytesIO because if we write to a StringIO, our filepos offset will
+        # be wrong because of multi-bytes characters.
+        self.buffer = BytesIO()
+        self._write('<html>')
         self.serialize_head()
         self.serialize_body()
-        buffer.write('</html>')
+        self._write('</html>')
         self.fixup_links()
-        self.text = buffer.getvalue()
-
+    
+    def _write(self, s):
+        self.buffer.write(encode(s))
+    
     def serialize_head(self):
-        buffer = self.buffer
-        buffer.write('<head>')
+        self._write('<head>')
         if len(self.oeb.guide) > 0:
             self.serialize_guide()
-        buffer.write('</head>')
+        self._write('</head>')
 
     def serialize_guide(self):
-        buffer = self.buffer
         hrefs = self.oeb.manifest.hrefs
-        buffer.write('<guide>')
+        self._write('<guide>')
         for ref in list(self.oeb.guide.values()):
             # The Kindle decides where to open a book based on the presence of
             # an item in the guide that looks like
@@ -148,21 +150,21 @@ class Serializer:
             if path not in hrefs or hrefs[path].media_type not in OEB_DOCS:
                 continue
 
-            buffer.write('<reference type="')
+            self._write('<reference type="')
             if ref.type.startswith('other.') :
                 self.serialize_text(ref.type.replace('other.',''), quot=True)
             else :
                 self.serialize_text(ref.type, quot=True)
-            buffer.write('" ')
+            self._write('" ')
             if ref.title is not None:
-                buffer.write('title="')
+                self._write('title="')
                 self.serialize_text(ref.title, quot=True)
-                buffer.write('" ')
+                self._write('" ')
             self.serialize_href(ref.href)
             # Space required or won't work, I kid you not
-            buffer.write(' />')
+            self._write(' />')
 
-        buffer.write('</guide>')
+        self._write('</guide>')
 
     def serialize_href(self, href, base=None):
         hrefs = self.oeb.manifest.hrefs
@@ -171,46 +173,42 @@ class Serializer:
             path = base.abshref(path)
         if path and path not in hrefs:
             return False
-        buffer = self.buffer
         item = hrefs[path] if path else None
         if item and item.spine_position is None:
             return False
         path = item.href if item else base.href
         href = '#'.join((path, frag)) if frag else path
-        buffer.write('filepos=')
-        self.href_offsets[href].append(buffer.tell())
-        buffer.write('0000000000')
+        self._write('filepos=')
+        self.href_offsets[href].append(self.buffer.tell())
+        self._write('0000000000')
         return True
 
     def serialize_body(self):
-        buffer = self.buffer
-        self.anchor_offset = buffer.tell()
-        buffer.write('<body>')
-        self.anchor_offset_kindle = buffer.tell()
+        self.anchor_offset = self.buffer.tell()
+        self._write('<body>')
+        self.anchor_offset_kindle = self.buffer.tell()
         spine = [item for item in self.oeb.spine if item.linear]
         spine.extend([item for item in self.oeb.spine if not item.linear])
         for item in spine:
             self.serialize_item(item)
-        buffer.write('</body>')
+        self._write('</body>')
 
     def serialize_item(self, item):
-        buffer = self.buffer
         if not item.linear:
-            self.breaks.append(buffer.tell() - 1)
-        self.id_offsets[urlnormalize(item.href)] = buffer.tell()
+            self.breaks.append(self.buffer.tell() - 1)
+        self.id_offsets[urlnormalize(item.href)] = self.buffer.tell()
         # Kindle periodical articles are contained in a <div> tag
-        buffer.write('<div>')
+        self._write('<div>')
         for elem in item.data.find(XHTML('body')):
             self.serialize_elem(elem, item)
         # Kindle periodical article end marker
-        buffer.write('<div></div>')
+        self._write('<div></div>')
         if self.write_page_breaks_after_item:
-            buffer.write('<mbp:pagebreak/>')
-        buffer.write('</div>')
+            self._write('<mbp:pagebreak/>')
+        self._write('</div>')
         self.anchor_offset = None
 
     def serialize_elem(self, elem, item, nsrmap=NSRMAP):
-        buffer = self.buffer
         if not isinstance(elem.tag, str) \
             or namespace(elem.tag) not in nsrmap:
                 return
@@ -219,21 +217,21 @@ class Serializer:
         id = elem.attrib.pop('id', None)
         if id:
             href = '#'.join((item.href, id))
-            offset = self.anchor_offset or buffer.tell()
+            offset = self.anchor_offset or self.buffer.tell()
             self.id_offsets[urlnormalize(href)] = offset
         if self.anchor_offset is not None and \
             tag == 'a' and not elem.attrib and \
             not len(elem) and not elem.text:
                 return
-        self.anchor_offset = buffer.tell()
-        buffer.write('<')
-        buffer.write(tag)
+        self.anchor_offset = self.buffer.tell()
+        self._write('<')
+        self._write(tag)
         if elem.attrib:
             for attr, val in list(elem.attrib.items()):
                 if namespace(attr) not in nsrmap:
                     continue
                 attr = prefixname(attr, nsrmap)
-                buffer.write(' ')
+                self._write(' ')
                 if attr == 'href':
                     if self.serialize_href(val, item):
                         continue
@@ -241,13 +239,13 @@ class Serializer:
                     href = urlnormalize(item.abshref(val))
                     if href in self.images:
                         index = self.images[href]
-                        buffer.write('recindex="%05d"' % index)
+                        self._write('recindex="%05d"' % index)
                         continue
-                buffer.write(attr)
-                buffer.write('="')
+                self._write(attr)
+                self._write('="')
                 self.serialize_text(val, quot=True)
-                buffer.write('"')
-        buffer.write('>')
+                self._write('"')
+        self._write('>')
         if elem.text or len(elem) > 0:
             if elem.text:
                 self.anchor_offset = None
@@ -257,7 +255,7 @@ class Serializer:
                 if child.tail:
                     self.anchor_offset = None
                     self.serialize_text(child.tail)
-        buffer.write('</%s>' % tag)
+        self._write('</%s>' % tag)
 
     def serialize_text(self, text, quot=False):
         text = text.replace('&', '&amp;')
@@ -266,10 +264,9 @@ class Serializer:
         text = text.replace('\u00AD', '') # Soft-hyphen
         if quot:
             text = text.replace('"', '&quot;')
-        self.buffer.write(text)
+        self._write(text)
 
     def fixup_links(self):
-        buffer = self.buffer
         id_offsets = self.id_offsets
         for href, hoffs in list(self.href_offsets.items()):
             if href not in id_offsets:
@@ -278,8 +275,8 @@ class Serializer:
             if href in self.id_offsets:
                 ioff = self.id_offsets[href]
                 for hoff in hoffs:
-                    buffer.seek(hoff)
-                    buffer.write('%010d' % ioff)
+                    self.buffer.seek(hoff)
+                    self._write('%010d' % ioff)
 
 class MobiWriter:
     COLLAPSE_RE = re.compile(r'[ \t\r\n\v]+')
@@ -1174,7 +1171,7 @@ class MobiWriter:
         serializer = Serializer(self._oeb, self._images,
                 write_page_breaks_after_item=self.write_page_breaks_after_item)
         breaks = serializer.breaks
-        text = encode(serializer.text)
+        text = serializer.buffer.getvalue()
         self._anchor_offset_kindle = serializer.anchor_offset_kindle
         self._id_offsets = serializer.id_offsets
         self._content_length = len(text)
