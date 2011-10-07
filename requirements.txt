@@ -1,6 +1,6 @@
 pdfminer3k>=1.2.4
 jobprogress>=1.0.2
 cssutils>=0.9.7
-lxml>=2.3.1
+lxml>=2.3
 pytest>=2.0.3
 pytest-monkeyplus>=1.0.0
