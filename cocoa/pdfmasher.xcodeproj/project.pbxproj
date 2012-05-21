@@ -44,7 +44,6 @@
 		CEFFF2C613B0BAB200BEA8D5 /* Dialogs.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFFF2C513B0BAB200BEA8D5 /* Dialogs.m */; };
 		CEFFF2E613B0BFA500BEA8D5 /* PMAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFFF2E513B0BFA500BEA8D5 /* PMAppDelegate.m */; };
 		CEFFF33D13B0C23700BEA8D5 /* help in Resources */ = {isa = PBXBuildFile; fileRef = CEFFF31313B0C23700BEA8D5 /* help */; };
-		CEFFF36313B0D12400BEA8D5 /* HSErrorReportWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFFF36213B0D12400BEA8D5 /* HSErrorReportWindow.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -135,8 +134,6 @@
 		CEFFF2E413B0BFA500BEA8D5 /* PMAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PMAppDelegate.h; path = controllers/PMAppDelegate.h; sourceTree = SOURCE_ROOT; };
 		CEFFF2E513B0BFA500BEA8D5 /* PMAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PMAppDelegate.m; path = controllers/PMAppDelegate.m; sourceTree = SOURCE_ROOT; };
 		CEFFF31313B0C23700BEA8D5 /* help */ = {isa = PBXFileReference; lastKnownFileType = folder; name = help; path = ../build/help; sourceTree = SOURCE_ROOT; };
-		CEFFF36113B0D12400BEA8D5 /* HSErrorReportWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HSErrorReportWindow.h; path = ../cocoalib/HSErrorReportWindow.h; sourceTree = SOURCE_ROOT; };
-		CEFFF36213B0D12400BEA8D5 /* HSErrorReportWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HSErrorReportWindow.m; path = ../cocoalib/HSErrorReportWindow.m; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -302,8 +299,6 @@
 				CEFFF2C513B0BAB200BEA8D5 /* Dialogs.m */,
 				CEFFF29613B0B8FF00BEA8D5 /* HSAboutBox.h */,
 				CEFFF29713B0B8FF00BEA8D5 /* HSAboutBox.m */,
-				CEFFF36113B0D12400BEA8D5 /* HSErrorReportWindow.h */,
-				CEFFF36213B0D12400BEA8D5 /* HSErrorReportWindow.m */,
 				CEFFF2BE13B0BA9B00BEA8D5 /* HSFairwareReminder.h */,
 				CEFFF2BF13B0BA9B00BEA8D5 /* HSFairwareReminder.m */,
 				CEBA096C13AEAB48007DD3E0 /* NSEventAdditions.h */,
@@ -445,7 +440,6 @@
 				CEFFF2C013B0BA9B00BEA8D5 /* HSFairwareReminder.m in Sources */,
 				CEFFF2C613B0BAB200BEA8D5 /* Dialogs.m in Sources */,
 				CEFFF2E613B0BFA500BEA8D5 /* PMAppDelegate.m in Sources */,
-				CEFFF36313B0D12400BEA8D5 /* HSErrorReportWindow.m in Sources */,
 				CE68745B13C87B2500992AE4 /* ProgressController.m in Sources */,
 				CECBE28B13DF044E007F9E9D /* PMElementTableView.m in Sources */,
 				CE249D8F13E731EF0018C7F6 /* PMPageRepr.m in Sources */,

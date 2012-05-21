@@ -8,9 +8,9 @@
 
 import logging
 
-from hscommon import cocoa
-from hscommon.cocoa.inter import signature, subproxy, PyFairware
-from hscommon.cocoa.objcmin import NSNotificationCenter, NSWorkspace
+import cocoa
+from cocoa.inter import signature, subproxy, PyFairware
+from cocoa.objcmin import NSNotificationCenter, NSWorkspace
 from jobprogress import job
 
 from core.app import JOBID2TITLE

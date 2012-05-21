@@ -13,14 +13,18 @@ import shutil
 import json
 from argparse import ArgumentParser
 
+from setuptools import setup, Extension
+
 from hscommon import sphinxgen
-from hscommon.build import (print_and_do, copy_packages, get_module_version, filereplace)
+from hscommon.build import (print_and_do, copy_packages, get_module_version, filereplace, move)
 from hscommon.plat import ISOSX
 
 def parse_args():
     parser = ArgumentParser()
     parser.add_argument('--clean', action='store_true', dest='clean',
         help="Clean build folder before building")
+    parser.add_argument('--cocoamod', action='store_true', dest='cocoamod',
+        help="Build only Cocoa modules")
     parser.add_argument('--doc', action='store_true', dest='doc',
         help="Build only the help file")
     args = parser.parse_args()
@@ -28,19 +32,12 @@ def parse_args():
 
 def build_cocoa(dev):
     from pluginbuilder import build_plugin
-    # if not dev:
-    #     print("Building help index")
-    #     help_path = op.abspath('help/moneyguru_help')
-    #     os.system('open -a /Developer/Applications/Utilities/Help\\ Indexer.app {0}'.format(help_path))
-    # 
-    # build_all_cocoa_locs('cocoalib')
-    # build_all_cocoa_locs('cocoa')
-        
+    build_cocoa_proxy_module()
     print("Building py.plugin")
     if dev:
-        copy_packages(['cocoa/inter'], 'build')
+        copy_packages(['cocoa/inter', 'cocoalib/cocoa'], 'build')
     else:
-        copy_packages(['core', 'hscommon', 'cocoa/inter'], 'build')
+        copy_packages(['core', 'hscommon', 'cocoa/inter', 'cocoalib/cocoa'], 'build')
     shutil.copy('cocoa/pyplugin.py', 'build')
     os.chdir('build')
     # We have to exclude PyQt4 specifically because it's conditionally imported in hscommon.trans
@@ -74,6 +71,25 @@ def build_cocoa(dev):
     tmpl = open('cocoa/runtemplate.py', 'rt').read()
     run_contents = tmpl.replace('{{app_path}}', app_path)
     open('run.py', 'wt').write(run_contents)
+
+def build_cocoa_ext(extname, dest, source_files, extra_frameworks=(), extra_includes=()):
+    extra_link_args = ["-framework", "CoreFoundation", "-framework", "Foundation"]
+    for extra in extra_frameworks:
+        extra_link_args += ['-framework', extra]
+    ext = Extension(extname, source_files, extra_link_args=extra_link_args, include_dirs=extra_includes)
+    setup(script_args=['build_ext', '--inplace'], ext_modules=[ext])
+    fn = extname + '.so'
+    assert op.exists(fn)
+    move(fn, op.join(dest, fn))
+
+def build_cocoa_proxy_module():
+    print("Building Cocoa Proxy")
+    import objp.p2o
+    objp.p2o.generate_python_proxy_code('cocoalib/cocoa/CocoaProxy.h', 'build/CocoaProxy.m')
+    build_cocoa_ext("CocoaProxy", 'cocoalib/cocoa',
+        ['cocoalib/cocoa/CocoaProxy.m', 'build/CocoaProxy.m', 'build/ObjP.m', 'cocoalib/HSErrorReportWindow.m'],
+        ['AppKit', 'CoreServices'],
+        ['cocoalib'])
 
 def build_qt():
     print("Building resource file")
@@ -118,6 +134,8 @@ def main():
         os.mkdir('build')
     if args.doc:
         build_help()
+    elif args.cocoamod:
+        build_cocoa_proxy_module()
     else:
         build_normal(ui, dev)
 

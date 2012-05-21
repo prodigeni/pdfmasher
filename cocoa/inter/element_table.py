@@ -6,7 +6,7 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from hscommon.cocoa.inter import PyTable
+from cocoa.inter import PyTable
 
 class PyElementTable(PyTable):
     def pressKey_(self, key):
