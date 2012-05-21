@@ -10,7 +10,7 @@ import logging
 
 from hscommon import cocoa
 from hscommon.cocoa.inter import signature, PyFairware
-from hscommon.cocoa.objcmin import NSNotificationCenter, NSWorkspace, NSAlert
+from hscommon.cocoa.objcmin import NSNotificationCenter, NSWorkspace
 from jobprogress import job
 
 from core.app import JOBID2TITLE
@@ -91,10 +91,4 @@ class PyPdfMasher(PyFairware):
         else:
             ud = {'desc': JOBID2TITLE[jobid], 'jobid':jobid}
             NSNotificationCenter.defaultCenter().postNotificationName_object_userInfo_('JobStarted', self, ud)
-    
-    def show_message(self, msg):
-        dialog = NSAlert.alloc().init()
-        dialog.addButtonWithTitle_("Ok")
-        dialog.setMessageText_(msg)
-        dialog.runModal()
     

@@ -8,6 +8,7 @@ http://www.hardcoded.net/licenses/gplv3_license
 
 #import "PMAppDelegate.h"
 #import "Utils.h"
+#import "Dialogs.h"
 #import "HSFairwareReminder.h"
 #import "ProgressController.h"
 
@@ -69,6 +70,11 @@ http://www.hardcoded.net/licenses/gplv3_license
 - (void)setupAsRegistered
 {
     // Nothing to do.
+}
+
+- (void)showMessage:(NSString *)msg
+{
+    [Dialogs showMessage:msg];
 }
 
 - (void)showFairwareNagWithPrompt:(NSString *)prompt
