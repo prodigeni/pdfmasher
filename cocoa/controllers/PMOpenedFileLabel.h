@@ -15,6 +15,6 @@ http://www.hardcoded.net/licenses/gplv3_license
 {
     NSTextField *label;
 }
-- (id)initWithPyParent:(id)aPyParent textView:(NSTextField *)aView;
+- (id)initWithPy:(id)aPy textView:(NSTextField *)aView;
 - (PyOpenedFileLabel *)py;
 @end

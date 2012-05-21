@@ -21,7 +21,7 @@ http://www.hardcoded.net/licenses/gplv3_license
     
     PMPageRepr *pageRepr;
 }
-- (id)initWithPyParent:(id)aPyParent;
+- (id)initWithPy:(id)aPy;
 - (PyPageController *)py;
 - (NSView *)view;
 

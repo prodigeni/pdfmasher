@@ -14,21 +14,20 @@ from PyQt4.QtGui import (QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QCheckB
 from qtlib.util import horizontalSpacer
 
 from core.const import ElementState
-from core.gui.edit_pane import EditPane as EditPaneModel
 
 class EditPane(QWidget):
-    def __init__(self, app):
+    def __init__(self, model):
         QWidget.__init__(self)
-        self.app = app
         self._setupUi()
-        self.model = EditPaneModel(view=self, app=app.model)
+        self.model = model
+        self.model.view = self
         self.model.connect()
         
-        self.normalButton.clicked.connect(partial(self.app.model.change_state_of_selected, ElementState.Normal))
-        self.titleButton.clicked.connect(partial(self.app.model.change_state_of_selected, ElementState.Title))
-        self.footnoteButton.clicked.connect(partial(self.app.model.change_state_of_selected, ElementState.Footnote))
-        self.ignoreButton.clicked.connect(partial(self.app.model.change_state_of_selected, ElementState.Ignored))
-        self.tofixButton.clicked.connect(partial(self.app.model.change_state_of_selected, ElementState.ToFix))
+        self.normalButton.clicked.connect(partial(self.model.app.change_state_of_selected, ElementState.Normal))
+        self.titleButton.clicked.connect(partial(self.model.app.change_state_of_selected, ElementState.Title))
+        self.footnoteButton.clicked.connect(partial(self.model.app.change_state_of_selected, ElementState.Footnote))
+        self.ignoreButton.clicked.connect(partial(self.model.app.change_state_of_selected, ElementState.Ignored))
+        self.tofixButton.clicked.connect(partial(self.model.app.change_state_of_selected, ElementState.ToFix))
         self.hideIgnoredCheckBox.stateChanged.connect(self.hideIgnoredCheckBoxStateChanged)
         self.textEdit.textChanged.connect(self.textEditTextChanged)
         self.saveEditsButton.clicked.connect(self.model.save_edits)
@@ -66,7 +65,7 @@ class EditPane(QWidget):
         
     #--- Signals
     def hideIgnoredCheckBoxStateChanged(self, state):
-        self.app.model.hide_ignored = state == Qt.Checked
+        self.model.app.hide_ignored = state == Qt.Checked
     
     def textEditTextChanged(self):
         self.model.edit_text = self.textEdit.toPlainText()

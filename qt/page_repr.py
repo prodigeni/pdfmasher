@@ -11,7 +11,7 @@ from math import pi, sin, cos, radians
 from PyQt4.QtCore import Qt, QRectF, QLineF, QPointF
 from PyQt4.QtGui import QWidget, QPainter, QPen, QPolygonF, QColor, QFont
 
-from core.gui.page_repr import PageRepresentation as PageRepresentationModel, PageColor
+from core.gui.page_repr import PageColor
 
 COLORS = {
     PageColor.PageBg: Qt.white,
@@ -27,9 +27,10 @@ COLORS = {
 }
 
 class PageRepresentation(QWidget):
-    def __init__(self, app):
+    def __init__(self, model):
         QWidget.__init__(self)
-        self.model = PageRepresentationModel(view=self, app=app.model)
+        self.model = model
+        self.model.view = self
     
     def _paintPage(self, painter):
         pagewidth = self.model.page.width

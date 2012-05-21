@@ -8,11 +8,7 @@
 
 from hscommon.cocoa.inter import signature, PyGUIObject
 
-from core.gui.page_repr import PageRepresentation
-
 class PyPageRepr(PyGUIObject):
-    py_class = PageRepresentation
-    
     @signature('v@:ff')
     def drawWithViewWidth_height_(self, view_width, view_height):
         self.py.draw(view_width, view_height)

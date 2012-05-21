@@ -8,12 +8,11 @@
 
 from PyQt4.QtGui import QLabel
 
-from core.gui.opened_file_label import OpenedFileLabel as OpenedFileLabelModel
-
 class OpenedFileLabel(QLabel):
-    def __init__(self, app):
+    def __init__(self, model):
         QLabel.__init__(self)
-        self.model = OpenedFileLabelModel(view=self, app=app.model)
+        self.model = model
+        self.model.view = self
         self.model.connect()
     
     #--- model -> view

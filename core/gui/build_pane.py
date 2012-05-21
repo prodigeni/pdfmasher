@@ -49,8 +49,8 @@ class BuildPane(GUIObject):
     # refresh() (for generation label and post processing buttons)
     #
     
-    def __init__(self, view, app):
-        GUIObject.__init__(self, view, app)
+    def __init__(self, app):
+        GUIObject.__init__(self, None, app)
         self.lastgen_desc = ''
         self.post_processing_enabled = False
         self.selected_ebook_type = EbookType.MOBI

@@ -14,6 +14,6 @@ http://www.hardcoded.net/licenses/gplv3_license
     PyPageRepr *py;
 }
 
-- (id)initWithPyParent:(id)aPyParent;
+- (id)initWithPy:(id)aPy;
 - (PyPageRepr *)py;
 @end

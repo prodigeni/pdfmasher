@@ -11,14 +11,14 @@ from PyQt4.QtGui import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel,
     QRadioButton, QFileDialog, QFormLayout, QLineEdit)
 from qtlib.util import verticalSpacer
 
-from core.gui.build_pane import BuildPane as BuildPaneModel, EbookType
+from core.gui.build_pane import EbookType
 
 class BuildPane(QWidget):
-    def __init__(self, app):
+    def __init__(self, model):
         QWidget.__init__(self)
-        self.app = app
         self._setupUi()
-        self.model = BuildPaneModel(view=self, app=app.model)
+        self.model = model
+        self.model.view = self
         self.model.connect()
         
         self.generateMarkdownButton.clicked.connect(self.model.generate_markdown)

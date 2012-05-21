@@ -8,11 +8,7 @@
 
 from hscommon.cocoa.inter import signature, PyGUIObject
 
-from core.gui.build_pane import BuildPane
-
 class PyBuildPane(PyGUIObject):
-    py_class = BuildPane
-    
     def lastGenDesc(self):
         return self.py.lastgen_desc
     

@@ -7,6 +7,7 @@
 # http://www.hardcoded.net/licenses/gplv3_license
 
 from hscommon.gui.table import GUITable, Row
+from hscommon.gui.column import Column, Columns
 
 from ..const import ElementState, SHORTCUTKEY2FLAG
 from .base import GUIObject
@@ -54,9 +55,21 @@ class ElementTable(GUIObject, GUITable):
     # refresh()
     #
     
-    def __init__(self, view, app):
-        GUIObject.__init__(self, view, app)
+    COLUMNS = [
+        Column('page', "Page"),
+        Column('order', "Order"),
+        Column('x', "X"),
+        Column('y', "Y"),
+        Column('fontsize', "Font Size"),
+        Column('text_length', "Text Length"),
+        Column('state', "State"),
+        Column('text', "Text"),
+    ]
+    
+    def __init__(self, app):
+        GUIObject.__init__(self, None, app)
         GUITable.__init__(self)
+        self.columns = Columns(self)
     
     #--- Override
     def _fill(self):

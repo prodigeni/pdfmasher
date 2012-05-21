@@ -8,11 +8,7 @@
 
 from hscommon.cocoa.inter import signature, PyGUIObject
 
-from core.gui.edit_pane import EditPane
-
 class PyEditPane(PyGUIObject):
-    py_class = EditPane
-    
     def editText(self):
         return self.py.edit_text
     

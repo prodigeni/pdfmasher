@@ -9,10 +9,10 @@ http://www.hardcoded.net/licenses/gplv3_license
 #import "PMElementTable.h"
 
 @implementation PMElementTable
-- (id)initWithPyParent:(id)aPyParent tableView:(PMElementTableView *)aTableView
+- (id)initWithPy:(id)aPy tableView:(PMElementTableView *)aTableView
 {
-    self = [super initWithPyClassName:@"PyElementTable" pyParent:aPyParent view:aTableView];
-    columns = [[HSColumns alloc] initWithPyParent:[self py] tableView:aTableView];
+    self = [super initWithPy:aPy view:aTableView];
+    columns = [[HSColumns alloc] initWithPy:[[self py] columns] tableView:aTableView];
     [self initializeColumns];
     [self connect];
     return self;

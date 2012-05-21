@@ -59,11 +59,11 @@ static NSColor* getColorFromConst(NSInteger c)
 }
 
 @implementation PMPageRepr
-- (id)initWithPyParent:(id)aPyParent
+- (id)initWithPy:(id)aPy
 {
     self = [super init];
-    Class pyClass = [Utils classNamed:@"PyPageRepr"];
-    py = [[pyClass alloc] initWithCocoa:self pyParent:aPyParent];
+    py = [aPy retain];
+    [py bindCocoa:self];
     [py connect];
     return self;
 }

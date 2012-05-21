@@ -23,7 +23,7 @@ class MainWindow(QMainWindow):
         QMainWindow.__init__(self, None)
         self.app = app
         self._setupUi()
-        self.elementTable = ElementTable(self.app, self.elementTableView)
+        self.elementTable = ElementTable(self.app.model.element_table, self.elementTableView)
         
         self.openButton.clicked.connect(self.openButtonClicked)
     
@@ -61,7 +61,7 @@ class MainWindow(QMainWindow):
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         self.openButton.setSizePolicy(sizePolicy)
         self.fileLayout.addWidget(self.openButton)
-        self.openedFileLabel = OpenedFileLabel(self.app)
+        self.openedFileLabel = OpenedFileLabel(self.app.model.opened_file_label)
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         self.openedFileLabel.setSizePolicy(sizePolicy)
         self.fileLayout.addWidget(self.openedFileLabel)
@@ -70,16 +70,16 @@ class MainWindow(QMainWindow):
         self.topTabWidget = QTabWidget()
         self.elementTableView = ElementTableView()
         self.topTabWidget.addTab(self.elementTableView, "Table")
-        self.pageController = PageController(self.app)
+        self.pageController = PageController(self.app.model.page_controller)
         self.topTabWidget.addTab(self.pageController, "Page")
         self.tabViewsLayout.addWidget(self.topTabWidget)
         self.bottomTabWidget = QTabWidget()
         # We want to leave the most screen estate possible to the table.
         sizePolicy = QSizePolicy(QSizePolicy.Maximum, QSizePolicy.Expanding)
         self.bottomTabWidget.setSizePolicy(sizePolicy)
-        self.editTab = EditPane(self.app)
+        self.editTab = EditPane(self.app.model.edit_pane)
         self.bottomTabWidget.addTab(self.editTab, "Edit")
-        self.buildTab = BuildPane(self.app)
+        self.buildTab = BuildPane(self.app.model.build_pane)
         self.bottomTabWidget.addTab(self.buildTab, "Build")
         self.tabViewsLayout.addWidget(self.bottomTabWidget)
         self.verticalLayout.addLayout(self.tabViewsLayout)

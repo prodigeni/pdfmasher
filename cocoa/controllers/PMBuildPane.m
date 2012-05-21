@@ -12,9 +12,9 @@ http://www.hardcoded.net/licenses/gplv3_license
 #define PMEbookTypeEPUB 2
 
 @implementation PMBuildPane
-- (id)initWithPyParent:(id)aPyParent
+- (id)initWithPy:(id)aPy
 {
-    self = [super initWithPyClassName:@"PyBuildPane" pyParent:aPyParent];
+    self = [super initWithPy:aPy];
     [NSBundle loadNibNamed:@"BuildPane" owner:self];
     [[self py] connect];
     return self;

@@ -24,7 +24,7 @@ http://www.hardcoded.net/licenses/gplv3_license
     IBOutlet NSTextField *ebookAuthorTextField;
     IBOutlet NSMatrix *ebookTypeRadioButtons;
 }
-- (id)initWithPyParent:(id)aPyParent;
+- (id)initWithPy:(id)aPy;
 - (PyBuildPane *)py;
 - (NSView *)view;
 

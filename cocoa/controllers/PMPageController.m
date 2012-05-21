@@ -10,14 +10,11 @@ http://www.hardcoded.net/licenses/gplv3_license
 #import "Utils.h"
 
 @implementation PMPageController
-- (id)initWithPyParent:(id)aPyParent
+- (id)initWithPy:(id)aPy
 {
-    self = [super initWithPyClassName:@"PyPageController" pyParent:aPyParent];
+    self = [super initWithPy:aPy];
     [NSBundle loadNibNamed:@"PagePane" owner:self];
-    pageRepr = [[PMPageRepr alloc] initWithPyParent:aPyParent];
-    
-    NSArray *children = [NSArray arrayWithObjects:[pageRepr py], nil];
-    [[self py] setChildren:children];
+    pageRepr = [[PMPageRepr alloc] initWithPy:[[self py] pageRepr]];
     
     replacePlaceholderInView(pageReprPlaceholder, pageRepr);
     [[self py] connect];

@@ -11,16 +11,14 @@ from PyQt4.QtGui import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, 
 
 from qtlib.util import horizontalSpacer
 
-from core.gui.page_controller import PageController as PageControllerModel
 from .page_repr import PageRepresentation
 
 class PageController(QWidget):
-    def __init__(self, app):
+    def __init__(self, model):
         QWidget.__init__(self)
-        self.app = app
+        self.model = model
+        self.model.view = self
         self._setupUi()
-        self.model = PageControllerModel(view=self, app=app.model)
-        self.model.set_children([self.pageRepr.model])
         self.model.connect()
         
         self.previousPageButton.clicked.connect(self.model.prev_page)
@@ -31,7 +29,7 @@ class PageController(QWidget):
         self.setWindowTitle("Grouping Dialog")
         self.resize(600, 600)
         self.mainLayout = QVBoxLayout(self)
-        self.pageRepr = PageRepresentation(self.app)
+        self.pageRepr = PageRepresentation(self.model.page_repr)
         self.mainLayout.addWidget(self.pageRepr)
         self.buttonLayout = QHBoxLayout()
         self.previousPageButton = QPushButton("<<")

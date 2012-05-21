@@ -8,11 +8,7 @@
 
 from hscommon.cocoa.inter import PyGUIObject
 
-from core.gui.opened_file_label import OpenedFileLabel
-
 class PyOpenedFileLabel(PyGUIObject):
-    py_class = OpenedFileLabel
-    
     def text(self):
         return self.py.text
     

@@ -15,6 +15,11 @@ from hscommon.trans import tr
 from .const import ElementState
 from .pdf import extract_text_elements_from_pdf
 from . import __appname__
+from .gui.element_table import ElementTable
+from .gui.opened_file_label import OpenedFileLabel
+from .gui.page_controller import PageController
+from .gui.build_pane import BuildPane
+from .gui.edit_pane import EditPane
 
 class JobType:
     LoadPDF = 'job_load_pdf'
@@ -42,6 +47,12 @@ class App(Broadcaster, RegistrableApplication):
         self.pages = []
         self.elements = []
         self.last_file_was_invalid = False
+        
+        self.element_table = ElementTable(self)
+        self.opened_file_label = OpenedFileLabel(self)
+        self.page_controller = PageController(self)
+        self.build_pane = BuildPane(self)
+        self.edit_pane = EditPane(self)
     
     #--- Overrides
     def _setup_as_registered(self):

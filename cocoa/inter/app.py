@@ -9,7 +9,7 @@
 import logging
 
 from hscommon import cocoa
-from hscommon.cocoa.inter import signature, PyFairware
+from hscommon.cocoa.inter import signature, subproxy, PyFairware
 from hscommon.cocoa.objcmin import NSNotificationCenter, NSWorkspace
 from jobprogress import job
 
@@ -17,6 +17,12 @@ from core.app import JOBID2TITLE
 
 from core import __appname__
 from core.app import App
+
+from .element_table import PyElementTable
+from .opened_file_label import PyOpenedFileLabel
+from .page_controller import PyPageController
+from .build_pane import PyBuildPane
+from .edit_pane import PyEditPane
 
 class PyPdfMasher(PyFairware):
     def init(self):
@@ -29,6 +35,12 @@ class PyPdfMasher(PyFairware):
     
     def bindCocoa_(self, cocoa):
         self.cocoa = cocoa
+    
+    elementTable = subproxy('elementTable', 'element_table', PyElementTable)
+    openedFileLabel = subproxy('openedFileLabel', 'opened_file_label', PyOpenedFileLabel)
+    pageController = subproxy('pageController', 'page_controller', PyPageController)
+    buildPane = subproxy('buildPane', 'build_pane', PyBuildPane)
+    editPane = subproxy('editPane', 'edit_pane', PyEditPane)
     
     def buildHtml(self):
         return self.py.build_html()
@@ -54,20 +66,20 @@ class PyPdfMasher(PyFairware):
     #--- Worker. Mixin classes don't work with NSObject so we can't use them for interfaces
     def getJobProgress(self):
         try:
-            return self.app_view.progress.last_progress
+            return self.progress.last_progress
         except AttributeError:
             # See dupeguru ticket #106
             return -1
     
     def getJobDesc(self):
         try:
-            return self.app_view.progress.last_desc
+            return self.progress.last_desc
         except AttributeError:
             # see getJobProgress
             return ''
     
     def cancelJob(self):
-        self.app_view.progress.job_cancelled = True
+        self.progress.job_cancelled = True
     
     def jobCompleted_(self, jobid):
         self.py._job_completed(jobid)

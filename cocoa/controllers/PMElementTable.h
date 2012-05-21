@@ -16,7 +16,7 @@ http://www.hardcoded.net/licenses/gplv3_license
 {
     HSColumns *columns;
 }
-- (id)initWithPyParent:(id)aPyParent tableView:(PMElementTableView *)aTableView;
+- (id)initWithPy:(id)aPy tableView:(PMElementTableView *)aTableView;
 - (void)initializeColumns;
 - (PyElementTable *)py;
 - (HSColumns *)columns;

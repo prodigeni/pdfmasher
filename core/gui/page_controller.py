@@ -7,14 +7,16 @@
 # http://www.hardcoded.net/licenses/gplv3_license
 
 from .base import GUIObject
+from .page_repr import PageRepresentation
 
 class PageController(GUIObject):
     #--- model -> view calls:
     # refresh_page_label()
     #
     
-    def set_children(self, children):
-        [self.page_repr] = children
+    def __init__(self, app):
+        GUIObject.__init__(self, None, app)
+        self.page_repr = PageRepresentation(app)
     
     #--- Public
     def prev_page(self):

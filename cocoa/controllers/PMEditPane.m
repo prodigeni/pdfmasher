@@ -9,9 +9,12 @@ http://www.hardcoded.net/licenses/gplv3_license
 #import "PMEditPane.h"
 
 @implementation PMEditPane
+/* Until we push down all the logic that has anything to do with "app", we're stuck with the old
+   initWithPyParent.
+*/ 
 - (id)initWithPyParent:(id)aPyParent
 {
-    self = [super initWithPyClassName:@"PyEditPane" pyParent:aPyParent];
+    self = [super initWithPy:[(PyPdfMasher *)aPyParent editPane]];
     [NSBundle loadNibNamed:@"EditPane" owner:self];
     app = (PyPdfMasher *)aPyParent;
     [[self py] connect];

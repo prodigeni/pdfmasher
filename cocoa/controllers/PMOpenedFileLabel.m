@@ -9,9 +9,9 @@ http://www.hardcoded.net/licenses/gplv3_license
 #import "PMOpenedFileLabel.h"
 
 @implementation PMOpenedFileLabel
-- (id)initWithPyParent:(id)aPyParent textView:(NSTextField *)aView
+- (id)initWithPy:(id)aPy textView:(NSTextField *)aView
 {
-    self = [super initWithPyClassName:@"PyOpenedFileLabel" pyParent:aPyParent];
+    self = [super initWithPy:aPy view:aView];
     label = aView;
     [self connect];
     return self;

@@ -11,24 +11,23 @@ from PyQt4.QtGui import QTableView, QSizePolicy, QShortcut, QKeySequence
 
 from qtlib.column import Column
 from qtlib.table import Table
-from core.gui.element_table import ElementTable as ElementTableModel, SHORTCUTKEY2FLAG
+from core.gui.element_table import SHORTCUTKEY2FLAG
 
 class ElementTable(Table):
     COLUMNS = [
-        Column('page', "Page", 50),
-        Column('order', "Order", 50),
-        Column('x', "X", 50),
-        Column('y', "Y", 50),
-        Column('fontsize', "Font Size", 70),
-        Column('text_length', "Text Length", 70),
-        Column('state', "State", 75),
-        Column('text', "Text", 150),
+        Column('page', 50),
+        Column('order', 50),
+        Column('x', 50),
+        Column('y', 50),
+        Column('fontsize', 70),
+        Column('text_length', 70),
+        Column('state', 75),
+        Column('text', 150),
     ]
     
-    def __init__(self, app, view):
-        model = ElementTableModel(view=self, app=app.model)
+    def __init__(self, model, view):
         Table.__init__(self, model, view)
-        self.setColumnsWidth(None) # set default widths
+        self.model.columns.reset_to_defaults()
         self._setupKeyBindings()
         self.model.connect()
     

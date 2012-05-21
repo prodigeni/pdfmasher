@@ -6,15 +6,12 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from hscommon.cocoa.inter import PyGUIObject, signature
+from hscommon.cocoa.inter import PyGUIObject, signature, subproxy
 
-from core.gui.page_controller import PageController
+from .page_repr import PyPageRepr
 
 class PyPageController(PyGUIObject):
-    py_class = PageController
-    
-    def setChildren_(self, children):
-        self.py.set_children([child.py for child in children])
+    pageRepr = subproxy('pageRepr', 'page_repr', PyPageRepr)
     
     def prevPage(self):
         self.py.prev_page()

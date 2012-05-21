@@ -1,8 +1,9 @@
 #import <Cocoa/Cocoa.h>
 #import "PyGUI.h"
+#import "PyPageRepr.h"
 
 @interface PyPageController : PyGUI {}
-- (void)setChildren:(NSArray *)children;
+- (PyPageRepr *)pageRepr;
 - (void)prevPage;
 - (void)nextPage;
 - (NSString *)pageLabel;

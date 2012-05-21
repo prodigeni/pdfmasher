@@ -40,9 +40,9 @@ class PageRepresentation:
     # draw_text(text, rect)
     #
     
-    def __init__(self, view, app):
+    def __init__(self, app):
         self.app = app
-        self.view = view
+        self.view = None
         self._pageno = 0
         self.page = None
         self.elements = None

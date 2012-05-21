@@ -15,8 +15,8 @@ class EditPane(GUIObject):
     # refresh_edit_text()
     #
     
-    def __init__(self, view, app):
-        GUIObject.__init__(self, view, app)
+    def __init__(self, app):
+        GUIObject.__init__(self, None, app)
         self.edit_text = ''
         self.edit_enabled = False
     

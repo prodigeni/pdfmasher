@@ -16,11 +16,11 @@ http://www.hardcoded.net/licenses/gplv3_license
 {
     [self window];
     app = [appDelegate py];
-    openedFileLabel = [[PMOpenedFileLabel alloc] initWithPyParent:app textView:openedFileLabelView];
-    elementTable = [[PMElementTable alloc] initWithPyParent:app tableView:elementsTableView];
-    pageController = [[PMPageController alloc] initWithPyParent:app];
+    openedFileLabel = [[PMOpenedFileLabel alloc] initWithPy:[app openedFileLabel] textView:openedFileLabelView];
+    elementTable = [[PMElementTable alloc] initWithPy:[app elementTable] tableView:elementsTableView];
+    pageController = [[PMPageController alloc] initWithPy:[app pageController]];
     editPane = [[PMEditPane alloc] initWithPyParent:app];
-    buildPane = [[PMBuildPane alloc] initWithPyParent:app];
+    buildPane = [[PMBuildPane alloc] initWithPy:[app buildPane]];
     
     NSTabViewItem *item = [[NSTabViewItem alloc] initWithIdentifier:@"edit_pane"];
     [item setLabel:@"Edit"];

@@ -6,7 +6,6 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-import sys
 import os
 import os.path as op
 import logging
@@ -119,6 +118,10 @@ class PdfMasher(ApplicationBase):
     @staticmethod
     def reveal_path(path):
         PdfMasher.open_path(op.dirname(path))
+    
+    def open_url(self, url):
+        url = QUrl(url)
+        QDesktopServices.openUrl(url)
     
     def setup_as_registered(self):
         self.prefs.registration_code = self.model.registration_code
