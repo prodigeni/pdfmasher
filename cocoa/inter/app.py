@@ -10,19 +10,25 @@ import logging
 
 from hscommon import cocoa
 from hscommon.cocoa.inter import signature, PyFairware
+from hscommon.cocoa.objcmin import NSNotificationCenter, NSWorkspace, NSAlert
+from jobprogress import job
+
+from core.app import JOBID2TITLE
 
 from core import __appname__
 from core.app import App
-from .app_view import AppView
 
 class PyPdfMasher(PyFairware):
     def init(self):
         self = super(PyPdfMasher, self).init()
         logging.basicConfig(level=logging.WARNING, format='%(levelname)s %(message)s')
         cocoa.install_exception_hook()
-        self.app_view = AppView()
-        self.py = App(self.app_view)
+        self.progress = cocoa.ThreadedJobPerformer()
+        self.py = App(self)
         return self
+    
+    def bindCocoa_(self, cocoa):
+        self.cocoa = cocoa
     
     def buildHtml(self):
         return self.py.build_html()
@@ -65,3 +71,30 @@ class PyPdfMasher(PyFairware):
     
     def jobCompleted_(self, jobid):
         self.py._job_completed(jobid)
+    
+    #--- Python --> cocoa
+    @staticmethod
+    def open_path(path):
+        NSWorkspace.sharedWorkspace().openFile_(path)
+    
+    @staticmethod
+    def reveal_path(path):
+        NSWorkspace.sharedWorkspace().selectFile_inFileViewerRootedAtPath_(path, '')
+    
+    def start_job(self, jobid, func):
+        try:
+            j = self.progress.create_job()
+            args = (j, )
+            self.progress.run_threaded(func, args=args)
+        except job.JobInProgressError:
+            NSNotificationCenter.defaultCenter().postNotificationName_object_('JobInProgress', self)
+        else:
+            ud = {'desc': JOBID2TITLE[jobid], 'jobid':jobid}
+            NSNotificationCenter.defaultCenter().postNotificationName_object_userInfo_('JobStarted', self, ud)
+    
+    def show_message(self, msg):
+        dialog = NSAlert.alloc().init()
+        dialog.addButtonWithTitle_("Ok")
+        dialog.setMessageText_(msg)
+        dialog.runModal()
+    

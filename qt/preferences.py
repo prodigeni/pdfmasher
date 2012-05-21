@@ -11,15 +11,10 @@ from qtlib.preferences import Preferences as PreferencesBase
 class Preferences(PreferencesBase):
     def _load_values(self, settings):
         get = self.get_value
-        self.registration_code = get('RegistrationCode', self.registration_code)
-        self.registration_email = get('RegistrationEmail', self.registration_email)
     
     def reset(self):
-        self.registration_code = ''
-        self.registration_email = ''
+        pass
     
     def _save_values(self, settings):
         set_ = self.set_value
-        set_('RegistrationCode', self.registration_code)
-        set_('RegistrationEmail', self.registration_email)
     

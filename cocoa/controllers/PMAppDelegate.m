@@ -32,6 +32,7 @@ http://www.hardcoded.net/licenses/gplv3_license
     if (py == nil) {
         Class PyPdfMasher = [Utils classNamed:@"PyPdfMasher"];
         py = [[PyPdfMasher alloc] init];
+        [py bindCocoa:self];
         [[ProgressController mainProgressController] setWorker:py];
     }
     return py;
@@ -61,6 +62,22 @@ http://www.hardcoded.net/licenses/gplv3_license
 /* Delegate */
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    [HSFairwareReminder showNagWithApp:[self py]];
+    [[self py] initialRegistrationSetup];
+}
+
+/* Python --> Cocoa */
+- (void)setupAsRegistered
+{
+    // Nothing to do.
+}
+
+- (void)showFairwareNagWithPrompt:(NSString *)prompt
+{
+    [HSFairwareReminder showFairwareNagWithApp:[self py] prompt:prompt];
+}
+
+- (void)showDemoNagWithPrompt:(NSString *)prompt
+{
+    [HSFairwareReminder showDemoNagWithApp:[self py] prompt:prompt];
 }
 @end

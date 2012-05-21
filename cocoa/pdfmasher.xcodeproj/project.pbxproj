@@ -42,7 +42,6 @@
 		CEFFF2AB13B0B96200BEA8D5 /* FairwareReminder.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEFFF2A413B0B96200BEA8D5 /* FairwareReminder.xib */; };
 		CEFFF2C013B0BA9B00BEA8D5 /* HSFairwareReminder.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFFF2BF13B0BA9B00BEA8D5 /* HSFairwareReminder.m */; };
 		CEFFF2C613B0BAB200BEA8D5 /* Dialogs.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFFF2C513B0BAB200BEA8D5 /* Dialogs.m */; };
-		CEFFF2D113B0BD3100BEA8D5 /* BRSingleLineFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFFF2D013B0BD3100BEA8D5 /* BRSingleLineFormatter.m */; };
 		CEFFF2E613B0BFA500BEA8D5 /* PMAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFFF2E513B0BFA500BEA8D5 /* PMAppDelegate.m */; };
 		CEFFF33D13B0C23700BEA8D5 /* help in Resources */ = {isa = PBXBuildFile; fileRef = CEFFF31313B0C23700BEA8D5 /* help */; };
 		CEFFF36313B0D12400BEA8D5 /* HSErrorReportWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFFF36213B0D12400BEA8D5 /* HSErrorReportWindow.m */; };
@@ -133,8 +132,6 @@
 		CEFFF2BF13B0BA9B00BEA8D5 /* HSFairwareReminder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HSFairwareReminder.m; path = ../cocoalib/HSFairwareReminder.m; sourceTree = SOURCE_ROOT; };
 		CEFFF2C413B0BAB200BEA8D5 /* Dialogs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Dialogs.h; path = ../cocoalib/Dialogs.h; sourceTree = SOURCE_ROOT; };
 		CEFFF2C513B0BAB200BEA8D5 /* Dialogs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Dialogs.m; path = ../cocoalib/Dialogs.m; sourceTree = SOURCE_ROOT; };
-		CEFFF2CF13B0BD3100BEA8D5 /* BRSingleLineFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BRSingleLineFormatter.h; path = ../cocoalib/brsinglelineformatter/BRSingleLineFormatter.h; sourceTree = SOURCE_ROOT; };
-		CEFFF2D013B0BD3100BEA8D5 /* BRSingleLineFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BRSingleLineFormatter.m; path = ../cocoalib/brsinglelineformatter/BRSingleLineFormatter.m; sourceTree = SOURCE_ROOT; };
 		CEFFF2E413B0BFA500BEA8D5 /* PMAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PMAppDelegate.h; path = controllers/PMAppDelegate.h; sourceTree = SOURCE_ROOT; };
 		CEFFF2E513B0BFA500BEA8D5 /* PMAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PMAppDelegate.m; path = controllers/PMAppDelegate.m; sourceTree = SOURCE_ROOT; };
 		CEFFF31313B0C23700BEA8D5 /* help */ = {isa = PBXFileReference; lastKnownFileType = folder; name = help; path = ../build/help; sourceTree = SOURCE_ROOT; };
@@ -301,8 +298,6 @@
 				CEBA095B13AEAB11007DD3E0 /* views */,
 				CEC7F3A013AE55CC00BA9A74 /* proxies */,
 				CEFFF29913B0B96200BEA8D5 /* xib */,
-				CEFFF2CF13B0BD3100BEA8D5 /* BRSingleLineFormatter.h */,
-				CEFFF2D013B0BD3100BEA8D5 /* BRSingleLineFormatter.m */,
 				CEFFF2C413B0BAB200BEA8D5 /* Dialogs.h */,
 				CEFFF2C513B0BAB200BEA8D5 /* Dialogs.m */,
 				CEFFF29613B0B8FF00BEA8D5 /* HSAboutBox.h */,
@@ -449,7 +444,6 @@
 				CEFFF29813B0B8FF00BEA8D5 /* HSAboutBox.m in Sources */,
 				CEFFF2C013B0BA9B00BEA8D5 /* HSFairwareReminder.m in Sources */,
 				CEFFF2C613B0BAB200BEA8D5 /* Dialogs.m in Sources */,
-				CEFFF2D113B0BD3100BEA8D5 /* BRSingleLineFormatter.m in Sources */,
 				CEFFF2E613B0BFA500BEA8D5 /* PMAppDelegate.m in Sources */,
 				CEFFF36313B0D12400BEA8D5 /* HSErrorReportWindow.m in Sources */,
 				CE68745B13C87B2500992AE4 /* ProgressController.m in Sources */,
@@ -537,9 +531,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				DEPLOYMENT_LOCATION = YES;
+				DEPLOYMENT_POSTPROCESSING = YES;
+				DSTROOT = /;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = "$(PROJECT_DIR)";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				SDKROOT = macosx10.6;
 			};
@@ -549,9 +547,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(NATIVE_ARCH_ACTUAL)";
+				DEPLOYMENT_LOCATION = YES;
+				DEPLOYMENT_POSTPROCESSING = YES;
+				DSTROOT = /;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INSTALL_PATH = "$(PROJECT_DIR)";
 				MACOSX_DEPLOYMENT_TARGET = 10.6;
 				SDKROOT = macosx10.6;
 			};

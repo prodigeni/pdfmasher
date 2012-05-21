@@ -46,7 +46,6 @@ class PdfMasher(ApplicationBase):
         self.mainWindow = MainWindow(app=self)
         self.aboutBox = AboutBox(self.mainWindow, self)
         self.reg = Registration(self.model)
-        self.model.set_registration(self.prefs.registration_code, self.prefs.registration_email)
         self._progress = Progress(self.mainWindow)
         
         self.connect(self, SIGNAL('applicationFinishedLaunching()'), self.applicationFinishedLaunching)
@@ -74,8 +73,7 @@ class PdfMasher(ApplicationBase):
     
     #--- Event Handling
     def applicationFinishedLaunching(self):
-        if not self.model.registered and self.model.unpaid_hours >= 1:
-            self.reg.show_nag()
+        self.model.initial_registration_setup()
         self.mainWindow.show()
     
     def applicationWillTerminate(self):
@@ -129,7 +127,7 @@ class PdfMasher(ApplicationBase):
         self.aboutBox.registerButton.hide()
         self.aboutBox.registeredEmailLabel.setText(self.prefs.registration_email)
     
-    def show_msg(self, msg):
+    def show_message(self, msg):
         QMessageBox.information(self.mainWindow, '', msg)
     
     def start_job(self, jobid, func, *args):
@@ -141,4 +139,18 @@ class PdfMasher(ApplicationBase):
         except job.JobInProgressError:
             msg = "A previous action is still hanging in there. You can't start a new one yet. Wait a few seconds, then try again."
             QMessageBox.information(self.mainWindow, "Action in progress", msg)
+    
+    def get_default(self, key):
+        return self.prefs.get_value(key)
+    
+    def set_default(self, key, value):
+        self.prefs.set_value(key, value)
+    
+    def show_fairware_nag(self, prompt):
+        reg = Registration(self.model)
+        reg.show_fairware_nag(prompt)
+    
+    def show_demo_nag(self, prompt):
+        reg = Registration(self.model)
+        reg.show_demo_nag(prompt)
     

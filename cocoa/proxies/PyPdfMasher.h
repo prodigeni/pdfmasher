@@ -3,6 +3,7 @@
 #import "ProgressController.h"
 
 @interface PyPdfMasher : PyFairware <Worker> {}
+- (void)bindCocoa:(id)cocoa;
 - (void)changeStateOfSelected:(NSString *)newstate;
 - (void)loadPDF:(NSString *)path;
 - (BOOL)hideIgnored;

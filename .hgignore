@@ -19,3 +19,4 @@ playground
 *.tm_build_errors
 *.xcodeproj/xcuserdata
 *.xcodeproj/project.xcworkspace/xcuserdata
+*.app

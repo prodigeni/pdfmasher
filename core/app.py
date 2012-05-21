@@ -14,6 +14,7 @@ from hscommon.trans import tr
 
 from .const import ElementState
 from .pdf import extract_text_elements_from_pdf
+from . import __appname__
 
 class JobType:
     LoadPDF = 'job_load_pdf'
@@ -28,13 +29,13 @@ class App(Broadcaster, RegistrableApplication):
     # open_path(path)
     # reveal_path(path)
     # setup_as_registered()
-    # show_msg(msg)
     # start_job(j, *args)
+    
+    PROMPT_NAME = __appname__
     
     def __init__(self, view):
         Broadcaster.__init__(self)
-        RegistrableApplication.__init__(self, appid=6)
-        self.view = view
+        RegistrableApplication.__init__(self, view, appid=6)
         self.current_path = None
         self._hide_ignored = False
         self.selected_elements = set()
@@ -54,7 +55,7 @@ class App(Broadcaster, RegistrableApplication):
                 self.notify('file_opened')
                 self.notify('elements_changed')
             else:
-                self.view.show_msg("This file is not a PDF.")
+                self.view.show_message("This file is not a PDF.")
     
     #--- Public (Internal)
     def select_elements(self, elements):
