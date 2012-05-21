@@ -11,6 +11,7 @@ cocoa/pyplugin.plugin
 qt/pm_rc.py
 help/*/conf.py
 help/*/changelog.rst
+playground
 
 *.mode1v3
 *.pbxuser

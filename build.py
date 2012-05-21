@@ -17,6 +17,7 @@ from argparse import ArgumentParser
 from hscommon import sphinxgen
 from hscommon.build import (print_and_do, copy_packages, get_module_version, filereplace,
     build_all_qt_locs)
+from hscommon.plat import ISOSX
 
 def parse_args():
     parser = ArgumentParser()
@@ -89,7 +90,7 @@ def build_qt():
 
 def build_help():
     print("Generating Help")
-    platform = 'osx' if sys.platform == 'darwin' else 'win'
+    platform = 'osx' if ISOSX else 'win'
     current_path = op.abspath('.')
     confpath = op.join(current_path, 'help', 'conf.tmpl')
     help_basepath = op.join(current_path, 'help', 'en')

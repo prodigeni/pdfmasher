@@ -7,13 +7,14 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-import sys
 from argparse import ArgumentParser
 import json
 
+from hscommon.plat import ISOSX
+
 def main(ui, dev):
     if ui not in {'cocoa', 'qt'}:
-        ui = 'cocoa' if sys.platform == 'darwin' else 'qt'
+        ui = 'cocoa' if ISOSX else 'qt'
     build_type = 'Dev' if dev else 'Release'
     print("Configuring PdfMasher for UI {0} ({1})".format(ui, build_type))
     conf = {

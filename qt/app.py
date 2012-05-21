@@ -15,6 +15,7 @@ from PyQt4.QtCore import SIGNAL, QUrl, QCoreApplication, QProcess
 from PyQt4.QtGui import QDesktopServices, QMessageBox
 
 from hscommon.trans import tr
+from hscommon.plat import ISLINUX
 from jobprogress import job
 from jobprogress.qt import Progress
 from qtlib.about_box import AboutBox
@@ -68,7 +69,7 @@ class PdfMasher(ApplicationBase):
         ]
         createActions(ACTIONS, self)
         
-        if sys.platform == 'linux2':
+        if ISLINUX:
             self.actionCheckForUpdate.setVisible(False) # This only works on Windows
     
     #--- Event Handling

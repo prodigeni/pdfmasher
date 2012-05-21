@@ -16,6 +16,7 @@ import json
 
 from hscommon.build import (build_dmg, copy_packages, build_debian_changelog, copy_qt_plugins,
     print_and_do, get_module_version)
+from hscommon.plat import ISLINUX, ISWINDOWS
 
 def package_windows(dev):
     from cx_Freeze import Freezer, Executable
@@ -101,9 +102,9 @@ def main():
     if ui == 'cocoa':
         build_dmg('cocoa/build/release/PdfMasher.app', '.')
     elif ui == 'qt':
-        if sys.platform == "win32":
+        if ISWINDOWS:
             package_windows(dev)
-        elif sys.platform == "linux2":
+        elif ISLINUX:
             package_debian()
         else:
             print("Qt packaging only works under Windows or Linux.")

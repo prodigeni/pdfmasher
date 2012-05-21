@@ -16,10 +16,11 @@ from PyQt4.QtGui import QApplication, QIcon, QPixmap
 
 from qtlib.error_report_dialog import install_excepthook
 from hscommon.trans import install_qt_trans
+from hscommon.plat import ISWINDOWS
 from core import __appname__, __version__
 import qt.pm_rc
 
-if sys.platform == 'win32':
+if ISWINDOWS:
     import qt.cxfreeze_fix
 
 def main(argv):
