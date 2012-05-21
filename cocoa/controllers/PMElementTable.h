@@ -9,15 +9,10 @@ http://www.hardcoded.net/licenses/gplv3_license
 #import <Cocoa/Cocoa.h>
 #import "PyElementTable.h"
 #import "HSTable.h"
-#import "HSColumns.h"
 #import "PMElementTableView.h"
 
-@interface PMElementTable : HSTable
-{
-    HSColumns *columns;
-}
+@interface PMElementTable : HSTable {}
 - (id)initWithPy:(id)aPy tableView:(PMElementTableView *)aTableView;
 - (void)initializeColumns;
 - (PyElementTable *)py;
-- (HSColumns *)columns;
 @end

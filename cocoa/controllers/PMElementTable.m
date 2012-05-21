@@ -12,7 +12,6 @@ http://www.hardcoded.net/licenses/gplv3_license
 - (id)initWithPy:(id)aPy tableView:(PMElementTableView *)aTableView
 {
     self = [super initWithPy:aPy view:aTableView];
-    columns = [[HSColumns alloc] initWithPy:[[self py] columns] tableView:aTableView];
     [self initializeColumns];
     [self connect];
     return self;
@@ -37,14 +36,14 @@ http://www.hardcoded.net/licenses/gplv3_license
 - (void)initializeColumns
 {
     HSColumnDef defs[] = {
-        {@"page", @"Page", 50, 20, 0, YES, nil},
-        {@"order", @"Order", 50, 20, 0, YES, nil},
-        {@"x", @"X", 50, 20, 0, YES, nil},
-        {@"y", @"Y", 50, 20, 0, YES, nil},
-        {@"fontsize", @"Font Size", 70, 20, 0, YES, nil},
-        {@"text_length", @"Text Length", 70, 20, 0, YES, nil},
-        {@"state", @"State", 75, 20, 0, YES, nil},
-        {@"text", @"Text", 150, 20, 0, YES, nil},
+        {@"page", 50, 20, 0, YES, nil},
+        {@"order", 50, 20, 0, YES, nil},
+        {@"x", 50, 20, 0, YES, nil},
+        {@"y", 50, 20, 0, YES, nil},
+        {@"fontsize", 70, 20, 0, YES, nil},
+        {@"text_length", 70, 20, 0, YES, nil},
+        {@"state", 75, 20, 0, YES, nil},
+        {@"text", 150, 20, 0, YES, nil},
         nil
     };
     [[self columns] initializeColumns:defs];
