@@ -7,7 +7,6 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-import sys
 import os
 import os.path as op
 import shutil
@@ -15,8 +14,7 @@ import json
 from argparse import ArgumentParser
 
 from hscommon import sphinxgen
-from hscommon.build import (print_and_do, copy_packages, get_module_version, filereplace,
-    build_all_qt_locs)
+from hscommon.build import (print_and_do, copy_packages, get_module_version, filereplace)
 from hscommon.plat import ISOSX
 
 def parse_args():
@@ -25,8 +23,6 @@ def parse_args():
         help="Clean build folder before building")
     parser.add_argument('--doc', action='store_true', dest='doc',
         help="Build only the help file")
-    parser.add_argument('--loc', action='store_true', dest='loc',
-        help="Build only localization")
     args = parser.parse_args()
     return args
 
@@ -100,15 +96,8 @@ def build_help():
     confrepl = {'platform': platform}
     sphinxgen.gen(help_basepath, help_destpath, changelog_path, tixurl, confrepl, confpath)
 
-def build_localizations(ui):
-    print("Building localizations")
-    if ui == 'qt':
-        print("Building .ts files")
-        build_all_qt_locs(op.join('qt', 'lang'), extradirs=[op.join('qtlib', 'lang')])
-
 def build_normal(ui, dev):
     build_help()
-    build_localizations(ui)
     if ui == 'cocoa':
         build_cocoa(dev)
     elif ui == 'qt':
@@ -129,8 +118,6 @@ def main():
         os.mkdir('build')
     if args.doc:
         build_help()
-    elif args.loc:
-        build_localizations(ui)
     else:
         build_normal(ui, dev)
 
