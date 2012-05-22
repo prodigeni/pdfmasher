@@ -8,6 +8,7 @@ http://www.hardcoded.net/licenses/gplv3_license
 
 #import "PMAppDelegate.h"
 #import "Utils.h"
+#import "HSPyUtil.h"
 #import "Dialogs.h"
 #import "HSFairwareReminder.h"
 #import "ProgressController.h"

@@ -18,6 +18,7 @@
 		CE8A6492156BC021008E8DD3 /* pyplugin.py in Resources */ = {isa = PBXBuildFile; fileRef = CE8A6491156BC021008E8DD3 /* pyplugin.py */; };
 		CE8A649A156BC97A008E8DD3 /* PyTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = CE8A6499156BC97A008E8DD3 /* PyTextField.m */; };
 		CE8A649D156BCA23008E8DD3 /* HSTextField.m in Sources */ = {isa = PBXBuildFile; fileRef = CE8A649C156BCA23008E8DD3 /* HSTextField.m */; };
+		CE8A64A0156BD261008E8DD3 /* HSPyUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = CE8A649F156BD261008E8DD3 /* HSPyUtil.m */; };
 		CE8C6D7C13C4924700D869ED /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE8C6D7B13C4924700D869ED /* Sparkle.framework */; };
 		CE8C6D8913C4928600D869ED /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = CE8C6D7B13C4924700D869ED /* Sparkle.framework */; };
 		CE8C6D8C13C4938400D869ED /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = CE8C6D8B13C4938400D869ED /* dsa_pub.pem */; };
@@ -98,6 +99,9 @@
 		CE8A6499156BC97A008E8DD3 /* PyTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PyTextField.m; sourceTree = "<group>"; };
 		CE8A649B156BCA23008E8DD3 /* HSTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HSTextField.h; sourceTree = "<group>"; };
 		CE8A649C156BCA23008E8DD3 /* HSTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HSTextField.m; sourceTree = "<group>"; };
+		CE8A649E156BD261008E8DD3 /* HSPyUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HSPyUtil.h; path = ../cocoalib/HSPyUtil.h; sourceTree = "<group>"; };
+		CE8A649F156BD261008E8DD3 /* HSPyUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HSPyUtil.m; path = ../cocoalib/HSPyUtil.m; sourceTree = "<group>"; };
+		CE8A64A1156BD3FA008E8DD3 /* HSFairwareProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HSFairwareProtocol.h; path = ../cocoalib/HSFairwareProtocol.h; sourceTree = "<group>"; };
 		CE8C6D7B13C4924700D869ED /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = /Library/Frameworks/Sparkle.framework; sourceTree = "<absolute>"; };
 		CE8C6D8B13C4938400D869ED /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = SOURCE_ROOT; };
 		CEA0155D13AF816900C6D985 /* main_icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = main_icon.icns; path = ../images/main_icon.icns; sourceTree = SOURCE_ROOT; };
@@ -344,12 +348,15 @@
 				CEFFF2C513B0BAB200BEA8D5 /* Dialogs.m */,
 				CEFFF29613B0B8FF00BEA8D5 /* HSAboutBox.h */,
 				CEFFF29713B0B8FF00BEA8D5 /* HSAboutBox.m */,
+				CE8A64A1156BD3FA008E8DD3 /* HSFairwareProtocol.h */,
 				CEFFF2BE13B0BA9B00BEA8D5 /* HSFairwareReminder.h */,
 				CEFFF2BF13B0BA9B00BEA8D5 /* HSFairwareReminder.m */,
 				CEBA096C13AEAB48007DD3E0 /* NSEventAdditions.h */,
 				CEBA096D13AEAB48007DD3E0 /* NSEventAdditions.m */,
 				CEC7F3A413AE55CC00BA9A74 /* Utils.h */,
 				CEC7F3A513AE55CC00BA9A74 /* Utils.m */,
+				CE8A649E156BD261008E8DD3 /* HSPyUtil.h */,
+				CE8A649F156BD261008E8DD3 /* HSPyUtil.m */,
 				CE68745913C87B2500992AE4 /* ProgressController.h */,
 				CE68745A13C87B2500992AE4 /* ProgressController.m */,
 			);
@@ -490,6 +497,7 @@
 				CEA1FE68156ACE7A001F96D5 /* PyTable.m in Sources */,
 				CE8A649A156BC97A008E8DD3 /* PyTextField.m in Sources */,
 				CE8A649D156BCA23008E8DD3 /* HSTextField.m in Sources */,
+				CE8A64A0156BD261008E8DD3 /* HSPyUtil.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

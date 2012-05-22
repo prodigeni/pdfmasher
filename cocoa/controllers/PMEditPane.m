@@ -7,7 +7,7 @@ http://www.hardcoded.net/licenses/gplv3_license
 */
 
 #import "PMEditPane.h"
-#import "Utils.h"
+#import "HSPyUtil.h"
 
 @implementation PMEditPane
 /* Until we push down all the logic that has anything to do with "app", we're stuck with the old

@@ -7,7 +7,7 @@ http://www.hardcoded.net/licenses/gplv3_license
 */
 
 #import "PMBuildPane.h"
-#import "Utils.h"
+#import "HSPyUtil.h"
 
 #define PMEbookTypeMOBI 1
 #define PMEbookTypeEPUB 2

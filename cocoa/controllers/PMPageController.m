@@ -8,6 +8,7 @@ http://www.hardcoded.net/licenses/gplv3_license
 
 #import "PMPageController.h"
 #import "Utils.h"
+#import "HSPyUtil.h"
 
 @implementation PMPageController
 - (id)initWithPyRef:(PyObject *)aPyRef

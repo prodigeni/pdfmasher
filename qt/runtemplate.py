@@ -9,8 +9,6 @@
 
 import sys
 import gc
-import sip
-sip.setapi('QVariant', 1)
 
 from PyQt4.QtGui import QApplication, QIcon, QPixmap
 

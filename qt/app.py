@@ -104,12 +104,6 @@ class PdfMasher(ApplicationBase):
         QDesktopServices.openUrl(url)
     
     #--- model --> view
-    # def get_default(self, key):
-    #     return self.prefs.get_value(key)
-    # 
-    # def set_default(self, key, value):
-    #     self.prefs.set_value(key, value)
-    # 
     @staticmethod
     def open_path(path):
         url = QUrl.fromLocalFile(path)

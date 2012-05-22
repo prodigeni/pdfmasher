@@ -7,7 +7,7 @@ http://www.hardcoded.net/licenses/gplv3_license
 */
 
 #import "PMPageRepr.h"
-#import "Utils.h"
+#import "HSPyUtil.h"
 #import "HSGeometry.h"
 #import "NSEventAdditions.h"
 
