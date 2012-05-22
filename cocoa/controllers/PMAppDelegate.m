@@ -25,18 +25,17 @@ http://www.hardcoded.net/licenses/gplv3_license
 - (void)dealloc
 {
     [aboutBox release];
-    [py release];
+    [model release];
     [super dealloc];
 }
 
-- (PyPdfMasher *)py {
-    if (py == nil) {
-        Class PyPdfMasher = [Utils classNamed:@"PyPdfMasher"];
-        py = [[PyPdfMasher alloc] init];
-        [py bindCocoa:self];
-        [[ProgressController mainProgressController] setWorker:py];
+- (PyPdfMasher *)model {
+    if (model == nil) {
+        model = [[PyPdfMasher alloc] init];
+        [model bindCallback:createCallback(@"FairwareView", self)];
+        [[ProgressController mainProgressController] setWorker:model];
     }
-    return py;
+    return model;
 }
 
 - (IBAction)openWebsite:(id)sender
@@ -55,7 +54,7 @@ http://www.hardcoded.net/licenses/gplv3_license
 - (IBAction)showAboutBox:(id)sender
 {
     if (aboutBox == nil) {
-        aboutBox = [[HSAboutBox alloc] initWithApp:py];
+        aboutBox = [[HSAboutBox alloc] initWithApp:model];
     }
     [[aboutBox window] makeKeyAndOrderFront:sender];
 }
@@ -63,7 +62,7 @@ http://www.hardcoded.net/licenses/gplv3_license
 /* Delegate */
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-    [[self py] initialRegistrationSetup];
+    [[self model] initialRegistrationSetup];
 }
 
 /* Python --> Cocoa */
@@ -79,11 +78,11 @@ http://www.hardcoded.net/licenses/gplv3_license
 
 - (void)showFairwareNagWithPrompt:(NSString *)prompt
 {
-    [HSFairwareReminder showFairwareNagWithApp:[self py] prompt:prompt];
+    [HSFairwareReminder showFairwareNagWithApp:[self model] prompt:prompt];
 }
 
 - (void)showDemoNagWithPrompt:(NSString *)prompt
 {
-    [HSFairwareReminder showDemoNagWithApp:[self py] prompt:prompt];
+    [HSFairwareReminder showDemoNagWithApp:[self model] prompt:prompt];
 }
 @end

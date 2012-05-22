@@ -15,7 +15,7 @@ class PageController(GUIObject):
     #
     
     def __init__(self, app):
-        GUIObject.__init__(self, None, app)
+        GUIObject.__init__(self, app)
         self.page_repr = PageRepresentation(app)
     
     #--- Public

@@ -7,57 +7,56 @@ http://www.hardcoded.net/licenses/gplv3_license
 */
 
 #import "PMBuildPane.h"
+#import "Utils.h"
 
 #define PMEbookTypeMOBI 1
 #define PMEbookTypeEPUB 2
 
 @implementation PMBuildPane
-- (id)initWithPy:(id)aPy
+- (id)initWithPyRef:(PyObject *)aPyRef
 {
-    self = [super initWithPy:aPy];
+    PyBuildPane *m = [[PyBuildPane alloc] initWithModel:aPyRef];
+    self = [self initWithModel:m];
     [NSBundle loadNibNamed:@"BuildPane" owner:self];
-    [[self py] connect];
+    [self setView:wholeView];
+    [m bindCallback:createCallback(@"GUIObjectView", self)];
+    [m release];
     return self;
 }
 
-- (PyBuildPane *)py
+- (PyBuildPane *)model
 {
-    return (PyBuildPane *)py;
-}
-
-- (NSView *)view
-{
-    return wholeView;
+    return (PyBuildPane *)model;
 }
 
 - (IBAction)generateMarkdown:(id)sender
 {
-    [[self py] generateMarkdown];
+    [[self model] generateMarkdown];
 }
 
 - (IBAction)editMarkdown:(id)sender
 {
-    [[self py] editMarkdown];
+    [[self model] editMarkdown];
 }
 
 - (IBAction)revealInFinder:(id)sender
 {
-    [[self py] revealMarkdown];
+    [[self model] revealMarkdown];
 }
 
 - (IBAction)viewHTML:(id)sender
 {
-    [[self py] viewHTML];
+    [[self model] viewHTML];
 }
 
 - (IBAction)createEbook:(id)sender
 {
-    [[self py] setEbookTitle:[ebookTitleTextField stringValue]];
-    [[self py] setEbookAuthor:[ebookAuthorTextField stringValue]];
+    [[self model] setEbookTitle:[ebookTitleTextField stringValue]];
+    [[self model] setEbookAuthor:[ebookAuthorTextField stringValue]];
     NSSavePanel *sp = [NSSavePanel savePanel];
     [sp setTitle:@"Select a destination for the e-book"];
     NSString *ext;
-    if ([[self py] selectedEbookType] == PMEbookTypeEPUB) {
+    if ([[self model] selectedEbookType] == PMEbookTypeEPUB) {
         ext = @"epub";
     }
     else {
@@ -67,7 +66,7 @@ http://www.hardcoded.net/licenses/gplv3_license
     [sp setAllowsOtherFileTypes:YES];
     if ([sp runModal] == NSOKButton) {
         NSString *filename = [[sp URL] path];
-        [[self py] createEbookAtPath:filename];
+        [[self model] createEbookAtPath:filename];
     }
 }
 
@@ -81,14 +80,14 @@ http://www.hardcoded.net/licenses/gplv3_license
     else {
         newtype = PMEbookTypeMOBI;
     }
-    [[self py] setSelectedEbookType:newtype];
+    [[self model] setSelectedEbookType:newtype];
 }
 
 /* model --> view */
 - (void)refresh
 {
-    [lastGenDescLabel setStringValue:[[self py] lastGenDesc]];
-    BOOL enabled = [[self py] postProcessingEnabled];
+    [lastGenDescLabel setStringValue:[[self model] lastGenDesc]];
+    BOOL enabled = [[self model] postProcessingEnabled];
     [editMarkdownButton setEnabled:enabled];
     [revealMarkdownButton setEnabled:enabled];
     [viewHTMLButton setEnabled:enabled];

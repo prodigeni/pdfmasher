@@ -11,10 +11,8 @@ http://www.hardcoded.net/licenses/gplv3_license
 #import "HSGUIController.h"
 #import "PyOpenedFileLabel.h"
 
-@interface PMOpenedFileLabel : HSGUIController
-{
-    NSTextField *label;
-}
-- (id)initWithPy:(id)aPy textView:(NSTextField *)aView;
-- (PyOpenedFileLabel *)py;
+@interface PMOpenedFileLabel : HSGUIController {}
+- (id)initWithPyRef:(PyObject *)aPyRef textView:(NSTextField *)aView;
+- (PyOpenedFileLabel *)model;
+- (NSTextField *)view;
 @end

@@ -16,7 +16,8 @@ from argparse import ArgumentParser
 from setuptools import setup, Extension
 
 from hscommon import sphinxgen
-from hscommon.build import (print_and_do, copy_packages, get_module_version, filereplace, move)
+from hscommon.build import (print_and_do, copy_packages, get_module_version, filereplace, move,
+    add_to_pythonpath, copy, symlink, copy_sysconfig_files_for_embed)
 from hscommon.plat import ISOSX
 
 def parse_args():
@@ -31,27 +32,23 @@ def parse_args():
     return args
 
 def build_cocoa(dev):
-    from pluginbuilder import build_plugin
+    print("Building the cocoa layer")
+    if not op.exists('build/py'):
+        os.mkdir('build/py')
     build_cocoa_proxy_module()
-    print("Building py.plugin")
-    if dev:
-        copy_packages(['cocoa/inter', 'cocoalib/cocoa'], 'build')
-    else:
-        copy_packages(['core', 'hscommon', 'cocoa/inter', 'cocoalib/cocoa'], 'build')
-    shutil.copy('cocoa/pyplugin.py', 'build')
+    build_cocoa_bridging_interfaces()
+    from pluginbuilder import copy_embeddable_python_dylib, get_python_header_folder, collect_dependencies
+    copy_embeddable_python_dylib('build')
+    symlink(get_python_header_folder(), 'build/PythonHeaders')
+    tocopy = ['core', 'hscommon', 'cocoa/inter', 'cocoalib/cocoa']
+    copy_packages(tocopy, 'build')
+    copy('cocoa/pyplugin.py', 'build/pyplugin.py')
     os.chdir('build')
-    # We have to exclude PyQt4 specifically because it's conditionally imported in hscommon.trans
-    build_plugin('pyplugin.py', excludes=['PyQt4'], alias=dev)
+    collect_dependencies('pyplugin.py', 'py', excludes=['PyQt4'])
     os.chdir('..')
-    pluginpath = 'cocoa/pyplugin.plugin'
-    if op.exists(pluginpath):
-        shutil.rmtree(pluginpath)
-    shutil.move('build/dist/pyplugin.plugin', pluginpath)
     if dev:
-        # In alias mode, the tweakings we do to the pythonpath aren't counted in. We have to
-        # manually put a .pth in the plugin
-        pthpath = op.join(pluginpath, 'Contents/Resources/dev.pth')
-        open(pthpath, 'w').write(op.abspath('.'))
+        copy_packages(tocopy, 'build/py', create_links=True)
+    copy_sysconfig_files_for_embed('build/py')
     os.chdir('cocoa')
     print('Generating Info.plist')
     app_version = get_module_version('core')
@@ -66,11 +63,7 @@ def build_cocoa(dev):
     os.system('xcodebuild {0}'.format(args))
     os.chdir('..')
     print("Creating the run.py file")
-    subfolder = 'dev' if dev else 'release'
-    app_path = 'cocoa/build/{0}/PdfMasher.app'.format(subfolder)
-    tmpl = open('cocoa/runtemplate.py', 'rt').read()
-    run_contents = tmpl.replace('{{app_path}}', app_path)
-    open('run.py', 'wt').write(run_contents)
+    copy('cocoa/runtemplate.py', 'run.py')
 
 def build_cocoa_ext(extname, dest, source_files, extra_frameworks=(), extra_includes=()):
     extra_link_args = ["-framework", "CoreFoundation", "-framework", "Foundation"]
@@ -90,6 +83,31 @@ def build_cocoa_proxy_module():
         ['cocoalib/cocoa/CocoaProxy.m', 'build/CocoaProxy.m', 'build/ObjP.m', 'cocoalib/HSErrorReportWindow.m'],
         ['AppKit', 'CoreServices'],
         ['cocoalib'])
+
+def build_cocoa_bridging_interfaces():
+    print("Building Cocoa Bridging Interfaces")
+    import objp.o2p
+    import objp.p2o
+    add_to_pythonpath('cocoa')
+    add_to_pythonpath('cocoalib')
+    from cocoa.inter import (PyGUIObject, GUIObjectView, PyTable, TableView, PyColumns,
+        ColumnsView, PyFairware, FairwareView)
+    from inter.app import PyPdfMasher
+    from inter.build_pane import PyBuildPane
+    from inter.edit_pane import PyEditPane, EditPaneView
+    from inter.element_table import PyElementTable
+    from inter.opened_file_label import PyOpenedFileLabel
+    from inter.page_controller import PyPageController, PageControllerView
+    from inter.page_repr import PyPageRepr, PageReprView
+    allclasses = [PyGUIObject, PyTable, PyColumns, PyFairware, PyPdfMasher, PyBuildPane, PyEditPane,
+        PyElementTable, PyOpenedFileLabel, PyPageController, PyPageRepr]
+    for class_ in allclasses:
+        objp.o2p.generate_objc_code(class_, 'cocoa/autogen', inherit=True)
+    allclasses = [GUIObjectView, TableView, ColumnsView, FairwareView, EditPaneView,
+        PageControllerView, PageReprView]
+    clsspecs = [objp.o2p.spec_from_python_class(class_) for class_ in allclasses]
+    objp.p2o.generate_python_proxy_code_from_clsspec(clsspecs, 'build/CocoaViews.m')
+    build_cocoa_ext('CocoaViews', 'build/py/inter', ['build/CocoaViews.m', 'build/ObjP.m'])
 
 def build_qt():
     print("Building resource file")
@@ -136,6 +154,7 @@ def main():
         build_help()
     elif args.cocoamod:
         build_cocoa_proxy_module()
+        build_cocoa_bridging_interfaces()
     else:
         build_normal(ui, dev)
 

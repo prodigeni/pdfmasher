@@ -21,7 +21,6 @@ class EditPane(QWidget):
         self._setupUi()
         self.model = model
         self.model.view = self
-        self.model.connect()
         
         self.normalButton.clicked.connect(partial(self.model.app.change_state_of_selected, ElementState.Normal))
         self.titleButton.clicked.connect(partial(self.model.app.change_state_of_selected, ElementState.Title))

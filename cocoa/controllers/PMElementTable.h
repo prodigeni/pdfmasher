@@ -12,7 +12,7 @@ http://www.hardcoded.net/licenses/gplv3_license
 #import "PMElementTableView.h"
 
 @interface PMElementTable : HSTable {}
-- (id)initWithPy:(id)aPy tableView:(PMElementTableView *)aTableView;
+- (id)initWithPyRef:(PyObject *)aPyRef tableView:(PMElementTableView *)aTableView;
 - (void)initializeColumns;
-- (PyElementTable *)py;
+- (PyElementTable *)model;
 @end

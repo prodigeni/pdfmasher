@@ -9,6 +9,6 @@
 from cocoa.inter import PyTable
 
 class PyElementTable(PyTable):
-    def pressKey_(self, key):
-        self.py.press_key(key)
+    def pressKey_(self, key: str):
+        self.model.press_key(key)
     

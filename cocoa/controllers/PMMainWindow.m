@@ -15,12 +15,12 @@ http://www.hardcoded.net/licenses/gplv3_license
 - (void)awakeFromNib
 {
     [self window];
-    app = [appDelegate py];
-    openedFileLabel = [[PMOpenedFileLabel alloc] initWithPy:[app openedFileLabel] textView:openedFileLabelView];
-    elementTable = [[PMElementTable alloc] initWithPy:[app elementTable] tableView:elementsTableView];
-    pageController = [[PMPageController alloc] initWithPy:[app pageController]];
+    app = [appDelegate model];
+    openedFileLabel = [[PMOpenedFileLabel alloc] initWithPyRef:[app openedFileLabel] textView:openedFileLabelView];
+    elementTable = [[PMElementTable alloc] initWithPyRef:[app elementTable] tableView:elementsTableView];
+    pageController = [[PMPageController alloc] initWithPyRef:[app pageController]];
     editPane = [[PMEditPane alloc] initWithPyParent:app];
-    buildPane = [[PMBuildPane alloc] initWithPy:[app buildPane]];
+    buildPane = [[PMBuildPane alloc] initWithPyRef:[app buildPane]];
     
     NSTabViewItem *item = [[NSTabViewItem alloc] initWithIdentifier:@"edit_pane"];
     [item setLabel:@"Edit"];

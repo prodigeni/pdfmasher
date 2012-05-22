@@ -13,7 +13,6 @@ class OpenedFileLabel(QLabel):
         QLabel.__init__(self)
         self.model = model
         self.model.view = self
-        self.model.connect()
     
     #--- model -> view
     def refresh(self):

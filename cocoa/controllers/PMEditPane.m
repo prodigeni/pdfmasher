@@ -7,6 +7,7 @@ http://www.hardcoded.net/licenses/gplv3_license
 */
 
 #import "PMEditPane.h"
+#import "Utils.h"
 
 @implementation PMEditPane
 /* Until we push down all the logic that has anything to do with "app", we're stuck with the old
@@ -14,21 +15,19 @@ http://www.hardcoded.net/licenses/gplv3_license
 */ 
 - (id)initWithPyParent:(id)aPyParent
 {
-    self = [super initWithPy:[(PyPdfMasher *)aPyParent editPane]];
+    PyEditPane *m = [[PyEditPane alloc] initWithModel:[(PyPdfMasher *)aPyParent editPane]];
+    self = [self initWithModel:m];
     [NSBundle loadNibNamed:@"EditPane" owner:self];
     app = (PyPdfMasher *)aPyParent;
-    [[self py] connect];
+    [self setView:wholeView];
+    [m bindCallback:createCallback(@"EditPaneView", self)];
+    [m release];
     return self;
 }
         
-- (PyEditPane *)py
+- (PyEditPane *)model
 {
-    return (PyEditPane *)py;
-}
-
-- (NSView *)view
-{
-    return wholeView;
+    return (PyEditPane *)model;
 }
 
 - (IBAction)selectNormal:(id)sender
@@ -64,22 +63,22 @@ http://www.hardcoded.net/licenses/gplv3_license
 
 - (IBAction)saveEdits:(id)sender
 {
-    [[self py] setEditText:[editTextView string]];
-    [[self py] saveEdits];
+    [[self model] setEditText:[editTextView string]];
+    [[self model] saveEdits];
 }
 
 - (IBAction)cancelEdits:(id)sender
 {
-    [[self py] cancelEdits];
-    [editTextView setString:[[self py] editText]];
+    [[self model] cancelEdits];
+    [editTextView setString:[[self model] editText]];
 }
 
 /* model --> view */
 
 - (void)refreshEditText
 {
-    [editTextView setString:[[self py] editText]];
-    BOOL enabled = [[self py] editEnabled];
+    [editTextView setString:[[self model] editText]];
+    BOOL enabled = [[self model] editEnabled];
     [editTextView setEditable:enabled];
     [saveButton setEnabled:enabled];
     [cancelButton setEnabled:enabled];

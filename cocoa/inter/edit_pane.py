@@ -6,26 +6,30 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from cocoa.inter import signature, PyGUIObject
+from objp.util import dontwrap
+from cocoa.inter import PyGUIObject, GUIObjectView
+
+class EditPaneView(GUIObjectView):
+    def refreshEditText(seld): pass
 
 class PyEditPane(PyGUIObject):
-    def editText(self):
-        return self.py.edit_text
+    def editText(self) -> str:
+        return self.model.edit_text
     
-    def setEditText_(self, value):
-        self.py.edit_text = str(value)
+    def setEditText_(self, value: str):
+        self.model.edit_text = value
     
-    @signature('c@:')
-    def editEnabled(self):
-        return self.py.edit_enabled
+    def editEnabled(self) -> bool:
+        return self.model.edit_enabled
     
     def saveEdits(self):
-        self.py.save_edits()
+        self.model.save_edits()
     
     def cancelEdits(self):
-        self.py.cancel_edits()
+        self.model.cancel_edits()
     
     #--- model -> view calls:
+    @dontwrap
     def refresh_edit_text(self):
-        self.cocoa.refreshEditText()
+        self.callback.refreshEditText()
     

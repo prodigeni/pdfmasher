@@ -6,42 +6,39 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from cocoa.inter import signature, PyGUIObject
+from cocoa.inter import PyGUIObject
 
 class PyBuildPane(PyGUIObject):
-    def lastGenDesc(self):
-        return self.py.lastgen_desc
+    def lastGenDesc(self) -> str:
+        return self.model.lastgen_desc
     
-    @signature('c@:')
-    def postProcessingEnabled(self):
-        return self.py.post_processing_enabled
+    def postProcessingEnabled(self) -> bool:
+        return self.model.post_processing_enabled
     
-    @signature('i@:')
-    def selectedEbookType(self):
-        return self.py.selected_ebook_type
+    def selectedEbookType(self) -> int:
+        return self.model.selected_ebook_type
     
-    @signature('v@:i')
-    def setSelectedEbookType_(self, value):
-        self.py.selected_ebook_type = value
+    def setSelectedEbookType_(self, value: int):
+        self.model.selected_ebook_type = value
     
-    def setEbookTitle_(self, value):
-        self.py.ebook_title = value
+    def setEbookTitle_(self, value: str):
+        self.model.ebook_title = value
     
-    def setEbookAuthor_(self, value):
-        self.py.ebook_author = value
+    def setEbookAuthor_(self, value: str):
+        self.model.ebook_author = value
     
     def generateMarkdown(self):
-        self.py.generate_markdown()
+        self.model.generate_markdown()
     
     def editMarkdown(self):
-        self.py.edit_markdown()
+        self.model.edit_markdown()
     
     def revealMarkdown(self):
-        self.py.reveal_markdown()
+        self.model.reveal_markdown()
     
     def viewHTML(self):
-        self.py.view_html()
+        self.model.view_html()
     
-    def createEbookAtPath_(self, path):
-        self.py.create_ebook(path)
+    def createEbookAtPath_(self, path: str):
+        self.model.create_ebook(path)
     

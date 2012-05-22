@@ -16,12 +16,11 @@ class EditPane(GUIObject):
     #
     
     def __init__(self, app):
-        GUIObject.__init__(self, None, app)
+        GUIObject.__init__(self, app)
         self.edit_text = ''
         self.edit_enabled = False
     
-    def connect(self):
-        GUIObject.connect(self)
+    def _view_updated(self):
         self.view.refresh_edit_text()
     
     #--- Public

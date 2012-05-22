@@ -9,11 +9,11 @@ http://www.hardcoded.net/licenses/gplv3_license
 #import "PMElementTable.h"
 
 @implementation PMElementTable
-- (id)initWithPy:(id)aPy tableView:(PMElementTableView *)aTableView
+- (id)initWithPyRef:(PyObject *)aPyRef tableView:(PMElementTableView *)aTableView
 {
-    self = [super initWithPy:aPy view:aTableView];
+    self = [super initWithPyRef:aPyRef wrapperClass:[PyElementTable class]
+        callbackClassName:@"TableView" view:aTableView];
     [self initializeColumns];
-    [self connect];
     return self;
 }
 
@@ -23,9 +23,9 @@ http://www.hardcoded.net/licenses/gplv3_license
     [super dealloc];
 }
 
-- (PyElementTable *)py
+- (PyElementTable *)model
 {
-    return (PyElementTable *)py;
+    return (PyElementTable *)model;
 }
 
 - (HSColumns *)columns
@@ -54,7 +54,7 @@ http://www.hardcoded.net/licenses/gplv3_license
 
 - (void)flagShortcutPressed:(NSString *)shortcut
 {
-    [[self py] pressKey:shortcut];
+    [[self model] pressKey:shortcut];
 }
 
 @end

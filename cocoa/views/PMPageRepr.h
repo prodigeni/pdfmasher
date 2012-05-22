@@ -11,9 +11,9 @@ http://www.hardcoded.net/licenses/gplv3_license
 
 @interface PMPageRepr : NSView
 {
-    PyPageRepr *py;
+    PyPageRepr *model;
 }
 
-- (id)initWithPy:(id)aPy;
-- (PyPageRepr *)py;
+- (id)initWithPyRef:(PyObject *)aPyRef;
+- (PyPageRepr *)model;
 @end

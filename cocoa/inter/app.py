@@ -8,70 +8,65 @@
 
 import logging
 
+from objp.util import pyref, dontwrap
 import cocoa
-from cocoa.inter import signature, subproxy, PyFairware
-from cocoa.objcmin import NSNotificationCenter, NSWorkspace
+from cocoa import proxy
+from cocoa.inter import PyFairware
 from jobprogress import job
 
 from core.app import JOBID2TITLE
 
-from core import __appname__
 from core.app import App
 
-from .element_table import PyElementTable
-from .opened_file_label import PyOpenedFileLabel
-from .page_controller import PyPageController
-from .build_pane import PyBuildPane
-from .edit_pane import PyEditPane
-
 class PyPdfMasher(PyFairware):
-    def init(self):
-        self = super(PyPdfMasher, self).init()
+    FOLLOW_PROTOCOLS = ['Worker']
+    
+    def __init__(self):
         logging.basicConfig(level=logging.WARNING, format='%(levelname)s %(message)s')
         cocoa.install_exception_hook()
         self.progress = cocoa.ThreadedJobPerformer()
-        self.py = App(self)
-        return self
+        model = App(self)
+        PyFairware.__init__(self, model)
     
-    def bindCocoa_(self, cocoa):
-        self.cocoa = cocoa
+    def elementTable(self) -> pyref:
+        return self.model.element_table
     
-    elementTable = subproxy('elementTable', 'element_table', PyElementTable)
-    openedFileLabel = subproxy('openedFileLabel', 'opened_file_label', PyOpenedFileLabel)
-    pageController = subproxy('pageController', 'page_controller', PyPageController)
-    buildPane = subproxy('buildPane', 'build_pane', PyBuildPane)
-    editPane = subproxy('editPane', 'edit_pane', PyEditPane)
+    def openedFileLabel(self) -> pyref:
+        return self.model.opened_file_label
+    
+    def pageController(self) -> pyref:
+        return self.model.page_controller
+    
+    def buildPane(self) -> pyref:
+        return self.model.build_pane
+    
+    def editPane(self) -> pyref:
+        return self.model.edit_pane
     
     def buildHtml(self):
-        return self.py.build_html()
+        return self.model.build_html()
     
-    def changeStateOfSelected_(self, newstate):
-        self.py.change_state_of_selected(newstate)
+    def changeStateOfSelected_(self, newstate: str):
+        self.model.change_state_of_selected(newstate)
     
-    def loadPDF_(self, path):
-        self.py.load_pdf(path)
+    def loadPDF_(self, path: str):
+        self.model.load_pdf(path)
     
-    @signature('c@:')
-    def hideIgnored(self):
-        return self.py.hide_ignored
+    def hideIgnored(self) -> bool:
+        return self.model.hide_ignored
     
-    @signature('v@:c')
-    def setHideIgnored_(self, value):
-        self.py.hide_ignored = value
-    
-    #---Registration
-    def appName(self):
-        return __appname__
+    def setHideIgnored_(self, value: bool):
+        self.model.hide_ignored = value
     
     #--- Worker. Mixin classes don't work with NSObject so we can't use them for interfaces
-    def getJobProgress(self):
+    def getJobProgress(self) -> object:
         try:
             return self.progress.last_progress
         except AttributeError:
             # See dupeguru ticket #106
             return -1
     
-    def getJobDesc(self):
+    def getJobDesc(self) -> str:
         try:
             return self.progress.last_desc
         except AttributeError:
@@ -81,26 +76,28 @@ class PyPdfMasher(PyFairware):
     def cancelJob(self):
         self.progress.job_cancelled = True
     
-    def jobCompleted_(self, jobid):
-        self.py._job_completed(jobid)
+    def jobCompleted_(self, jobid: str):
+        self.progress.reraise_if_error()
+        self.model._job_completed(jobid)
     
     #--- Python --> cocoa
-    @staticmethod
-    def open_path(path):
-        NSWorkspace.sharedWorkspace().openFile_(path)
+    @dontwrap
+    def open_path(self, path):
+        proxy.openPath_(path)
     
-    @staticmethod
-    def reveal_path(path):
-        NSWorkspace.sharedWorkspace().selectFile_inFileViewerRootedAtPath_(path, '')
+    @dontwrap
+    def reveal_path(self, path):
+        proxy.revealPath_(path)
     
-    def start_job(self, jobid, func):
+    @dontwrap
+    def start_job(self, jobid, func, args=()):
         try:
             j = self.progress.create_job()
-            args = (j, )
+            args = tuple([j] + list(args))
             self.progress.run_threaded(func, args=args)
         except job.JobInProgressError:
-            NSNotificationCenter.defaultCenter().postNotificationName_object_('JobInProgress', self)
+            proxy.postNotification_userInfo_('JobInProgress', None)
         else:
             ud = {'desc': JOBID2TITLE[jobid], 'jobid':jobid}
-            NSNotificationCenter.defaultCenter().postNotificationName_object_userInfo_('JobStarted', self, ud)
+            proxy.postNotification_userInfo_('JobStarted', ud)
     

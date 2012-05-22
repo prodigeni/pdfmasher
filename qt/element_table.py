@@ -29,7 +29,6 @@ class ElementTable(Table):
         Table.__init__(self, model, view)
         self.model.columns.reset_to_defaults()
         self._setupKeyBindings()
-        self.model.connect()
     
     def _setupKeyBindings(self):
         # we have to keep a reference to the shortcuts for them not to be freed right away

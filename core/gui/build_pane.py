@@ -50,15 +50,14 @@ class BuildPane(GUIObject):
     #
     
     def __init__(self, app):
-        GUIObject.__init__(self, None, app)
+        GUIObject.__init__(self, app)
         self.lastgen_desc = ''
         self.post_processing_enabled = False
         self.selected_ebook_type = EbookType.MOBI
         self.ebook_title = ''
         self.ebook_author = ''
     
-    def connect(self):
-        GUIObject.connect(self)
+    def _view_updated(self):
         self.view.refresh()
     
     #--- Private

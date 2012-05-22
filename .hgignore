@@ -7,11 +7,10 @@ conf.json
 build
 dist
 cocoa/Info.plist
-cocoa/pyplugin.plugin
+cocoa/autogen
 qt/pm_rc.py
 help/*/conf.py
 help/*/changelog.rst
-playground
 
 *.mode1v3
 *.pbxuser
@@ -20,3 +19,5 @@ playground
 *.xcodeproj/xcuserdata
 *.xcodeproj/project.xcworkspace/xcuserdata
 *.app
+*.so
+*.pyc

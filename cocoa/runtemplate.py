@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # Created By: Virgil Dupras
 # Created On: 2011-06-19
 # Copyright 2011 Hardcoded Software (http://www.hardcoded.net)
@@ -11,7 +11,7 @@ import sys
 import os
 
 def main():
-    return os.system('open {{app_path}}')
+    return os.system('open cocoa/PdfMasher.app')
 
 if __name__ == '__main__':
     sys.exit(main())

@@ -10,46 +10,43 @@ http://www.hardcoded.net/licenses/gplv3_license
 #import "Utils.h"
 
 @implementation PMPageController
-- (id)initWithPy:(id)aPy
+- (id)initWithPyRef:(PyObject *)aPyRef
 {
-    self = [super initWithPy:aPy];
+    PyPageController *m = [[PyPageController alloc] initWithModel:aPyRef];
+    self = [self initWithModel:m];
     [NSBundle loadNibNamed:@"PagePane" owner:self];
-    pageRepr = [[PMPageRepr alloc] initWithPy:[[self py] pageRepr]];
-    
+    [self setView:wholeView];
+    [m bindCallback:createCallback(@"PageControllerView", self)];
+    [m release];
+    pageRepr = [[PMPageRepr alloc] initWithPyRef:[[self model] pageRepr]];
     replacePlaceholderInView(pageReprPlaceholder, pageRepr);
-    [[self py] connect];
     return self;
 }
         
-- (PyPageController *)py
+- (PyPageController *)model
 {
-    return (PyPageController *)py;
-}
-
-- (NSView *)view
-{
-    return wholeView;
+    return (PyPageController *)model;
 }
 
 - (IBAction)prevPage:(id)sender
 {
-    [[self py] prevPage];
+    [[self model] prevPage];
 }
 
 - (IBAction)nextPage:(id)sender
 {
-    [[self py] nextPage];
+    [[self model] nextPage];
 }
 
 - (IBAction)toggleShowOrder:(id)sender
 {
     BOOL isChecked = [reorderModeButton state] == NSOnState;
-    [[self py] setReorderMode:isChecked];
+    [[self model] setReorderMode:isChecked];
 }
 
 /* model --> view */
 - (void)refreshPageLabel
 {
-    [pageLabelTextField setStringValue:[[self py] pageLabel]];
+    [pageLabelTextField setStringValue:[[self model] pageLabel]];
 }
 @end

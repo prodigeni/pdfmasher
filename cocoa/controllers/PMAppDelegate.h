@@ -12,11 +12,11 @@ http://www.hardcoded.net/licenses/gplv3_license
 
 @interface PMAppDelegate : NSObject
 {
-    PyPdfMasher *py;
+    PyPdfMasher *model;
     HSAboutBox *aboutBox;
 }
 
-- (PyPdfMasher *)py;
+- (PyPdfMasher *)model;
 
 - (IBAction)openWebsite:(id)sender;
 - (IBAction)openHelp:(id)sender;

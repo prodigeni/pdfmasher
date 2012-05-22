@@ -9,9 +9,9 @@
 from cocoa.inter import PyGUIObject
 
 class PyOpenedFileLabel(PyGUIObject):
-    def text(self):
-        return self.py.text
+    def text(self) -> str:
+        return self.model.text
     
-    def setText_(self, value):
-        self.py.text = str(value)
+    def setText_(self, value: str):
+        self.model.text = value
     

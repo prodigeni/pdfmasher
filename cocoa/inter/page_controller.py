@@ -6,27 +6,30 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from cocoa.inter import PyGUIObject, signature, subproxy
+from objp.util import pyref, dontwrap
+from cocoa.inter import PyGUIObject, GUIObjectView
 
-from .page_repr import PyPageRepr
+class PageControllerView(GUIObjectView):
+    def refreshPageLabel(self): pass
 
 class PyPageController(PyGUIObject):
-    pageRepr = subproxy('pageRepr', 'page_repr', PyPageRepr)
+    def pageRepr(self) -> pyref:
+        return self.model.page_repr
     
     def prevPage(self):
-        self.py.prev_page()
+        self.model.prev_page()
     
     def nextPage(self):
-        self.py.next_page()
+        self.model.next_page()
     
-    def pageLabel(self):
-        return self.py.page_label
+    def pageLabel(self) -> str:
+        return self.model.page_label
     
-    @signature('v@:c')
-    def setReorderMode_(self, flag):
-        self.py.page_repr.reorder_mode = flag
+    def setReorderMode_(self, flag: bool):
+        self.model.page_repr.reorder_mode = flag
     
     #--- model -> view calls:
+    @dontwrap
     def refresh_page_label(self):
-        self.cocoa.refreshPageLabel()
+        self.callback.refreshPageLabel()
     

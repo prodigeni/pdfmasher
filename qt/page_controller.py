@@ -19,7 +19,6 @@ class PageController(QWidget):
         self.model = model
         self.model.view = self
         self._setupUi()
-        self.model.connect()
         
         self.previousPageButton.clicked.connect(self.model.prev_page)
         self.nextPageButton.clicked.connect(self.model.next_page)

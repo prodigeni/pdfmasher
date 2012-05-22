@@ -13,11 +13,12 @@ http://www.hardcoded.net/licenses/gplv3_license
 #import "PMElementTable.h"
 #import "PMPageController.h"
 #import "PMAppDelegate.h"
+#import "PMElementTableView.h"
 
 @interface PMMainWindow : NSWindowController
 {
     IBOutlet NSTextField *openedFileLabelView;
-    IBOutlet NSTableView *elementsTableView;
+    IBOutlet PMElementTableView *elementsTableView;
     IBOutlet NSTabView *topTabView;
     IBOutlet NSTabView *bottomTabView;
     IBOutlet PMAppDelegate *appDelegate;

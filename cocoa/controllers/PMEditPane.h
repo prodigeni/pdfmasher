@@ -23,8 +23,7 @@ http://www.hardcoded.net/licenses/gplv3_license
     PyPdfMasher *app;
 }
 - (id)initWithPyParent:(id)aPyParent;
-- (PyEditPane *)py;
-- (NSView *)view;
+- (PyEditPane *)model;
 
 - (IBAction)selectNormal:(id)sender;
 - (IBAction)selectTitle:(id)sender;

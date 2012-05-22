@@ -59,18 +59,17 @@ static NSColor* getColorFromConst(NSInteger c)
 }
 
 @implementation PMPageRepr
-- (id)initWithPy:(id)aPy
+- (id)initWithPyRef:(PyObject *)aPyRef
 {
     self = [super init];
-    py = [aPy retain];
-    [py bindCocoa:self];
-    [py connect];
+    model = [[PyPageRepr alloc] initWithModel:aPyRef];
+    [model bindCallback:createCallback(@"PageReprView", self)];
     return self;
 }
 
-- (PyPageRepr *)py
+- (PyPageRepr *)model
 {
-    return py;
+    return model;
 }
 
 - (BOOL)isFlipped
@@ -80,7 +79,7 @@ static NSColor* getColorFromConst(NSInteger c)
 
 - (void)drawRect:(NSRect)rect
 {
-    [py drawWithViewWidth:NSWidth(rect) height:NSHeight(rect)];
+    [model drawWithViewWidth:NSWidth(rect) height:NSHeight(rect)];
 }
 
 - (void)mouseDown:(NSEvent *)event
@@ -88,14 +87,14 @@ static NSColor* getColorFromConst(NSInteger c)
     [[self window] makeFirstResponder:self];
     NSPoint windowPos = [event locationInWindow];
     NSPoint pos = [self convertPoint:windowPos fromView:nil];
-    [py mouseDownAtX:pos.x y:pos.y];
+    [model mouseDownAtX:pos.x y:pos.y];
 }
 
 - (void)mouseDragged:(NSEvent *)event
 {
     NSPoint windowPos = [event locationInWindow];
     NSPoint pos = [self convertPoint:windowPos fromView:nil];
-    [py mouseMoveAtX:pos.x y:pos.y];
+    [model mouseMoveAtX:pos.x y:pos.y];
 }
 
 - (void)mouseUp:(NSEvent *)event
@@ -103,14 +102,14 @@ static NSColor* getColorFromConst(NSInteger c)
     // Just monitoring flagsChanged is not enough because the shift key might have been pressed
     // before our view was first responder.
     BOOL isShiftHeld = ([event modifierFlags] & NSShiftKeyMask) > 0;
-    [py setShiftKeyHeld:isShiftHeld];
-    [py mouseUp];
+    [model setShiftKeyHeld:isShiftHeld];
+    [model mouseUp];
 }
 
 - (void)flagsChanged:(NSEvent *)event
 {
     BOOL isShiftHeld = ([event modifierFlags] & NSShiftKeyMask) > 0;
-    [py setShiftKeyHeld:isShiftHeld];
+    [model setShiftKeyHeld:isShiftHeld];
 }
 
 - (void)keyDown:(NSEvent *)event 
@@ -119,7 +118,7 @@ static NSColor* getColorFromConst(NSInteger c)
         NSString *s = [event characters];
         NSSet *acceptableFlagKeys = [NSSet setWithObjects:@"n", @"t", @"f", @"x", @"i", nil];
         if ([acceptableFlagKeys containsObject:s]) {
-            [py pressKey:s];
+            [model pressKey:s];
         }
     }
 }

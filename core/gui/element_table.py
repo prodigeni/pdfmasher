@@ -67,7 +67,7 @@ class ElementTable(GUIObject, GUITable):
     ]
     
     def __init__(self, app):
-        GUIObject.__init__(self, None, app)
+        GUIObject.__init__(self, app)
         GUITable.__init__(self)
         self.columns = Columns(self)
     

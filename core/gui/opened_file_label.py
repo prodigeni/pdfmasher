@@ -14,11 +14,10 @@ class OpenedFileLabel(GUIObject):
     #
     
     def __init__(self, app):
-        GUIObject.__init__(self, None, app)
+        GUIObject.__init__(self, app)
         self.text = "Working on: Nothing"
     
-    def connect(self):
-        GUIObject.connect(self)
+    def _view_updated(self):
         self.view.refresh()
     
     #--- Events

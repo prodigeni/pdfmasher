@@ -19,7 +19,6 @@ class BuildPane(QWidget):
         self._setupUi()
         self.model = model
         self.model.view = self
-        self.model.connect()
         
         self.generateMarkdownButton.clicked.connect(self.model.generate_markdown)
         self.editMarkdownButton.clicked.connect(self.model.edit_markdown)
