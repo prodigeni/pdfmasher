@@ -27,7 +27,6 @@ class ElementTable(Table):
     
     def __init__(self, model, view):
         Table.__init__(self, model, view)
-        self.model.columns.reset_to_defaults()
         self._setupKeyBindings()
     
     def _setupKeyBindings(self):
