@@ -6,11 +6,10 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from cocoa.inter import PyGUIObject, PyTable, PyColumns, PyFairware
+from cocoa.inter import PyGUIObject, PyTable, PyColumns, PyFairware, PyTextField
 from inter.app import PyPdfMasher
 from inter.edit_pane import PyEditPane
 from inter.build_pane import PyBuildPane
-from inter.opened_file_label import PyOpenedFileLabel
 from inter.element_table import PyElementTable
 from inter.page_repr import PyPageRepr
 from inter.page_controller import PyPageController

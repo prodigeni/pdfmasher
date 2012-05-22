@@ -6,7 +6,7 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from .base import GUIObject
+from hscommon.gui.base import GUIObject
 
 class OpenedFileLabel(GUIObject):
     #--- model -> view calls:
@@ -14,14 +14,14 @@ class OpenedFileLabel(GUIObject):
     #
     
     def __init__(self, app):
-        GUIObject.__init__(self, app)
+        GUIObject.__init__(self)
+        self.app = app
         self.text = "Working on: Nothing"
     
     def _view_updated(self):
         self.view.refresh()
     
-    #--- Events
-    def file_opened(self):
+    def refresh(self):
         self.text = "Working on: {}".format(self.app.current_path)
         self.view.refresh()
     

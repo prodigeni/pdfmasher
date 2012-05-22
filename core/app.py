@@ -64,6 +64,7 @@ class App(Broadcaster, RegistrableApplication):
         if jobid == JobType.LoadPDF:
             if not self.last_file_was_invalid:
                 self.notify('file_opened')
+                self.opened_file_label.refresh()
                 self.notify('elements_changed')
             else:
                 self.view.show_message("This file is not a PDF.")

@@ -91,16 +91,15 @@ def build_cocoa_bridging_interfaces():
     add_to_pythonpath('cocoa')
     add_to_pythonpath('cocoalib')
     from cocoa.inter import (PyGUIObject, GUIObjectView, PyTable, TableView, PyColumns,
-        ColumnsView, PyFairware, FairwareView)
+        ColumnsView, PyFairware, FairwareView, PyTextField)
     from inter.app import PyPdfMasher
     from inter.build_pane import PyBuildPane
     from inter.edit_pane import PyEditPane, EditPaneView
     from inter.element_table import PyElementTable
-    from inter.opened_file_label import PyOpenedFileLabel
     from inter.page_controller import PyPageController, PageControllerView
     from inter.page_repr import PyPageRepr, PageReprView
-    allclasses = [PyGUIObject, PyTable, PyColumns, PyFairware, PyPdfMasher, PyBuildPane, PyEditPane,
-        PyElementTable, PyOpenedFileLabel, PyPageController, PyPageRepr]
+    allclasses = [PyGUIObject, PyTable, PyColumns, PyFairware, PyTextField, PyPdfMasher,
+        PyBuildPane, PyEditPane, PyElementTable, PyPageController, PyPageRepr]
     for class_ in allclasses:
         objp.o2p.generate_objc_code(class_, 'cocoa/autogen', inherit=True)
     allclasses = [GUIObjectView, TableView, ColumnsView, FairwareView, EditPaneView,

@@ -16,7 +16,7 @@ http://www.hardcoded.net/licenses/gplv3_license
 {
     [self window];
     app = [appDelegate model];
-    openedFileLabel = [[PMOpenedFileLabel alloc] initWithPyRef:[app openedFileLabel] textView:openedFileLabelView];
+    openedFileLabel = [[HSTextField alloc] initWithPyRef:[app openedFileLabel] view:openedFileLabelView];
     elementTable = [[PMElementTable alloc] initWithPyRef:[app elementTable] tableView:elementsTableView];
     pageController = [[PMPageController alloc] initWithPyRef:[app pageController]];
     editPane = [[PMEditPane alloc] initWithPyParent:app];

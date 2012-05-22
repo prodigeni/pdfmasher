@@ -9,7 +9,7 @@ http://www.hardcoded.net/licenses/gplv3_license
 #import <Cocoa/Cocoa.h>
 #import "PMEditPane.h"
 #import "PMBuildPane.h"
-#import "PMOpenedFileLabel.h"
+#import "HSTextField.h"
 #import "PMElementTable.h"
 #import "PMPageController.h"
 #import "PMAppDelegate.h"
@@ -24,7 +24,7 @@ http://www.hardcoded.net/licenses/gplv3_license
     IBOutlet PMAppDelegate *appDelegate;
     
     PyPdfMasher *app;
-    PMOpenedFileLabel *openedFileLabel;
+    HSTextField *openedFileLabel;
     PMElementTable *elementTable;
     PMPageController *pageController;
     PMEditPane *editPane;
