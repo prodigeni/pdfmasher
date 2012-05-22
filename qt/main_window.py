@@ -8,13 +8,13 @@
 
 from PyQt4.QtCore import QCoreApplication, QRect
 from PyQt4.QtGui import (QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QFileDialog,
-    QTabWidget, QSizePolicy, QMenuBar, QMenu)
+    QTabWidget, QSizePolicy, QMenuBar, QMenu, QLabel)
 
 from hscommon.trans import tr
 from qtlib.util import moveToScreenCenter
+from qtlib.text_field import TextField
 from .element_table import ElementTable, ElementTableView
 from .page_controller import PageController
-from .opened_file_label import OpenedFileLabel
 from .edit_pane import EditPane
 from .build_pane import BuildPane
 
@@ -24,6 +24,7 @@ class MainWindow(QMainWindow):
         self.app = app
         self._setupUi()
         self.elementTable = ElementTable(self.app.model.element_table, self.elementTableView)
+        self.openedFileLabel = TextField(self.app.model.opened_file_label, self.openedFileLabelView)
         
         self.openButton.clicked.connect(self.openButtonClicked)
     
@@ -61,10 +62,10 @@ class MainWindow(QMainWindow):
         sizePolicy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
         self.openButton.setSizePolicy(sizePolicy)
         self.fileLayout.addWidget(self.openButton)
-        self.openedFileLabel = OpenedFileLabel(self.app.model.opened_file_label)
+        self.openedFileLabelView = QLabel()
         sizePolicy = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-        self.openedFileLabel.setSizePolicy(sizePolicy)
-        self.fileLayout.addWidget(self.openedFileLabel)
+        self.openedFileLabelView.setSizePolicy(sizePolicy)
+        self.fileLayout.addWidget(self.openedFileLabelView)
         self.verticalLayout.addLayout(self.fileLayout)
         self.tabViewsLayout = QHBoxLayout()
         self.topTabWidget = QTabWidget()
