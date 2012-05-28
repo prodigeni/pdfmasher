@@ -6,13 +6,13 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-from objp.util import dontwrap
+from objp.util import dontwrap, nspoint, nsrect
 from cocoa.inter import PyGUIObject, GUIObjectView
 
 class PageReprView(GUIObjectView):
-    def drawRectAtX_y_width_height_bgColor_penColor_(self, x: float, y: float, width: float, height: float, bgcolor: int, pencolor: int): pass
-    def drawArrowFromX_y_toX_y_width_color_(self, x1: float, y1: float, x2: float, y2: float, width: float, color: int): pass
-    def drawText_inRectAtX_y_width_height_(self, text: str, x: float, y: float, width: float, height: float): pass
+    def drawRect_bgColor_penColor_(self, rect: nsrect, bgcolor: int, pencolor: int): pass
+    def drawArrowFrom_to_width_color_(self, src: nspoint, dst: nspoint, width: float, color: int): pass
+    def drawText_inRect_(self, text: str, rect: nsrect): pass
 
 class PyPageRepr(PyGUIObject):
     def drawWithViewWidth_height_(self, view_width: float, view_height: float):
@@ -42,21 +42,18 @@ class PyPageRepr(PyGUIObject):
     #--- model -> view calls:
     @dontwrap
     def draw_rectangle(self, rect, bgcolor, pencolor):
-        x, y, width, height = rect
         if bgcolor is None:
             bgcolor = -1
         if pencolor is None:
             pencolor = -1
-        self.callback.drawRectAtX_y_width_height_bgColor_penColor_(
-            x, y, width, height, bgcolor, pencolor)
+        self.callback.drawRect_bgColor_penColor_(rect, bgcolor, pencolor)
     
     @dontwrap
     def draw_arrow(self, line, width, color):
-        (x1, y1), (x2, y2) = line
-        self.callback.drawArrowFromX_y_toX_y_width_color_(x1, y1, x2, y2, width, color)
+        src, dst = line
+        self.callback.drawArrowFrom_to_width_color_(src, dst, width, color)
     
     @dontwrap
     def draw_text(self, text, rect):
-        x, y, width, height = rect
-        self.callback.drawText_inRectAtX_y_width_height_(text, x, y, width, height)
+        self.callback.drawText_inRect_(text, rect)
     

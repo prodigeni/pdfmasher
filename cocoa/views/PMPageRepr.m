@@ -129,13 +129,12 @@ static NSColor* getColorFromConst(NSInteger c)
     [self setNeedsDisplay:YES];
 }
 
-- (void)drawRectAtX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height bgColor:(NSInteger)bgColor penColor:(NSInteger)penColor
+- (void)drawRect:(NSRect)rect bgColor:(NSInteger)bgColor penColor:(NSInteger)penColor
 {
     [NSGraphicsContext saveGraphicsState];
     NSColor *bg = getColorFromConst(bgColor);
     NSColor *pen = getColorFromConst(penColor);
-    NSRect r = NSMakeRect(x, y, width, height);
-    NSBezierPath *p = [NSBezierPath bezierPathWithRect:r];
+    NSBezierPath *p = [NSBezierPath bezierPathWithRect:rect];
     if (bg != nil) {
         [bg setFill];
         [p fill];
@@ -148,19 +147,17 @@ static NSColor* getColorFromConst(NSInteger c)
     [NSGraphicsContext restoreGraphicsState];
 }
 
-- (void)drawArrowFromX:(CGFloat)x1 y:(CGFloat)y1 toX:(CGFloat)x2 y:(CGFloat)y2 width:(CGFloat)width color:(NSInteger)iColor
+- (void)drawArrowFrom:(NSPoint)src to:(NSPoint)dst width:(CGFloat)width color:(NSInteger)iColor
 {
     // Define points
-    NSPoint pt1 = NSMakePoint(x1, y1);
-    NSPoint pt2 = NSMakePoint(x2, y2);
-    CGFloat lineAngle = angleFromPoints(pt1, pt2);
-    CGFloat arrowsize = MIN(20, distance(pt1, pt2) / 2);
-    NSPoint arrowPt1 = pointInCircle(pt2, arrowsize, lineAngle + M_PI + (M_PI / 8));
-    NSPoint arrowPt2 = pointInCircle(pt2, arrowsize, lineAngle + M_PI - (M_PI / 8));
+    CGFloat lineAngle = angleFromPoints(src, dst);
+    CGFloat arrowsize = MIN(20, distance(src, dst) / 2);
+    NSPoint arrowPt1 = pointInCircle(dst, arrowsize, lineAngle + M_PI + (M_PI / 8));
+    NSPoint arrowPt2 = pointInCircle(dst, arrowsize, lineAngle + M_PI - (M_PI / 8));
     // The drawn line has to actually be a bit shorter than asked because when the width is larger
     // than one, the tip of the arrow is larger than expected. So we shorten the line by half the
     // arrowsize
-    NSPoint adjustedPt2 = pointInCircle(pt2, arrowsize/2, lineAngle + M_PI);
+    NSPoint adjustedPt2 = pointInCircle(dst, arrowsize/2, lineAngle + M_PI);
     
     // Draw line
     [NSGraphicsContext saveGraphicsState];
@@ -168,21 +165,21 @@ static NSColor* getColorFromConst(NSInteger c)
     [color setStroke];
     NSBezierPath *p = [NSBezierPath bezierPath];
     [p setLineWidth:width];
-    [p moveToPoint:pt1];
+    [p moveToPoint:src];
     [p lineToPoint:adjustedPt2];
     [p stroke];
     
     // arrowhead
     [color setFill];
     p = [NSBezierPath bezierPath];
-    [p moveToPoint:pt2];
+    [p moveToPoint:dst];
     [p lineToPoint:arrowPt1];
     [p lineToPoint:arrowPt2];
     [p fill];
     [NSGraphicsContext restoreGraphicsState];
 }
 
-- (void)drawText:(NSString *)text inRectAtX:(CGFloat)x y:(CGFloat)y width:(CGFloat)width height:(CGFloat)height
+- (void)drawText:(NSString *)text inRect:(NSRect)rect
 {
     [NSGraphicsContext saveGraphicsState];
     NSFont *font = [NSFont labelFontOfSize:11];
@@ -193,7 +190,7 @@ static NSColor* getColorFromConst(NSInteger c)
         [NSColor blackColor], NSForegroundColorAttributeName,
         pstyle, NSParagraphStyleAttributeName,
         nil];
-    [text drawInRect:NSMakeRect(x, y, width, height) withAttributes:attr];
+    [text drawInRect:rect withAttributes:attr];
     [NSGraphicsContext restoreGraphicsState];
 }
 
