@@ -106,7 +106,7 @@ def build_cocoa_bridging_interfaces():
         PageControllerView, PageReprView]
     clsspecs = [objp.o2p.spec_from_python_class(class_) for class_ in allclasses]
     objp.p2o.generate_python_proxy_code_from_clsspec(clsspecs, 'build/CocoaViews.m')
-    build_cocoa_ext('CocoaViews', 'build/py/inter', ['build/CocoaViews.m', 'build/ObjP.m'])
+    build_cocoa_ext('CocoaViews', 'build/py', ['build/CocoaViews.m', 'build/ObjP.m'])
 
 def build_qt():
     print("Building resource file")
