@@ -7,16 +7,21 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-import sys
 import os
 import os.path as op
 import compileall
 import shutil
 import json
+from argparse import ArgumentParser
 
-from hscommon.build import (build_dmg, copy_packages, build_debian_changelog, copy_qt_plugins,
-    print_and_do, get_module_version)
+from hscommon.build import (copy_packages, build_debian_changelog, copy_qt_plugins, print_and_do,
+    get_module_version, setup_package_argparser, package_cocoa_app_in_dmg)
 from hscommon.plat import ISLINUX, ISWINDOWS
+
+def parse_args():
+    parser = ArgumentParser()
+    setup_package_argparser(parser)
+    return parser.parse_args()
 
 def package_windows(dev):
     from cx_Freeze import Freezer, Executable
@@ -95,12 +100,13 @@ def package_debian():
     os.system("dpkg-buildpackage")
 
 def main():
+    args = parse_args()
     conf = json.load(open('conf.json'))
     ui = conf['ui']
     dev = conf['dev']
     print("Packaging PdfMasher with UI {0}".format(ui))
     if ui == 'cocoa':
-        build_dmg('cocoa/build/release/PdfMasher.app', '.')
+        package_cocoa_app_in_dmg('cocoa/PdfMasher.app', '.', args)
     elif ui == 'qt':
         if ISWINDOWS:
             package_windows(dev)
