@@ -11,7 +11,7 @@ from PyQt4.QtGui import (QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushBu
     QTabWidget, QSizePolicy, QMenuBar, QMenu, QLabel)
 
 from hscommon.trans import tr
-from qtlib.util import moveToScreenCenter
+from qtlib.util import moveToScreenCenter, createActions
 from qtlib.text_field import TextField
 from .element_table import ElementTable, ElementTableView
 from .page_controller import PageController
@@ -26,11 +26,13 @@ class MainWindow(QMainWindow):
         self.elementTable = ElementTable(self.app.model.element_table, self.elementTableView)
         self.openedFileLabel = TextField(self.app.model.opened_file_label, self.openedFileLabelView)
         
-        self.openButton.clicked.connect(self.openButtonClicked)
+        self.openButton.clicked.connect(self.actionLoadPDF.trigger)
     
     def _setupActions(self):
-        # None for now
-        pass
+        ACTIONS = [
+            ('actionLoadPDF', 'Ctrl+O', '', tr("Load PDF"), self.loadPDFTriggered),
+        ]
+        createActions(ACTIONS, self)
     
     def _setupMenu(self):
         self.menubar = QMenuBar(self)
@@ -41,6 +43,7 @@ class MainWindow(QMainWindow):
         self.menuHelp.setTitle(tr("Help"))
         self.setMenuBar(self.menubar)
         
+        self.menuFile.addAction(self.actionLoadPDF)
         self.menuFile.addAction(self.app.actionQuit)
         self.menuHelp.addAction(self.app.actionShowHelp)
         self.menuHelp.addAction(self.app.actionRegister)
@@ -91,7 +94,7 @@ class MainWindow(QMainWindow):
         moveToScreenCenter(self)
     
     #--- Signals
-    def openButtonClicked(self):
+    def loadPDFTriggered(self):
         title = "Select a PDF to open"
         files = ';;'.join(["PDF file (*.pdf)", "All Files (*.*)"])
         destination = QFileDialog.getOpenFileName(self, title, '', files)
