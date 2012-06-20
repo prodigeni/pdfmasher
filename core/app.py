@@ -6,14 +6,16 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
+from xml.etree import ElementTree as ET
 from pdfminer.pdfparser import PDFSyntaxError
 
 from hscommon.reg import RegistrableApplication
 from hscommon.notify import Broadcaster
+from hscommon.geometry import Rect
 from hscommon.trans import tr
 
 from .const import ElementState
-from .pdf import extract_text_elements_from_pdf
+from .pdf import extract_text_elements_from_pdf, Page, TextElement
 from . import __appname__
 from .gui.element_table import ElementTable
 from .gui.opened_file_label import OpenedFileLabel
@@ -105,6 +107,59 @@ class App(Broadcaster, RegistrableApplication):
                 self.last_file_was_invalid = True
         
         self.view.start_job(JobType.LoadPDF, do)
+    
+    def load_project(self, path):
+        def str2rect(s):
+            elems = s.split(' ')
+            assert len(elems) == 4
+            return Rect(*map(float, elems))
+        
+        root = ET.parse(path).getroot()
+        self.pages = []
+        for page_elem in root.iter('page'):
+            attrs = page_elem.attrib
+            width = float(attrs['width'])
+            height = float(attrs['height'])
+            self.pages.append(Page(width, height))
+        self.elements = []
+        for elem_elem in root.iter('element'):
+            attrs = elem_elem.attrib
+            rect = str2rect(attrs['rect'])
+            fontsize = float(attrs['fontsize'])
+            text = attrs['text']
+            elem = TextElement(rect, fontsize, text)
+            elem.page = int(attrs['page'])
+            elem.order = int(attrs['order'])
+            elem.state = attrs['state']
+            elem.title_level = int(attrs['title_level'])
+            self.elements.append(elem)
+        self.current_path = root.attrib['pdfpath']
+        self.notify('file_opened')
+        self.opened_file_label.refresh()
+        self.notify('elements_changed')
+        
+    def save_project(self, path):
+        def rect2str(r):
+            return "{} {} {} {}".format(*r)
+        
+        root = ET.Element('pdfmasher-project')
+        root.set('pdfpath', self.current_path)
+        for page in self.pages:
+            page_elem = ET.SubElement(root, 'page')
+            page_elem.set('width', str(page.width))
+            page_elem.set('height', str(page.height))
+        for elem in self.elements:
+            elem_elem = ET.SubElement(root, 'element')
+            elem_elem.set('page', str(elem.page))
+            elem_elem.set('order', str(elem.order))
+            elem_elem.set('rect', rect2str(elem.rect))
+            elem_elem.set('fontsize', str(elem.fontsize))
+            elem_elem.set('text', elem.text)
+            elem_elem.set('state', elem.state)
+            elem_elem.set('title_level', str(elem.title_level))
+        tree = ET.ElementTree(root)
+        with open(path, 'wb') as fp:
+            tree.write(fp, encoding='utf-8')
     
     #--- Properties
     @property

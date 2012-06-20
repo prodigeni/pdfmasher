@@ -44,6 +44,8 @@ class MainWindow(QMainWindow):
         self.setMenuBar(self.menubar)
         
         self.menuFile.addAction(self.actionLoadPDF)
+        self.menuFile.addAction(self.app.actionLoadProject)
+        self.menuFile.addAction(self.app.actionSaveProject)
         self.menuFile.addAction(self.app.actionQuit)
         self.menuHelp.addAction(self.app.actionShowHelp)
         self.menuHelp.addAction(self.app.actionRegister)

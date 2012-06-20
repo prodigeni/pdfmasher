@@ -58,6 +58,8 @@ class PdfMasher(ApplicationBase):
     #--- Private
     def _setupActions(self):
         ACTIONS = [
+            ('actionLoadProject', 'Ctrl+Shift+O', '', tr("Load Project"), self.loadProjectTriggered),
+            ('actionSaveProject', 'Ctrl+S', '', tr("Save Project"), self.saveProjectTriggered),
             ('actionQuit', 'Ctrl+Q', '', tr("Quit"), self.quitTriggered),
             ('actionShowHelp', 'F1', '', tr("PDfMasher Help"), self.showHelpTriggered),
             ('actionAbout', '', '', tr("About dupeGuru"), self.showAboutBoxTriggered),
@@ -80,6 +82,12 @@ class PdfMasher(ApplicationBase):
     
     def jobFinished(self, jobid):
         self.model._job_completed(jobid)
+    
+    def loadProjectTriggered(self):
+        self.model.load_project("/Users/hsoft/Desktop/pdfmashertest.masherproj")
+    
+    def saveProjectTriggered(self):
+        self.model.save_project("/Users/hsoft/Desktop/pdfmashertest.masherproj")
     
     def checkForUpdateTriggered(self):
         QProcess.execute('updater.exe', ['/checknow'])
