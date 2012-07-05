@@ -7,18 +7,28 @@ http://www.hardcoded.net/licenses/gplv3_license
 */
 
 #import "PMBuildPane.h"
+#import "PMBuildPane_UI.h"
 #import "HSPyUtil.h"
 
 #define PMEbookTypeMOBI 1
 #define PMEbookTypeEPUB 2
 
 @implementation PMBuildPane
+
+@synthesize lastGenDescLabel;
+@synthesize editMarkdownButton;
+@synthesize revealMarkdownButton;
+@synthesize viewHTMLButton;
+@synthesize createEbookButton;
+@synthesize ebookTitleTextField;
+@synthesize ebookAuthorTextField;
+@synthesize ebookTypeRadioButtons;
+
 - (id)initWithPyRef:(PyObject *)aPyRef
 {
     PyBuildPane *m = [[PyBuildPane alloc] initWithModel:aPyRef];
     self = [self initWithModel:m];
-    [NSBundle loadNibNamed:@"BuildPane" owner:self];
-    [self setView:wholeView];
+    [self setView:createPMBuildPane_UI(self)];
     [m bindCallback:createCallback(@"GUIObjectView", self)];
     [m release];
     return self;
@@ -29,27 +39,27 @@ http://www.hardcoded.net/licenses/gplv3_license
     return (PyBuildPane *)model;
 }
 
-- (IBAction)generateMarkdown:(id)sender
+- (void)generateMarkdown
 {
     [[self model] generateMarkdown];
 }
 
-- (IBAction)editMarkdown:(id)sender
+- (void)editMarkdown
 {
     [[self model] editMarkdown];
 }
 
-- (IBAction)revealInFinder:(id)sender
+- (void)revealInFinder
 {
     [[self model] revealMarkdown];
 }
 
-- (IBAction)viewHTML:(id)sender
+- (void)viewHTML
 {
     [[self model] viewHTML];
 }
 
-- (IBAction)createEbook:(id)sender
+- (void)createEbook
 {
     [[self model] setEbookTitle:[ebookTitleTextField stringValue]];
     [[self model] setEbookAuthor:[ebookAuthorTextField stringValue]];
@@ -70,7 +80,7 @@ http://www.hardcoded.net/licenses/gplv3_license
     }
 }
 
-- (IBAction)selectEbookType:(id)sender
+- (void)selectEbookType
 {
     NSInteger newtype;
     NSInteger col = [ebookTypeRadioButtons selectedColumn];

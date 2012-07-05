@@ -36,7 +36,6 @@
 		CEA1FE71156ACED5001F96D5 /* py in Resources */ = {isa = PBXBuildFile; fileRef = CEA1FE70156ACED5001F96D5 /* py */; };
 		CEA1FE73156ACF03001F96D5 /* Python in Frameworks */ = {isa = PBXBuildFile; fileRef = CEA1FE72156ACF03001F96D5 /* Python */; };
 		CEA1FE74156ACF27001F96D5 /* Python in CopyFiles */ = {isa = PBXBuildFile; fileRef = CEA1FE72156ACF03001F96D5 /* Python */; };
-		CEBA080A13AE70FF007DD3E0 /* BuildPane.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEBA080813AE70FF007DD3E0 /* BuildPane.xib */; };
 		CEBA081613AE71BB007DD3E0 /* HSGUIController.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBA080F13AE71BB007DD3E0 /* HSGUIController.m */; };
 		CEBA081813AE71BB007DD3E0 /* HSTable.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBA081313AE71BB007DD3E0 /* HSTable.m */; };
 		CEBA082313AE745B007DD3E0 /* PMEditPane.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBA082213AE745B007DD3E0 /* PMEditPane.m */; };
@@ -86,6 +85,7 @@
 		CE3B475913EAF0C900D95FB6 /* PMConst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PMConst.h; path = controllers/PMConst.h; sourceTree = "<group>"; };
 		CE3B475C13EB14BC00D95FB6 /* HSGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HSGeometry.h; path = ../cocoalib/HSGeometry.h; sourceTree = "<group>"; };
 		CE3B475D13EB14BC00D95FB6 /* HSGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HSGeometry.m; path = ../cocoalib/HSGeometry.m; sourceTree = "<group>"; };
+		CE3FA56715A6421100D95922 /* PMBuildPane_UI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMBuildPane_UI.h; sourceTree = "<group>"; };
 		CE4FD88C15A50BC7004A4E9B /* HSAboutBox_UI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HSAboutBox_UI.h; path = ../cocoalib/autogen/HSAboutBox_UI.h; sourceTree = "<group>"; };
 		CE5E82DF15A6247A005E7EF4 /* PMEditPane_UI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMEditPane_UI.h; sourceTree = "<group>"; };
 		CE68745913C87B2500992AE4 /* ProgressController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ProgressController.h; path = ../cocoalib/ProgressController.h; sourceTree = SOURCE_ROOT; };
@@ -125,7 +125,6 @@
 		CEA1FE5C156ACE7A001F96D5 /* PyTable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PyTable.m; sourceTree = "<group>"; };
 		CEA1FE70156ACED5001F96D5 /* py */ = {isa = PBXFileReference; lastKnownFileType = folder; name = py; path = ../build/py; sourceTree = "<group>"; };
 		CEA1FE72156ACF03001F96D5 /* Python */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = Python; path = ../build/Python; sourceTree = "<group>"; };
-		CEBA080913AE70FF007DD3E0 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/BuildPane.xib; sourceTree = "<group>"; };
 		CEBA080E13AE71BB007DD3E0 /* HSGUIController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HSGUIController.h; path = ../cocoalib/controllers/HSGUIController.h; sourceTree = SOURCE_ROOT; };
 		CEBA080F13AE71BB007DD3E0 /* HSGUIController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HSGUIController.m; path = ../cocoalib/controllers/HSGUIController.m; sourceTree = SOURCE_ROOT; };
 		CEBA081213AE71BB007DD3E0 /* HSTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HSTable.h; path = ../cocoalib/controllers/HSTable.h; sourceTree = SOURCE_ROOT; };
@@ -291,6 +290,7 @@
 				CEA1FE5C156ACE7A001F96D5 /* PyTable.m */,
 				CE8A6498156BC97A008E8DD3 /* PyTextField.h */,
 				CE8A6499156BC97A008E8DD3 /* PyTextField.m */,
+				CE3FA56715A6421100D95922 /* PMBuildPane_UI.h */,
 				CE5E82DF15A6247A005E7EF4 /* PMEditPane_UI.h */,
 			);
 			path = autogen;
@@ -326,7 +326,6 @@
 			isa = PBXGroup;
 			children = (
 				CEC7F38413AE558700BA9A74 /* MainMenu.xib */,
-				CEBA080813AE70FF007DD3E0 /* BuildPane.xib */,
 				CE3B475313EAF09B00D95FB6 /* PagePane.xib */,
 			);
 			name = xib;
@@ -438,7 +437,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				CEC7F38613AE558700BA9A74 /* MainMenu.xib in Resources */,
-				CEBA080A13AE70FF007DD3E0 /* BuildPane.xib in Resources */,
 				CEA0155E13AF816900C6D985 /* main_icon.icns in Resources */,
 				CEFFF33D13B0C23700BEA8D5 /* help in Resources */,
 				CE8C6D8C13C4938400D869ED /* dsa_pub.pem in Resources */,
@@ -501,14 +499,6 @@
 				CE3B475413EAF09B00D95FB6 /* en */,
 			);
 			name = PagePane.xib;
-			sourceTree = "<group>";
-		};
-		CEBA080813AE70FF007DD3E0 /* BuildPane.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				CEBA080913AE70FF007DD3E0 /* en */,
-			);
-			name = BuildPane.xib;
 			sourceTree = "<group>";
 		};
 		CEC7F38413AE558700BA9A74 /* MainMenu.xib */ = {
