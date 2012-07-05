@@ -26,13 +26,27 @@ def parse_args():
         help="Clean build folder before building")
     parser.add_argument('--cocoamod', action='store_true', dest='cocoamod',
         help="Build only Cocoa modules")
+    parser.add_argument('--xibless', action='store_true', dest='xibless',
+        help="Build only xibless UIs")
     parser.add_argument('--doc', action='store_true', dest='doc',
         help="Build only the help file")
     args = parser.parse_args()
     return args
 
+def build_xibless():
+    import xibless
+    if not op.exists('cocoalib/autogen'):
+        os.mkdir('cocoalib/autogen')
+    xibless.generate('cocoalib/ui/progress.py', 'cocoalib/autogen/ProgressController_UI.h')
+    xibless.generate('cocoalib/ui/about.py', 'cocoalib/autogen/HSAboutBox_UI.h')
+    xibless.generate('cocoalib/ui/fairware_reminder.py', 'cocoalib/autogen/HSFairwareReminder_UI.h')
+    xibless.generate('cocoalib/ui/demo_reminder.py', 'cocoalib/autogen/HSDemoReminder_UI.h')
+    xibless.generate('cocoalib/ui/enter_code.py', 'cocoalib/autogen/HSEnterCode_UI.h')
+    xibless.generate('cocoalib/ui/error_report.py', 'cocoalib/autogen/HSErrorReportWindow_UI.h')
+
 def build_cocoa(dev):
     print("Building the cocoa layer")
+    build_xibless()
     if not op.exists('build/py'):
         os.mkdir('build/py')
     build_cocoa_proxy_module()
@@ -80,9 +94,10 @@ def build_cocoa_proxy_module():
     import objp.p2o
     objp.p2o.generate_python_proxy_code('cocoalib/cocoa/CocoaProxy.h', 'build/CocoaProxy.m')
     build_cocoa_ext("CocoaProxy", 'cocoalib/cocoa',
-        ['cocoalib/cocoa/CocoaProxy.m', 'build/CocoaProxy.m', 'build/ObjP.m', 'cocoalib/HSErrorReportWindow.m'],
+        ['cocoalib/cocoa/CocoaProxy.m', 'build/CocoaProxy.m', 'build/ObjP.m',
+            'cocoalib/HSErrorReportWindow.m'],
         ['AppKit', 'CoreServices'],
-        ['cocoalib'])
+        ['cocoalib', 'cocoalib/autogen'])
 
 def build_cocoa_bridging_interfaces():
     print("Building Cocoa Bridging Interfaces")
@@ -154,6 +169,8 @@ def main():
     elif args.cocoamod:
         build_cocoa_proxy_module()
         build_cocoa_bridging_interfaces()
+    elif args.xibless:
+        build_xibless()
     else:
         build_normal(ui, dev)
 
