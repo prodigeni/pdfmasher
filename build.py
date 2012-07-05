@@ -43,6 +43,7 @@ def build_xibless():
     xibless.generate('cocoalib/ui/demo_reminder.py', 'cocoalib/autogen/HSDemoReminder_UI.h')
     xibless.generate('cocoalib/ui/enter_code.py', 'cocoalib/autogen/HSEnterCode_UI.h')
     xibless.generate('cocoalib/ui/error_report.py', 'cocoalib/autogen/HSErrorReportWindow_UI.h')
+    xibless.generate('cocoa/ui/edit_pane.py', 'cocoa/autogen/PMEditPane_UI.h')
 
 def build_cocoa(dev):
     print("Building the cocoa layer")

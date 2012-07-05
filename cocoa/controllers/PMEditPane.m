@@ -7,9 +7,16 @@ http://www.hardcoded.net/licenses/gplv3_license
 */
 
 #import "PMEditPane.h"
+#import "PMEditPane_UI.h"
 #import "HSPyUtil.h"
 
 @implementation PMEditPane
+
+@synthesize hideIgnoredButton;
+@synthesize editTextView;
+@synthesize saveButton;
+@synthesize cancelButton;
+
 /* Until we push down all the logic that has anything to do with "app", we're stuck with the old
    initWithPyParent.
 */ 
@@ -17,9 +24,8 @@ http://www.hardcoded.net/licenses/gplv3_license
 {
     PyEditPane *m = [[PyEditPane alloc] initWithModel:[(PyPdfMasher *)aPyParent editPane]];
     self = [self initWithModel:m];
-    [NSBundle loadNibNamed:@"EditPane" owner:self];
     app = (PyPdfMasher *)aPyParent;
-    [self setView:wholeView];
+    [self setView:createPMEditPane_UI(self)];
     [m bindCallback:createCallback(@"EditPaneView", self)];
     [m release];
     return self;
@@ -30,44 +36,44 @@ http://www.hardcoded.net/licenses/gplv3_license
     return (PyEditPane *)model;
 }
 
-- (IBAction)selectNormal:(id)sender
+- (void)selectNormal
 {
     [app changeStateOfSelected:@"normal"];
 }
 
-- (IBAction)selectTitle:(id)sender
+- (void)selectTitle
 {
     [app changeStateOfSelected:@"title"];
 }
 
-- (IBAction)selectFootnote:(id)sender
+- (void)selectFootnote
 {
     [app changeStateOfSelected:@"footnote"];
 }
 
-- (IBAction)selectToFix:(id)sender
+- (void)selectToFix
 {
     [app changeStateOfSelected:@"tofix"];
 }
 
-- (IBAction)selectIgnored:(id)sender
+- (void)selectIgnored
 {
     [app changeStateOfSelected:@"ignored"];
 }
 
-- (IBAction)toggleHideIgnored:(id)sender
+- (void)toggleHideIgnored
 {
     BOOL isChecked = [hideIgnoredButton state] == NSOnState;
     [app setHideIgnored:isChecked];
 }
 
-- (IBAction)saveEdits:(id)sender
+- (void)saveEdits
 {
     [[self model] setEditText:[editTextView string]];
     [[self model] saveEdits];
 }
 
-- (IBAction)cancelEdits:(id)sender
+- (void)cancelEdits
 {
     [[self model] cancelEdits];
     [editTextView setString:[[self model] editText]];
