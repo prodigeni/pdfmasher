@@ -39,6 +39,7 @@ class App(Broadcaster, RegistrableApplication):
     # start_job(j, *args)
     
     PROMPT_NAME = __appname__
+    NAME = PROMPT_NAME
     
     def __init__(self, view):
         Broadcaster.__init__(self)
