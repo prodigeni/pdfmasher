@@ -17,11 +17,11 @@ http://www.hardcoded.net/licenses/gplv3_license
 
 @interface PMMainWindow : NSWindowController
 {
-    IBOutlet NSTextField *openedFileLabelView;
-    IBOutlet PMElementTableView *elementsTableView;
-    IBOutlet NSTabView *topTabView;
-    IBOutlet NSTabView *bottomTabView;
     IBOutlet PMAppDelegate *appDelegate;
+    NSTextField *openedFileLabelView;
+    PMElementTableView *elementsTableView;
+    NSTabView *topTabView;
+    NSTabView *bottomTabView;
     
     PyPdfMasher *app;
     HSTextField *openedFileLabel;
@@ -30,6 +30,11 @@ http://www.hardcoded.net/licenses/gplv3_license
     PMEditPane *editPane;
     PMBuildPane *buildPane;
 }
+
+@property (readwrite, retain) NSTextField *openedFileLabelView;
+@property (readwrite, retain) PMElementTableView *elementsTableView;
+@property (readwrite, retain) NSTabView *topTabView;
+@property (readwrite, retain) NSTabView *bottomTabView;
 
 - (IBAction)loadPDF:(id)sender;
 @end

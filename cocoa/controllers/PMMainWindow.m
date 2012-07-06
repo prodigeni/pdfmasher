@@ -7,14 +7,21 @@ http://www.hardcoded.net/licenses/gplv3_license
 */
 
 #import "PMMainWindow.h"
+#import "PMMainWindow_UI.h"
 #import "ProgressController.h"
 #import "Dialogs.h"
 #import "PMConst.h"
 
 @implementation PMMainWindow
+
+@synthesize openedFileLabelView;
+@synthesize elementsTableView;
+@synthesize topTabView;
+@synthesize bottomTabView;
+
 - (void)awakeFromNib
 {
-    [self window];
+    [self setWindow:createPMMainWindow_UI(self)];
     app = [appDelegate model];
     openedFileLabel = [[HSTextField alloc] initWithPyRef:[app openedFileLabel] view:openedFileLabelView];
     elementTable = [[PMElementTable alloc] initWithPyRef:[app elementTable] tableView:elementsTableView];
@@ -40,6 +47,8 @@ http://www.hardcoded.net/licenses/gplv3_license
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(jobStarted:) name:JobStarted object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(jobInProgress:) name:JobInProgress object:nil];
+    
+    [self showWindow:nil];
 }
 
 - (void)dealloc

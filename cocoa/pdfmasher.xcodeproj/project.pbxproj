@@ -124,6 +124,7 @@
 		CEA1FE5C156ACE7A001F96D5 /* PyTable.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PyTable.m; sourceTree = "<group>"; };
 		CEA1FE70156ACED5001F96D5 /* py */ = {isa = PBXFileReference; lastKnownFileType = folder; name = py; path = ../build/py; sourceTree = "<group>"; };
 		CEA1FE72156ACF03001F96D5 /* Python */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = Python; path = ../build/Python; sourceTree = "<group>"; };
+		CEAAFA9815A747F60067DF59 /* PMMainWindow_UI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMMainWindow_UI.h; sourceTree = "<group>"; };
 		CEBA080E13AE71BB007DD3E0 /* HSGUIController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HSGUIController.h; path = ../cocoalib/controllers/HSGUIController.h; sourceTree = SOURCE_ROOT; };
 		CEBA080F13AE71BB007DD3E0 /* HSGUIController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HSGUIController.m; path = ../cocoalib/controllers/HSGUIController.m; sourceTree = SOURCE_ROOT; };
 		CEBA081213AE71BB007DD3E0 /* HSTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HSTable.h; path = ../cocoalib/controllers/HSTable.h; sourceTree = SOURCE_ROOT; };
@@ -292,6 +293,7 @@
 				CE3FA56715A6421100D95922 /* PMBuildPane_UI.h */,
 				CE5E82DF15A6247A005E7EF4 /* PMEditPane_UI.h */,
 				CE7958FD15A73E4600B7C1E0 /* PMPageController_UI.h */,
+				CEAAFA9815A747F60067DF59 /* PMMainWindow_UI.h */,
 			);
 			path = autogen;
 			sourceTree = "<group>";
