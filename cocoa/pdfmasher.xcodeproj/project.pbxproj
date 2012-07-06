@@ -10,7 +10,6 @@
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		CE249D8F13E731EF0018C7F6 /* PMPageRepr.m in Sources */ = {isa = PBXBuildFile; fileRef = CE249D8E13E731EF0018C7F6 /* PMPageRepr.m */; };
-		CE3B475513EAF09B00D95FB6 /* PagePane.xib in Resources */ = {isa = PBXBuildFile; fileRef = CE3B475313EAF09B00D95FB6 /* PagePane.xib */; };
 		CE3B475A13EAF0C900D95FB6 /* PMPageController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3B475813EAF0C900D95FB6 /* PMPageController.m */; };
 		CE3B475E13EB14BC00D95FB6 /* HSGeometry.m in Sources */ = {isa = PBXBuildFile; fileRef = CE3B475D13EB14BC00D95FB6 /* HSGeometry.m */; };
 		CE68745B13C87B2500992AE4 /* ProgressController.m in Sources */ = {isa = PBXBuildFile; fileRef = CE68745A13C87B2500992AE4 /* ProgressController.m */; };
@@ -79,7 +78,6 @@
 		8D1107320486CEB800E47090 /* PdfMasher.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PdfMasher.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE249D8D13E731EF0018C7F6 /* PMPageRepr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PMPageRepr.h; path = views/PMPageRepr.h; sourceTree = "<group>"; };
 		CE249D8E13E731EF0018C7F6 /* PMPageRepr.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PMPageRepr.m; path = views/PMPageRepr.m; sourceTree = "<group>"; };
-		CE3B475413EAF09B00D95FB6 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/PagePane.xib; sourceTree = "<group>"; };
 		CE3B475713EAF0C900D95FB6 /* PMPageController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PMPageController.h; path = controllers/PMPageController.h; sourceTree = "<group>"; };
 		CE3B475813EAF0C900D95FB6 /* PMPageController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PMPageController.m; path = controllers/PMPageController.m; sourceTree = "<group>"; };
 		CE3B475913EAF0C900D95FB6 /* PMConst.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PMConst.h; path = controllers/PMConst.h; sourceTree = "<group>"; };
@@ -90,6 +88,7 @@
 		CE5E82DF15A6247A005E7EF4 /* PMEditPane_UI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMEditPane_UI.h; sourceTree = "<group>"; };
 		CE68745913C87B2500992AE4 /* ProgressController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ProgressController.h; path = ../cocoalib/ProgressController.h; sourceTree = SOURCE_ROOT; };
 		CE68745A13C87B2500992AE4 /* ProgressController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ProgressController.m; path = ../cocoalib/ProgressController.m; sourceTree = SOURCE_ROOT; };
+		CE7958FD15A73E4600B7C1E0 /* PMPageController_UI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMPageController_UI.h; sourceTree = "<group>"; };
 		CE8A6491156BC021008E8DD3 /* pyplugin.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; name = pyplugin.py; path = ../build/pyplugin.py; sourceTree = "<group>"; };
 		CE8A6498156BC97A008E8DD3 /* PyTextField.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PyTextField.h; sourceTree = "<group>"; };
 		CE8A6499156BC97A008E8DD3 /* PyTextField.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PyTextField.m; sourceTree = "<group>"; };
@@ -292,6 +291,7 @@
 				CE8A6499156BC97A008E8DD3 /* PyTextField.m */,
 				CE3FA56715A6421100D95922 /* PMBuildPane_UI.h */,
 				CE5E82DF15A6247A005E7EF4 /* PMEditPane_UI.h */,
+				CE7958FD15A73E4600B7C1E0 /* PMPageController_UI.h */,
 			);
 			path = autogen;
 			sourceTree = "<group>";
@@ -326,7 +326,6 @@
 			isa = PBXGroup;
 			children = (
 				CEC7F38413AE558700BA9A74 /* MainMenu.xib */,
-				CE3B475313EAF09B00D95FB6 /* PagePane.xib */,
 			);
 			name = xib;
 			sourceTree = "<group>";
@@ -440,7 +439,6 @@
 				CEA0155E13AF816900C6D985 /* main_icon.icns in Resources */,
 				CEFFF33D13B0C23700BEA8D5 /* help in Resources */,
 				CE8C6D8C13C4938400D869ED /* dsa_pub.pem in Resources */,
-				CE3B475513EAF09B00D95FB6 /* PagePane.xib in Resources */,
 				CEA1FE71156ACED5001F96D5 /* py in Resources */,
 				CE8A6492156BC021008E8DD3 /* pyplugin.py in Resources */,
 			);
@@ -493,14 +491,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		CE3B475313EAF09B00D95FB6 /* PagePane.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				CE3B475413EAF09B00D95FB6 /* en */,
-			);
-			name = PagePane.xib;
-			sourceTree = "<group>";
-		};
 		CEC7F38413AE558700BA9A74 /* MainMenu.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
