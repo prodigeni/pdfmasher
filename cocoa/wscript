@@ -1,0 +1,94 @@
+#! /usr/bin/env python
+
+import plistlib
+import os
+import os.path as op
+
+# This WAF script is a bit complicated, but we have to keep in mind that it replaces XCode
+# entirely... See line-by-line comments for details.
+
+top = '.'
+out = 'build'
+
+def options(opt):
+    opt.load('compiler_c python')
+
+def configure(conf):
+    # We use clang to compile our app
+    conf.env.CC = 'clang'
+    # WAF has a "pyembed" feature allowing us to automatically find Python and compile by linking
+    # to it. The problem is that because we made a copy of the Python library to mangle with its
+    # "install name", we don't actually want to link to our installed python, but to our mangled
+    # Python. The line below tells the "pyembed" WAF feature to look in ../build for Python.
+    conf.env.LIBPATH_PYEMBED = op.abspath('../build')
+    # I did a lot of fiddling-around, but I didn't find how to tell WAF the Python library name
+    # to look for without making the whole compilation process fail, so I just create a symlink
+    # with the name WAF is looking for. 
+    if not op.exists('../build/libpython3.2.dylib'):
+        os.symlink('../build/Python', '../build/libpython3.2.dylib')
+    # The rest is standard WAF code that you can find the the python and macapp demos.
+    conf.load('compiler_c python')
+    conf.check_python_version((3,2,0))
+    conf.check_python_headers()
+    conf.env.FRAMEWORK_COCOA = 'Cocoa'
+    conf.env.ARCH_COCOA = ['i386', 'x86_64']
+
+def build(ctx):
+    # Here. we generate our app structure. We start by creating a base skeleton, and then we
+    # copy our "py" dependencies in "Resources" and our Python library in "Frameworks"
+    infoplist = ctx.srcnode.find_node("Info.plist")
+    info = plistlib.readPlist(infoplist.abspath())
+    appname = info['CFBundleName']
+    executablename = info['CFBundleExecutable']
+    appfilename = appname + ".app"
+    appnode = ctx.bldnode.make_node(appfilename)
+    create_app_skeleton(ctx, appnode, infoplist)
+    pyres = ctx.srcnode.find_dir('../build/py')
+    appres = appnode.find_node('Contents/Resources')
+    # I couldn't find out how to copy a folder with WAF... If you use the typical SRC and TGT, you
+    # get an error.
+    ctx(rule="cp -R \"%s\" \"%s\"" % (pyres.abspath(), appres.abspath()))
+    ctx(rule="cp ${SRC} ${TGT}", source=ctx.srcnode.find_node('../build/pyplugin.py'), target=appres.make_node('pyplugin.py'))
+    appfw = appnode.find_node('Contents/Frameworks')
+    pylib = ctx.srcnode.find_node('../build/Python')
+    ctx(rule="cp ${SRC} ${TGT}", source=pylib, target=appfw)
+    
+    # What do we compile?
+    cocoalib_node = ctx.srcnode.find_dir('..').find_dir('cocoalib')
+    cocoalib_folders = ['autogen', 'controllers', 'views']
+    cocoalib_includes = [cocoalib_node] + [cocoalib_node.find_dir(folder) for folder in cocoalib_folders]
+    cocoalib_uses = ['HSGeometry', 'Dialogs', 'HSAboutBox', 'HSFairwareReminder', 'NSEventAdditions',
+        'Utils', 'HSPyUtil', 'ProgressController', 'views/HSTableView', 'controllers/HSColumns',
+        'controllers/HSGUIController', 'controllers/HSTable', 'controllers/HSTextField']
+    cocoalib_src = [cocoalib_node.find_node(usename + '.m') for usename in cocoalib_uses]
+    project_folders = ['autogen', 'controllers', 'views']
+    project_src = sum([ctx.srcnode.ant_glob('%s/*.m' % folder) for folder in project_folders], ctx.srcnode.ant_glob('*.m'))
+    
+    # Compile
+    ctx.program(
+        # "pyembed" takes care of the include and linking stuff to compile an app that embed Python.
+        features      = 'c cprogram pyembed',
+        target        = appnode.find_node("Contents").find_node("MacOS").make_node(executablename),
+        source        = cocoalib_src + project_src,
+        includes      = ['.'] + project_folders + cocoalib_includes,
+        use           = 'COCOA',
+        # Because our python lib's install name is "@rpath/Python", we need to set the executable's
+        # rpath. Fortunately, WAF supports it and we just need to supply the "rpath" argument.
+        rpath         = '@executable_path/../Frameworks',
+        framework     = 'Sparkle',
+    )
+
+def create_app_skeleton(ctx, dest, info_plist_path):
+    contents = dest.make_node("Contents")
+    contents.make_node("MacOS").mkdir()
+    contents.make_node("Resources").mkdir()
+    contents.make_node("Frameworks").mkdir()
+    ctx(rule="cp ${SRC} ${TGT}", source=info_plist_path, target=contents.make_node("Info.plist"))
+    open(contents.make_node("PkgInfo").abspath(), 'wt').write("APPLxxxx")
+
+from waflib import TaskGen
+@TaskGen.extension('.m')
+def m_hook(self, node):
+    """Alias .m files to be compiled the same as .c files, gcc will do the right thing."""
+    return self.create_compiled_task('c', node)
+
