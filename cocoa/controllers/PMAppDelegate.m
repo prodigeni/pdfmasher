@@ -12,10 +12,16 @@ http://www.hardcoded.net/licenses/gplv3_license
 #import "Dialogs.h"
 #import "HSFairwareReminder.h"
 #import "ProgressController.h"
+#import "PMMainMenu_UI.h"
 
 @implementation PMAppDelegate
+
+@synthesize updater;
+@synthesize mainWindow;
+
 - (void)awakeFromNib
 {
+    [NSApp setMainMenu:createPMMainMenu_UI(self)];
     // py has to be initialized "lazily" because awakeFromNib's order is undefined, so PMAppDelegate
     // might be awoken after PMMainWindow, and PMMainWindow needs PyPdfMasher on its own awakeFromNib.
     // However, we cannot initialize it to nil here because we might overwrite an already initialized
@@ -39,12 +45,12 @@ http://www.hardcoded.net/licenses/gplv3_license
     return model;
 }
 
-- (IBAction)openWebsite:(id)sender
+- (void)openWebsite
 {
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"http://www.hardcoded.net/pdfmasher/"]];
 }
 
-- (IBAction)openHelp:(id)sender
+- (void)openHelp
 {
     NSBundle *b = [NSBundle mainBundle];
     NSString *p = [b pathForResource:@"index" ofType:@"html" inDirectory:@"help"];
@@ -52,12 +58,12 @@ http://www.hardcoded.net/licenses/gplv3_license
     [[NSWorkspace sharedWorkspace] openURL:u];
 }
 
-- (IBAction)showAboutBox:(id)sender
+- (void)showAboutBox
 {
     if (aboutBox == nil) {
         aboutBox = [[HSAboutBox alloc] initWithApp:model];
     }
-    [[aboutBox window] makeKeyAndOrderFront:sender];
+    [[aboutBox window] makeKeyAndOrderFront:nil];
 }
 
 /* Delegate */

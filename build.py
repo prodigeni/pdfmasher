@@ -47,6 +47,7 @@ def build_xibless():
     xibless.generate('cocoa/ui/build_pane.py', 'cocoa/autogen/PMBuildPane_UI.h')
     xibless.generate('cocoa/ui/page_pane.py', 'cocoa/autogen/PMPageController_UI.h')
     xibless.generate('cocoa/ui/main_window.py', 'cocoa/autogen/PMMainWindow_UI.h')
+    xibless.generate('cocoa/ui/main_menu.py', 'cocoa/autogen/PMMainMenu_UI.h')
 
 def build_cocoa(dev):
     print("Building the cocoa layer")

@@ -84,6 +84,7 @@
 		CE3B475C13EB14BC00D95FB6 /* HSGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HSGeometry.h; path = ../cocoalib/HSGeometry.h; sourceTree = "<group>"; };
 		CE3B475D13EB14BC00D95FB6 /* HSGeometry.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HSGeometry.m; path = ../cocoalib/HSGeometry.m; sourceTree = "<group>"; };
 		CE3FA56715A6421100D95922 /* PMBuildPane_UI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMBuildPane_UI.h; sourceTree = "<group>"; };
+		CE400C2215A9CD8300BA0E7E /* PMMainMenu_UI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMMainMenu_UI.h; sourceTree = "<group>"; };
 		CE4FD88C15A50BC7004A4E9B /* HSAboutBox_UI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HSAboutBox_UI.h; path = ../cocoalib/autogen/HSAboutBox_UI.h; sourceTree = "<group>"; };
 		CE5E82DF15A6247A005E7EF4 /* PMEditPane_UI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PMEditPane_UI.h; sourceTree = "<group>"; };
 		CE68745913C87B2500992AE4 /* ProgressController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ProgressController.h; path = ../cocoalib/ProgressController.h; sourceTree = SOURCE_ROOT; };
@@ -294,6 +295,7 @@
 				CE5E82DF15A6247A005E7EF4 /* PMEditPane_UI.h */,
 				CE7958FD15A73E4600B7C1E0 /* PMPageController_UI.h */,
 				CEAAFA9815A747F60067DF59 /* PMMainWindow_UI.h */,
+				CE400C2215A9CD8300BA0E7E /* PMMainMenu_UI.h */,
 			);
 			path = autogen;
 			sourceTree = "<group>";
