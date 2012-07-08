@@ -7,6 +7,7 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
+import sys
 import os
 import os.path as op
 import shutil
@@ -17,7 +18,7 @@ from setuptools import setup, Extension
 
 from hscommon import sphinxgen
 from hscommon.build import (print_and_do, copy_packages, get_module_version, filereplace, move,
-    add_to_pythonpath, copy, symlink, copy_sysconfig_files_for_embed)
+    add_to_pythonpath, copy, copy_sysconfig_files_for_embed, create_osx_app_structure)
 from hscommon.plat import ISOSX
 
 def parse_args():
@@ -37,6 +38,8 @@ def build_xibless():
     import xibless
     if not op.exists('cocoalib/autogen'):
         os.mkdir('cocoalib/autogen')
+    if not op.exists('cocoa/autogen'):
+        os.mkdir('cocoa/autogen')
     xibless.generate('cocoalib/ui/progress.py', 'cocoalib/autogen/ProgressController_UI.h')
     xibless.generate('cocoalib/ui/about.py', 'cocoalib/autogen/HSAboutBox_UI.h')
     xibless.generate('cocoalib/ui/fairware_reminder.py', 'cocoalib/autogen/HSFairwareReminder_UI.h')
@@ -56,9 +59,8 @@ def build_cocoa(dev):
         os.mkdir('build/py')
     build_cocoa_proxy_module()
     build_cocoa_bridging_interfaces()
-    from pluginbuilder import copy_embeddable_python_dylib, get_python_header_folder, collect_dependencies
+    from pluginbuilder import copy_embeddable_python_dylib, collect_dependencies
     copy_embeddable_python_dylib('build')
-    symlink(get_python_header_folder(), 'build/PythonHeaders')
     tocopy = ['core', 'hscommon', 'cocoa/inter', 'cocoalib/cocoa']
     copy_packages(tocopy, 'build')
     copy('cocoa/pyplugin.py', 'build/pyplugin.py')
@@ -72,15 +74,15 @@ def build_cocoa(dev):
     print('Generating Info.plist')
     app_version = get_module_version('core')
     filereplace('InfoTemplate.plist', 'Info.plist', version=app_version)
-    print("Building the XCode project")
-    args = []
-    if dev:
-        args.append('-configuration dev')
-    else:
-        args.append('-configuration release')
-    args = ' '.join(args)
-    os.system('xcodebuild {0}'.format(args))
+    print("Compiling with WAF")
+    os.system('{0} waf configure && {0} waf'.format(sys.executable))
     os.chdir('..')
+    print("Creating the .app folder")
+    resources = ['images/main_icon.icns', 'cocoa/dsa_pub.pem', 'build/pyplugin.py',
+        'build/py', 'build/help']
+    frameworks = ['build/Python', '/Library/Frameworks/Sparkle.framework']
+    create_osx_app_structure('build/PdfMasher.app', 'cocoa/build/PdfMasher', 'cocoa/Info.plist',
+        resources, frameworks)
     print("Creating the run.py file")
     copy('cocoa/runtemplate.py', 'run.py')
 

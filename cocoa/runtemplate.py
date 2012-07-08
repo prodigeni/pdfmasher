@@ -11,7 +11,7 @@ import sys
 import os
 
 def main():
-    return os.system('open cocoa/PdfMasher.app')
+    return os.system('open build/PdfMasher.app')
 
 if __name__ == '__main__':
     sys.exit(main())

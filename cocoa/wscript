@@ -1,11 +1,7 @@
-#! /usr/bin/env python
+#!/usr/bin/env python
 
-import plistlib
 import os
 import os.path as op
-
-# This WAF script is a bit complicated, but we have to keep in mind that it replaces XCode
-# entirely... See line-by-line comments for details.
 
 top = '.'
 out = 'build'
@@ -34,25 +30,6 @@ def configure(conf):
     conf.env.ARCH_COCOA = ['i386', 'x86_64']
 
 def build(ctx):
-    # Here. we generate our app structure. We start by creating a base skeleton, and then we
-    # copy our "py" dependencies in "Resources" and our Python library in "Frameworks"
-    infoplist = ctx.srcnode.find_node("Info.plist")
-    info = plistlib.readPlist(infoplist.abspath())
-    appname = info['CFBundleName']
-    executablename = info['CFBundleExecutable']
-    appfilename = appname + ".app"
-    appnode = ctx.bldnode.make_node(appfilename)
-    create_app_skeleton(ctx, appnode, infoplist)
-    pyres = ctx.srcnode.find_dir('../build/py')
-    appres = appnode.find_node('Contents/Resources')
-    # I couldn't find out how to copy a folder with WAF... If you use the typical SRC and TGT, you
-    # get an error.
-    ctx(rule="cp -R \"%s\" \"%s\"" % (pyres.abspath(), appres.abspath()))
-    ctx(rule="cp ${SRC} ${TGT}", source=ctx.srcnode.find_node('../build/pyplugin.py'), target=appres.make_node('pyplugin.py'))
-    appfw = appnode.find_node('Contents/Frameworks')
-    pylib = ctx.srcnode.find_node('../build/Python')
-    ctx(rule="cp ${SRC} ${TGT}", source=pylib, target=appfw)
-    
     # What do we compile?
     cocoalib_node = ctx.srcnode.find_dir('..').find_dir('cocoalib')
     cocoalib_folders = ['autogen', 'controllers', 'views']
@@ -68,7 +45,7 @@ def build(ctx):
     ctx.program(
         # "pyembed" takes care of the include and linking stuff to compile an app that embed Python.
         features      = 'c cprogram pyembed',
-        target        = appnode.find_node("Contents").find_node("MacOS").make_node(executablename),
+        target        = ctx.bldnode.make_node("PdfMasher"),
         source        = cocoalib_src + project_src,
         includes      = ['.'] + project_folders + cocoalib_includes,
         use           = 'COCOA',
@@ -77,14 +54,6 @@ def build(ctx):
         rpath         = '@executable_path/../Frameworks',
         framework     = 'Sparkle',
     )
-
-def create_app_skeleton(ctx, dest, info_plist_path):
-    contents = dest.make_node("Contents")
-    contents.make_node("MacOS").mkdir()
-    contents.make_node("Resources").mkdir()
-    contents.make_node("Frameworks").mkdir()
-    ctx(rule="cp ${SRC} ${TGT}", source=info_plist_path, target=contents.make_node("Info.plist"))
-    open(contents.make_node("PkgInfo").abspath(), 'wt').write("APPLxxxx")
 
 from waflib import TaskGen
 @TaskGen.extension('.m')
