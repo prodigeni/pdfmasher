@@ -10,19 +10,19 @@ http://www.hardcoded.net/licenses/gplv3_license
 #import <Sparkle/SUUpdater.h>
 #import "HSAboutBox.h"
 #import "PyPdfMasher.h"
+#import "PMMainWindow.h"
 
 @interface PMAppDelegate : NSObject
 {
-    IBOutlet SUUpdater *updater;
-    IBOutlet id mainWindow;
     PyPdfMasher *model;
+    PMMainWindow *mainWindow;
     HSAboutBox *aboutBox;
+    SUUpdater *updater;
 }
 
+@property (readwrite, retain) PyPdfMasher *model;
 @property (readwrite, retain) SUUpdater *updater;
-@property (readwrite, retain) id mainWindow;
-
-- (PyPdfMasher *)model;
+@property (readwrite, retain) PMMainWindow *mainWindow;
 
 - (void)openWebsite;
 - (void)openHelp;

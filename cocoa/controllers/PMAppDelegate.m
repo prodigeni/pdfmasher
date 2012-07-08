@@ -16,33 +16,26 @@ http://www.hardcoded.net/licenses/gplv3_license
 
 @implementation PMAppDelegate
 
+@synthesize model;
 @synthesize updater;
 @synthesize mainWindow;
 
 - (void)awakeFromNib
 {
+    [self setModel:[[[PyPdfMasher alloc] init] autorelease]];
+    [[self model] bindCallback:createCallback(@"FairwareView", self)];
+    [[ProgressController mainProgressController] setWorker:[self model]];
+    [self setUpdater:[[[SUUpdater alloc] init] autorelease]];
+    [self setMainWindow:[[[PMMainWindow alloc] initWithAppDelegate:self] autorelease]];
     [NSApp setMainMenu:createPMMainMenu_UI(self)];
-    // py has to be initialized "lazily" because awakeFromNib's order is undefined, so PMAppDelegate
-    // might be awoken after PMMainWindow, and PMMainWindow needs PyPdfMasher on its own awakeFromNib.
-    // However, we cannot initialize it to nil here because we might overwrite an already initialized
-    // PyPdfMasher.
     aboutBox = nil; // Lazily loaded
+    [[self mainWindow] showWindow:nil];
 }
 
 - (void)dealloc
 {
     [aboutBox release];
-    [model release];
     [super dealloc];
-}
-
-- (PyPdfMasher *)model {
-    if (model == nil) {
-        model = [[PyPdfMasher alloc] init];
-        [model bindCallback:createCallback(@"FairwareView", self)];
-        [[ProgressController mainProgressController] setWorker:model];
-    }
-    return model;
 }
 
 - (void)openWebsite

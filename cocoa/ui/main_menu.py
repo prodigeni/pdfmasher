@@ -19,7 +19,7 @@ appMenu.addItem("Show All", Action(NSApp, 'unhideAllApplications:'))
 appMenu.addSeparator()
 appMenu.addItem("Quit PdfMasher", Action(NSApp, 'terminate:'), 'cmd+q')
 
-fileMenu.addItem("Load PDF", Action(owner.mainWindow, 'loadPDF:'), 'cmd+o')
+fileMenu.addItem("Load PDF", Action(owner.mainWindow, 'loadPDF'), 'cmd+o')
 fileMenu.addItem("Close", Action(None, 'performClose:'), 'cmd+w')
 
 editMenu.addItem("Cut", Action(None, 'cut:'), 'cmd+x')

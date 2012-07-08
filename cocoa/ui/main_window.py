@@ -16,7 +16,7 @@ owner.bottomTabView = sideTabView
 owner.elementsTableView = elementsTable
 
 elementsTable.allowsMultipleSelection = True
-loadButton.action = Action(owner, 'loadPDF:')
+loadButton.action = Action(owner, 'loadPDF')
 
 loadButton.width = 87
 mainTabView.width = 660

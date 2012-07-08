@@ -19,10 +19,11 @@ http://www.hardcoded.net/licenses/gplv3_license
 @synthesize topTabView;
 @synthesize bottomTabView;
 
-- (void)awakeFromNib
+- (id)initWithAppDelegate:(PMAppDelegate *)aAppDelegate
 {
+    self = [super initWithWindow:nil];
     [self setWindow:createPMMainWindow_UI(self)];
-    app = [appDelegate model];
+    app = (PyPdfMasher *)[aAppDelegate model];
     openedFileLabel = [[HSTextField alloc] initWithPyRef:[app openedFileLabel] view:openedFileLabelView];
     elementTable = [[PMElementTable alloc] initWithPyRef:[app elementTable] tableView:elementsTableView];
     pageController = [[PMPageController alloc] initWithPyRef:[app pageController]];
@@ -48,7 +49,7 @@ http://www.hardcoded.net/licenses/gplv3_license
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(jobStarted:) name:JobStarted object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(jobInProgress:) name:JobInProgress object:nil];
     
-    [self showWindow:nil];
+    return self;
 }
 
 - (void)dealloc
@@ -61,7 +62,7 @@ http://www.hardcoded.net/licenses/gplv3_license
     [super dealloc];
 }
 
-- (IBAction)loadPDF:(id)sender
+- (void)loadPDF
 {
     NSOpenPanel *op = [NSOpenPanel openPanel];
     [op setCanChooseFiles:YES];

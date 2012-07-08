@@ -7,17 +7,18 @@ http://www.hardcoded.net/licenses/gplv3_license
 */
 
 #import <Cocoa/Cocoa.h>
+#import "PyPdfMasher.h"
 #import "PMEditPane.h"
 #import "PMBuildPane.h"
 #import "HSTextField.h"
 #import "PMElementTable.h"
 #import "PMPageController.h"
-#import "PMAppDelegate.h"
 #import "PMElementTableView.h"
+
+@class PMAppDelegate;
 
 @interface PMMainWindow : NSWindowController
 {
-    IBOutlet PMAppDelegate *appDelegate;
     NSTextField *openedFileLabelView;
     PMElementTableView *elementsTableView;
     NSTabView *topTabView;
@@ -36,5 +37,6 @@ http://www.hardcoded.net/licenses/gplv3_license
 @property (readwrite, retain) NSTabView *topTabView;
 @property (readwrite, retain) NSTabView *bottomTabView;
 
-- (IBAction)loadPDF:(id)sender;
+- (id)initWithAppDelegate:(PMAppDelegate *)aAppDelegate;
+- (void)loadPDF;
 @end
