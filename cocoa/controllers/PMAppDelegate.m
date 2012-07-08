@@ -12,7 +12,6 @@ http://www.hardcoded.net/licenses/gplv3_license
 #import "Dialogs.h"
 #import "HSFairwareReminder.h"
 #import "ProgressController.h"
-#import "PMMainMenu_UI.h"
 
 @implementation PMAppDelegate
 
@@ -20,16 +19,18 @@ http://www.hardcoded.net/licenses/gplv3_license
 @synthesize updater;
 @synthesize mainWindow;
 
-- (void)awakeFromNib
+- (id)init
 {
+    self = [super init];
+    
     [self setModel:[[[PyPdfMasher alloc] init] autorelease]];
     [[self model] bindCallback:createCallback(@"FairwareView", self)];
     [[ProgressController mainProgressController] setWorker:[self model]];
     [self setUpdater:[[[SUUpdater alloc] init] autorelease]];
     [self setMainWindow:[[[PMMainWindow alloc] initWithAppDelegate:self] autorelease]];
-    [NSApp setMainMenu:createPMMainMenu_UI(self)];
     aboutBox = nil; // Lazily loaded
-    [[self mainWindow] showWindow:nil];
+    
+    return self;
 }
 
 - (void)dealloc

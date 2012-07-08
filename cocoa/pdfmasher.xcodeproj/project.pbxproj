@@ -44,7 +44,6 @@
 		CEBA096513AEAB11007DD3E0 /* HSTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBA095F13AEAB11007DD3E0 /* HSTableView.m */; };
 		CEBA096E13AEAB48007DD3E0 /* NSEventAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CEBA096D13AEAB48007DD3E0 /* NSEventAdditions.m */; };
 		CEC7F38213AE556600BA9A74 /* PMMainWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = CEC7F38113AE556600BA9A74 /* PMMainWindow.m */; };
-		CEC7F38613AE558700BA9A74 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = CEC7F38413AE558700BA9A74 /* MainMenu.xib */; };
 		CEC7F3A613AE55CC00BA9A74 /* Utils.m in Sources */ = {isa = PBXBuildFile; fileRef = CEC7F3A513AE55CC00BA9A74 /* Utils.m */; };
 		CECBE28B13DF044E007F9E9D /* PMElementTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = CECBE28A13DF044E007F9E9D /* PMElementTableView.m */; };
 		CEFFF29813B0B8FF00BEA8D5 /* HSAboutBox.m in Sources */ = {isa = PBXBuildFile; fileRef = CEFFF29713B0B8FF00BEA8D5 /* HSAboutBox.m */; };
@@ -147,7 +146,6 @@
 		CEBA45C715A53D3B00C7CE5D /* HSFairwareReminder_UI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HSFairwareReminder_UI.h; path = ../cocoalib/autogen/HSFairwareReminder_UI.h; sourceTree = "<group>"; };
 		CEC7F38013AE556600BA9A74 /* PMMainWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PMMainWindow.h; path = controllers/PMMainWindow.h; sourceTree = SOURCE_ROOT; };
 		CEC7F38113AE556600BA9A74 /* PMMainWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PMMainWindow.m; path = controllers/PMMainWindow.m; sourceTree = SOURCE_ROOT; };
-		CEC7F38513AE558700BA9A74 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		CEC7F3A413AE55CC00BA9A74 /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utils.h; path = ../cocoalib/Utils.h; sourceTree = SOURCE_ROOT; };
 		CEC7F3A513AE55CC00BA9A74 /* Utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Utils.m; path = ../cocoalib/Utils.m; sourceTree = SOURCE_ROOT; };
 		CECBE28913DF044E007F9E9D /* PMElementTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PMElementTableView.h; path = views/PMElementTableView.h; sourceTree = "<group>"; };
@@ -329,7 +327,6 @@
 		CEC7F38313AE557C00BA9A74 /* xib */ = {
 			isa = PBXGroup;
 			children = (
-				CEC7F38413AE558700BA9A74 /* MainMenu.xib */,
 			);
 			name = xib;
 			sourceTree = "<group>";
@@ -439,7 +436,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CEC7F38613AE558700BA9A74 /* MainMenu.xib in Resources */,
 				CEA0155E13AF816900C6D985 /* main_icon.icns in Resources */,
 				CEFFF33D13B0C23700BEA8D5 /* help in Resources */,
 				CE8C6D8C13C4938400D869ED /* dsa_pub.pem in Resources */,
@@ -493,17 +489,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXVariantGroup section */
-		CEC7F38413AE558700BA9A74 /* MainMenu.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				CEC7F38513AE558700BA9A74 /* en */,
-			);
-			name = MainMenu.xib;
-			sourceTree = SOURCE_ROOT;
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		C01FCF4C08A954540054247B /* release */ = {
