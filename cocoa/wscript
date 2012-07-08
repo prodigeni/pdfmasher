@@ -28,6 +28,9 @@ def configure(conf):
     conf.check_python_headers()
     conf.env.FRAMEWORK_COCOA = 'Cocoa'
     conf.env.ARCH_COCOA = ['i386', 'x86_64']
+    # Add current dir to the framework search path so we can find Sparkle.
+    conf.env.CFLAGS = ['-F'+op.abspath('.')]
+    conf.env.LINKFLAGS = ['-F'+op.abspath('.')]
 
 def build(ctx):
     # What do we compile?

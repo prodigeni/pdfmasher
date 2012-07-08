@@ -80,7 +80,7 @@ def build_cocoa(dev):
     print("Creating the .app folder")
     resources = ['images/main_icon.icns', 'cocoa/dsa_pub.pem', 'build/pyplugin.py',
         'build/py', 'build/help']
-    frameworks = ['build/Python', '/Library/Frameworks/Sparkle.framework']
+    frameworks = ['build/Python', 'cocoa/Sparkle.framework']
     create_osx_app_structure('build/PdfMasher.app', 'cocoa/build/PdfMasher', 'cocoa/Info.plist',
         resources, frameworks)
     print("Creating the run.py file")
