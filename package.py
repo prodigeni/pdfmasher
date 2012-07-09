@@ -106,7 +106,7 @@ def main():
     dev = conf['dev']
     print("Packaging PdfMasher with UI {0}".format(ui))
     if ui == 'cocoa':
-        package_cocoa_app_in_dmg('cocoa/PdfMasher.app', '.', args)
+        package_cocoa_app_in_dmg('build/PdfMasher.app', '.', args)
     elif ui == 'qt':
         if ISWINDOWS:
             package_windows(dev)

@@ -14,23 +14,32 @@ http://www.hardcoded.net/licenses/gplv3_license
 
 @interface PMBuildPane : HSGUIController
 {
-    IBOutlet NSView *wholeView;
-    IBOutlet NSTextField *lastGenDescLabel;
-    IBOutlet NSButton *editMarkdownButton;
-    IBOutlet NSButton *revealMarkdownButton;
-    IBOutlet NSButton *viewHTMLButton;
-    IBOutlet NSButton *createEbookButton;
-    IBOutlet NSTextField *ebookTitleTextField;
-    IBOutlet NSTextField *ebookAuthorTextField;
-    IBOutlet NSMatrix *ebookTypeRadioButtons;
+    NSTextField *lastGenDescLabel;
+    NSButton *editMarkdownButton;
+    NSButton *revealMarkdownButton;
+    NSButton *viewHTMLButton;
+    NSButton *createEbookButton;
+    NSTextField *ebookTitleTextField;
+    NSTextField *ebookAuthorTextField;
+    NSMatrix *ebookTypeRadioButtons;
 }
+
+@property (readwrite, retain) NSTextField *lastGenDescLabel;
+@property (readwrite, retain) NSButton *editMarkdownButton;
+@property (readwrite, retain) NSButton *revealMarkdownButton;
+@property (readwrite, retain) NSButton *viewHTMLButton;
+@property (readwrite, retain) NSButton *createEbookButton;
+@property (readwrite, retain) NSTextField *ebookTitleTextField;
+@property (readwrite, retain) NSTextField *ebookAuthorTextField;
+@property (readwrite, retain) NSMatrix *ebookTypeRadioButtons;
+
 - (id)initWithPyRef:(PyObject *)aPyRef;
 - (PyBuildPane *)model;
 
-- (IBAction)generateMarkdown:(id)sender;
-- (IBAction)editMarkdown:(id)sender;
-- (IBAction)revealInFinder:(id)sender;
-- (IBAction)viewHTML:(id)sender;
-- (IBAction)createEbook:(id)sender;
-- (IBAction)selectEbookType:(id)sender;
+- (void)generateMarkdown;
+- (void)editMarkdown;
+- (void)revealInFinder;
+- (void)viewHTML;
+- (void)createEbook;
+- (void)selectEbookType;
 @end

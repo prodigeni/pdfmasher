@@ -14,17 +14,21 @@ http://www.hardcoded.net/licenses/gplv3_license
 
 @interface PMPageController : HSGUIController
 {
-    IBOutlet NSView *wholeView;
-    IBOutlet NSView *pageReprPlaceholder;
-    IBOutlet NSTextField *pageLabelTextField;
-    IBOutlet NSButton *reorderModeButton;
+    NSView *pageReprPlaceholder;
+    NSTextField *pageLabelTextField;
+    NSButton *reorderModeButton;
     
     PMPageRepr *pageRepr;
 }
+
+@property (readwrite, retain) NSView *pageReprPlaceholder;
+@property (readwrite, retain) NSTextField *pageLabelTextField;
+@property (readwrite, retain) NSButton *reorderModeButton;
+
 - (id)initWithPyRef:(PyObject *)aPyRef;
 - (PyPageController *)model;
 
-- (IBAction)prevPage:(id)sender;
-- (IBAction)nextPage:(id)sender;
-- (IBAction)toggleShowOrder:(id)sender;
+- (void)prevPage;
+- (void)nextPage;
+- (void)toggleShowOrder;
 @end

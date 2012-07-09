@@ -6,18 +6,16 @@ run.py
 conf.json
 build
 dist
+.waf*
+.lock-waf*
 cocoa/Info.plist
 cocoa/autogen
 qt/pm_rc.py
 help/*/conf.py
 help/*/changelog.rst
 
-*.mode1v3
-*.pbxuser
 *.pdf
-*.tm_build_errors
-*.xcodeproj/xcuserdata
-*.xcodeproj/project.xcworkspace/xcuserdata
 *.app
 *.so
 *.pyc
+*.dmg

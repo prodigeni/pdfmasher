@@ -7,16 +7,21 @@ http://www.hardcoded.net/licenses/gplv3_license
 */
 
 #import "PMPageController.h"
+#import "PMPageController_UI.h"
 #import "Utils.h"
 #import "HSPyUtil.h"
 
 @implementation PMPageController
+
+@synthesize pageReprPlaceholder;
+@synthesize pageLabelTextField;
+@synthesize reorderModeButton;
+
 - (id)initWithPyRef:(PyObject *)aPyRef
 {
     PyPageController *m = [[PyPageController alloc] initWithModel:aPyRef];
     self = [self initWithModel:m];
-    [NSBundle loadNibNamed:@"PagePane" owner:self];
-    [self setView:wholeView];
+    [self setView:createPMPageController_UI(self)];
     [m bindCallback:createCallback(@"PageControllerView", self)];
     [m release];
     pageRepr = [[PMPageRepr alloc] initWithPyRef:[[self model] pageRepr]];
@@ -29,17 +34,17 @@ http://www.hardcoded.net/licenses/gplv3_license
     return (PyPageController *)model;
 }
 
-- (IBAction)prevPage:(id)sender
+- (void)prevPage
 {
     [[self model] prevPage];
 }
 
-- (IBAction)nextPage:(id)sender
+- (void)nextPage
 {
     [[self model] nextPage];
 }
 
-- (IBAction)toggleShowOrder:(id)sender
+- (void)toggleShowOrder
 {
     BOOL isChecked = [reorderModeButton state] == NSOnState;
     [[self model] setReorderMode:isChecked];

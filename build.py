@@ -7,6 +7,7 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
+import sys
 import os
 import os.path as op
 import shutil
@@ -17,7 +18,7 @@ from setuptools import setup, Extension
 
 from hscommon import sphinxgen
 from hscommon.build import (print_and_do, copy_packages, get_module_version, filereplace, move,
-    add_to_pythonpath, copy, symlink, copy_sysconfig_files_for_embed)
+    add_to_pythonpath, copy, copy_sysconfig_files_for_embed, create_osx_app_structure)
 from hscommon.plat import ISOSX
 
 def parse_args():
@@ -26,20 +27,40 @@ def parse_args():
         help="Clean build folder before building")
     parser.add_argument('--cocoamod', action='store_true', dest='cocoamod',
         help="Build only Cocoa modules")
+    parser.add_argument('--xibless', action='store_true', dest='xibless',
+        help="Build only xibless UIs")
     parser.add_argument('--doc', action='store_true', dest='doc',
         help="Build only the help file")
     args = parser.parse_args()
     return args
 
+def build_xibless():
+    import xibless
+    if not op.exists('cocoalib/autogen'):
+        os.mkdir('cocoalib/autogen')
+    if not op.exists('cocoa/autogen'):
+        os.mkdir('cocoa/autogen')
+    xibless.generate('cocoalib/ui/progress.py', 'cocoalib/autogen/ProgressController_UI.h')
+    xibless.generate('cocoalib/ui/about.py', 'cocoalib/autogen/HSAboutBox_UI.h')
+    xibless.generate('cocoalib/ui/fairware_reminder.py', 'cocoalib/autogen/HSFairwareReminder_UI.h')
+    xibless.generate('cocoalib/ui/demo_reminder.py', 'cocoalib/autogen/HSDemoReminder_UI.h')
+    xibless.generate('cocoalib/ui/enter_code.py', 'cocoalib/autogen/HSEnterCode_UI.h')
+    xibless.generate('cocoalib/ui/error_report.py', 'cocoalib/autogen/HSErrorReportWindow_UI.h')
+    xibless.generate('cocoa/ui/edit_pane.py', 'cocoa/autogen/PMEditPane_UI.h')
+    xibless.generate('cocoa/ui/build_pane.py', 'cocoa/autogen/PMBuildPane_UI.h')
+    xibless.generate('cocoa/ui/page_pane.py', 'cocoa/autogen/PMPageController_UI.h')
+    xibless.generate('cocoa/ui/main_window.py', 'cocoa/autogen/PMMainWindow_UI.h')
+    xibless.generate('cocoa/ui/main_menu.py', 'cocoa/autogen/PMMainMenu_UI.h')
+
 def build_cocoa(dev):
     print("Building the cocoa layer")
+    build_xibless()
     if not op.exists('build/py'):
         os.mkdir('build/py')
     build_cocoa_proxy_module()
     build_cocoa_bridging_interfaces()
-    from pluginbuilder import copy_embeddable_python_dylib, get_python_header_folder, collect_dependencies
+    from pluginbuilder import copy_embeddable_python_dylib, collect_dependencies
     copy_embeddable_python_dylib('build')
-    symlink(get_python_header_folder(), 'build/PythonHeaders')
     tocopy = ['core', 'hscommon', 'cocoa/inter', 'cocoalib/cocoa']
     copy_packages(tocopy, 'build')
     copy('cocoa/pyplugin.py', 'build/pyplugin.py')
@@ -53,15 +74,15 @@ def build_cocoa(dev):
     print('Generating Info.plist')
     app_version = get_module_version('core')
     filereplace('InfoTemplate.plist', 'Info.plist', version=app_version)
-    print("Building the XCode project")
-    args = []
-    if dev:
-        args.append('-configuration dev')
-    else:
-        args.append('-configuration release')
-    args = ' '.join(args)
-    os.system('xcodebuild {0}'.format(args))
+    print("Compiling with WAF")
+    os.system('{0} waf configure && {0} waf'.format(sys.executable))
     os.chdir('..')
+    print("Creating the .app folder")
+    resources = ['images/main_icon.icns', 'cocoa/dsa_pub.pem', 'build/pyplugin.py',
+        'build/py', 'build/help']
+    frameworks = ['build/Python', 'cocoa/Sparkle.framework']
+    create_osx_app_structure('build/PdfMasher.app', 'cocoa/build/PdfMasher', 'cocoa/Info.plist',
+        resources, frameworks)
     print("Creating the run.py file")
     copy('cocoa/runtemplate.py', 'run.py')
 
@@ -80,9 +101,10 @@ def build_cocoa_proxy_module():
     import objp.p2o
     objp.p2o.generate_python_proxy_code('cocoalib/cocoa/CocoaProxy.h', 'build/CocoaProxy.m')
     build_cocoa_ext("CocoaProxy", 'cocoalib/cocoa',
-        ['cocoalib/cocoa/CocoaProxy.m', 'build/CocoaProxy.m', 'build/ObjP.m', 'cocoalib/HSErrorReportWindow.m'],
+        ['cocoalib/cocoa/CocoaProxy.m', 'build/CocoaProxy.m', 'build/ObjP.m',
+            'cocoalib/HSErrorReportWindow.m'],
         ['AppKit', 'CoreServices'],
-        ['cocoalib'])
+        ['cocoalib', 'cocoalib/autogen'])
 
 def build_cocoa_bridging_interfaces():
     print("Building Cocoa Bridging Interfaces")
@@ -154,6 +176,8 @@ def main():
     elif args.cocoamod:
         build_cocoa_proxy_module()
         build_cocoa_bridging_interfaces()
+    elif args.xibless:
+        build_xibless()
     else:
         build_normal(ui, dev)
 

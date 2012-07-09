@@ -7,15 +7,23 @@ http://www.hardcoded.net/licenses/gplv3_license
 */
 
 #import "PMMainWindow.h"
+#import "PMMainWindow_UI.h"
 #import "ProgressController.h"
 #import "Dialogs.h"
 #import "PMConst.h"
 
 @implementation PMMainWindow
-- (void)awakeFromNib
+
+@synthesize openedFileLabelView;
+@synthesize elementsTableView;
+@synthesize topTabView;
+@synthesize bottomTabView;
+
+- (id)initWithAppDelegate:(PMAppDelegate *)aAppDelegate
 {
-    [self window];
-    app = [appDelegate model];
+    self = [super initWithWindow:nil];
+    [self setWindow:createPMMainWindow_UI(self)];
+    app = (PyPdfMasher *)[aAppDelegate model];
     openedFileLabel = [[HSTextField alloc] initWithPyRef:[app openedFileLabel] view:openedFileLabelView];
     elementTable = [[PMElementTable alloc] initWithPyRef:[app elementTable] tableView:elementsTableView];
     pageController = [[PMPageController alloc] initWithPyRef:[app pageController]];
@@ -40,6 +48,8 @@ http://www.hardcoded.net/licenses/gplv3_license
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(jobStarted:) name:JobStarted object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(jobInProgress:) name:JobInProgress object:nil];
+    
+    return self;
 }
 
 - (void)dealloc
@@ -52,7 +62,7 @@ http://www.hardcoded.net/licenses/gplv3_license
     [super dealloc];
 }
 
-- (IBAction)loadPDF:(id)sender
+- (void)loadPDF
 {
     NSOpenPanel *op = [NSOpenPanel openPanel];
     [op setCanChooseFiles:YES];

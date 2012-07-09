@@ -14,23 +14,28 @@ http://www.hardcoded.net/licenses/gplv3_license
 
 @interface PMEditPane : HSGUIController
 {
-    IBOutlet NSView *wholeView;
-    IBOutlet NSButton *hideIgnoredButton;
-    IBOutlet NSTextView *editTextView;
-    IBOutlet NSButton *saveButton;
-    IBOutlet NSButton *cancelButton;
+    NSButton *hideIgnoredButton;
+    NSTextView *editTextView;
+    NSButton *saveButton;
+    NSButton *cancelButton;
     
     PyPdfMasher *app;
 }
+
+@property (readwrite, retain) NSButton *hideIgnoredButton;
+@property (readwrite, retain) NSTextView *editTextView;
+@property (readwrite, retain) NSButton *saveButton;
+@property (readwrite, retain) NSButton *cancelButton;
+
 - (id)initWithPyParent:(id)aPyParent;
 - (PyEditPane *)model;
 
-- (IBAction)selectNormal:(id)sender;
-- (IBAction)selectTitle:(id)sender;
-- (IBAction)selectFootnote:(id)sender;
-- (IBAction)selectToFix:(id)sender;
-- (IBAction)selectIgnored:(id)sender;
-- (IBAction)toggleHideIgnored:(id)sender;
-- (IBAction)saveEdits:(id)sender;
-- (IBAction)cancelEdits:(id)sender;
+- (void)selectNormal;
+- (void)selectTitle;
+- (void)selectFootnote;
+- (void)selectToFix;
+- (void)selectIgnored;
+- (void)toggleHideIgnored;
+- (void)saveEdits;
+- (void)cancelEdits;
 @end
