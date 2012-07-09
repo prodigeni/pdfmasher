@@ -11,7 +11,7 @@ import os.path as op
 import logging
 
 from PyQt4.QtCore import SIGNAL, QUrl, QCoreApplication, QProcess
-from PyQt4.QtGui import QDesktopServices, QMessageBox
+from PyQt4.QtGui import QDesktopServices, QMessageBox, QFileDialog
 
 from hscommon.trans import tr
 from hscommon.plat import ISLINUX
@@ -158,4 +158,14 @@ class PdfMasher(ApplicationBase):
     def show_demo_nag(self, prompt):
         reg = Registration(self.model)
         reg.show_demo_nag(prompt)
+    
+    def query_load_path(self, prompt):
+        # XXX Eventually, the line below won't be hardcoded
+        files = ';;'.join(["PDF file (*.pdf)", "All Files (*.*)"])
+        return QFileDialog.getOpenFileName(self.mainWindow, prompt, '', files)
+    
+    def query_save_path(self, prompt, allowed_exts):
+        myfilters = ["{0} file (*.{0})".format(ext) for ext in allowed_exts]
+        files = ';;'.join(myfilters+ ["All Files (*.*)"])
+        return QFileDialog.getSaveFileName(self.mainWindow, prompt, '', files)
     

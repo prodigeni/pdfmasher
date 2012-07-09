@@ -24,7 +24,7 @@ http://www.hardcoded.net/licenses/gplv3_license
     self = [super init];
     
     [self setModel:[[[PyPdfMasher alloc] init] autorelease]];
-    [[self model] bindCallback:createCallback(@"FairwareView", self)];
+    [[self model] bindCallback:createCallback(@"PdfMasherView", self)];
     [[ProgressController mainProgressController] setWorker:[self model]];
     [self setUpdater:[[[SUUpdater alloc] init] autorelease]];
     [self setMainWindow:[[[PMMainWindow alloc] initWithAppDelegate:self] autorelease]];
@@ -85,5 +85,35 @@ http://www.hardcoded.net/licenses/gplv3_license
 - (void)showDemoNagWithPrompt:(NSString *)prompt
 {
     [HSFairwareReminder showDemoNagWithApp:[self model] prompt:prompt];
+}
+
+- (NSString *)queryLoadPathWithPrompt:(NSString *)prompt
+{
+    NSOpenPanel *op = [NSOpenPanel openPanel];
+    [op setCanChooseFiles:YES];
+    [op setCanChooseDirectories:NO];
+    [op setCanCreateDirectories:NO];
+    [op setAllowsMultipleSelection:NO];
+    [op setTitle:prompt];
+    if ([op runModal] == NSOKButton) {
+        return [[op filenames] objectAtIndex:0];
+    }
+    else {
+        return nil;
+    }
+}
+
+- (NSString *)querySavePathWithPrompt:(NSString *)prompt allowedExts:(NSArray *)allowedExts
+{
+    NSSavePanel *sp = [NSSavePanel savePanel];
+    [sp setTitle:prompt];
+    [sp setAllowedFileTypes:allowedExts];
+    [sp setAllowsOtherFileTypes:YES];
+    if ([sp runModal] == NSOKButton) {
+        return [[sp URL] path];
+    }
+    else {
+        return nil;
+    }
 }
 @end

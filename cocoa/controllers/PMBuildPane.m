@@ -63,21 +63,7 @@ http://www.hardcoded.net/licenses/gplv3_license
 {
     [[self model] setEbookTitle:[ebookTitleTextField stringValue]];
     [[self model] setEbookAuthor:[ebookAuthorTextField stringValue]];
-    NSSavePanel *sp = [NSSavePanel savePanel];
-    [sp setTitle:@"Select a destination for the e-book"];
-    NSString *ext;
-    if ([[self model] selectedEbookType] == PMEbookTypeEPUB) {
-        ext = @"epub";
-    }
-    else {
-        ext = @"mobi";
-    }
-    [sp setAllowedFileTypes:[NSArray arrayWithObject:ext]];
-    [sp setAllowsOtherFileTypes:YES];
-    if ([sp runModal] == NSOKButton) {
-        NSString *filename = [[sp URL] path];
-        [[self model] createEbookAtPath:filename];
-    }
+    [[self model] createEbook];
 }
 
 - (void)selectEbookType

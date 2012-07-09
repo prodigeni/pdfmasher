@@ -37,6 +37,8 @@ class App(Broadcaster, RegistrableApplication):
     # reveal_path(path)
     # setup_as_registered()
     # start_job(j, *args)
+    # query_load_path(prompt) --> str_path
+    # query_save_path(prompt, allowed_exts) --> str_path
     
     PROMPT_NAME = __appname__
     NAME = PROMPT_NAME
@@ -98,7 +100,11 @@ class App(Broadcaster, RegistrableApplication):
             element.state = newstate
         self.notify('elements_changed')
     
-    def load_pdf(self, path):
+    def load_pdf(self):
+        path = self.view.query_load_path("Select a PDF to work with")
+        if not path:
+            return
+        
         def do(j):
             self.last_file_was_invalid = False
             try:

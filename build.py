@@ -25,8 +25,8 @@ def parse_args():
     parser = ArgumentParser()
     parser.add_argument('--clean', action='store_true', dest='clean',
         help="Clean build folder before building")
-    parser.add_argument('--cocoamod', action='store_true', dest='cocoamod',
-        help="Build only Cocoa modules")
+    parser.add_argument('--cocoa-compile', action='store_true', dest='cocoa_compile',
+        help="Build only Cocoa modules and executables")
     parser.add_argument('--xibless', action='store_true', dest='xibless',
         help="Build only xibless UIs")
     parser.add_argument('--doc', action='store_true', dest='doc',
@@ -82,7 +82,7 @@ def build_cocoa(dev):
         'build/py', 'build/help']
     frameworks = ['build/Python', 'cocoa/Sparkle.framework']
     create_osx_app_structure('build/PdfMasher.app', 'cocoa/build/PdfMasher', 'cocoa/Info.plist',
-        resources, frameworks)
+        resources, frameworks, symlink_resources=dev)
     print("Creating the run.py file")
     copy('cocoa/runtemplate.py', 'run.py')
 
@@ -114,7 +114,7 @@ def build_cocoa_bridging_interfaces():
     add_to_pythonpath('cocoalib')
     from cocoa.inter import (PyGUIObject, GUIObjectView, PyTable, TableView, PyColumns,
         ColumnsView, PyFairware, FairwareView, PyTextField)
-    from inter.app import PyPdfMasher
+    from inter.app import PyPdfMasher, PdfMasherView
     from inter.build_pane import PyBuildPane
     from inter.edit_pane import PyEditPane, EditPaneView
     from inter.element_table import PyElementTable
@@ -125,7 +125,7 @@ def build_cocoa_bridging_interfaces():
     for class_ in allclasses:
         objp.o2p.generate_objc_code(class_, 'cocoa/autogen', inherit=True)
     allclasses = [GUIObjectView, TableView, ColumnsView, FairwareView, EditPaneView,
-        PageControllerView, PageReprView]
+        PageControllerView, PageReprView, PdfMasherView]
     clsspecs = [objp.o2p.spec_from_python_class(class_) for class_ in allclasses]
     objp.p2o.generate_python_proxy_code_from_clsspec(clsspecs, 'build/CocoaViews.m')
     build_cocoa_ext('CocoaViews', 'build/py', ['build/CocoaViews.m', 'build/ObjP.m'])
@@ -173,9 +173,13 @@ def main():
         os.mkdir('build')
     if args.doc:
         build_help()
-    elif args.cocoamod:
+    elif args.cocoa_compile:
         build_cocoa_proxy_module()
         build_cocoa_bridging_interfaces()
+        os.chdir('cocoa')
+        os.system('{0} waf configure && {0} waf'.format(sys.executable))
+        os.chdir('..')
+        copy('cocoa/build/PdfMasher', 'build/PdfMasher.app/Contents/MacOS/PdfMasher')
     elif args.xibless:
         build_xibless()
     else:

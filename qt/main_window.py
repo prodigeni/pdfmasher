@@ -7,8 +7,8 @@
 # http://www.hardcoded.net/licenses/gplv3_license
 
 from PyQt4.QtCore import QCoreApplication, QRect
-from PyQt4.QtGui import (QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QFileDialog,
-    QTabWidget, QSizePolicy, QMenuBar, QMenu, QLabel)
+from PyQt4.QtGui import (QMainWindow, QVBoxLayout, QHBoxLayout, QWidget, QPushButton, QTabWidget,
+    QSizePolicy, QMenuBar, QMenu, QLabel)
 
 from hscommon.trans import tr
 from qtlib.util import moveToScreenCenter, createActions
@@ -30,7 +30,7 @@ class MainWindow(QMainWindow):
     
     def _setupActions(self):
         ACTIONS = [
-            ('actionLoadPDF', 'Ctrl+O', '', tr("Load PDF"), self.loadPDFTriggered),
+            ('actionLoadPDF', 'Ctrl+O', '', tr("Load PDF"), self.app.model.load_pdf),
         ]
         createActions(ACTIONS, self)
     
@@ -94,14 +94,4 @@ class MainWindow(QMainWindow):
         self._setupActions()
         self._setupMenu()
         moveToScreenCenter(self)
-    
-    #--- Signals
-    def loadPDFTriggered(self):
-        title = "Select a PDF to open"
-        files = ';;'.join(["PDF file (*.pdf)", "All Files (*.*)"])
-        destination = QFileDialog.getOpenFileName(self, title, '', files)
-        if destination:
-            self.app.model.load_pdf(destination)
-    
-
     

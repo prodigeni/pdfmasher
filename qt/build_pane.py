@@ -8,7 +8,7 @@
 
 from PyQt4.QtCore import Qt
 from PyQt4.QtGui import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QSizePolicy,
-    QRadioButton, QFileDialog, QFormLayout, QLineEdit)
+    QRadioButton, QFormLayout, QLineEdit)
 from qtlib.util import verticalSpacer
 
 from core.gui.build_pane import EbookType
@@ -71,15 +71,7 @@ class BuildPane(QWidget):
         self.model.selected_ebook_type = ebook_type
         self.model.ebook_title = self.titleEdit.text()
         self.model.ebook_author = self.authorEdit.text()
-        title = "Select a destination for the e-book"
-        if self.model.selected_ebook_type == EbookType.EPUB:
-            myfilter = "EPUB file (*.epub)"
-        else:
-            myfilter = "MOBI file (*.mobi)"
-        files = ';;'.join([myfilter, "All Files (*.*)"])
-        destination = QFileDialog.getSaveFileName(self, title, '', files)
-        if destination:
-            self.model.create_ebook(destination)
+        self.model.create_ebook()
     
     #--- model --> view
     def refresh(self):

@@ -98,7 +98,11 @@ class BuildPane(GUIObject):
     def view_html(self):
         self.app.open_path(self._generate_html())
     
-    def create_ebook(self, path):
+    def create_ebook(self):
+        allowed_ext = 'mobi' if self.selected_ebook_type == EbookType.MOBI else 'epub'
+        path = self.app.view.query_save_path("Select a destination for the e-book", [allowed_ext])
+        if not path:
+            return
         hi = HTMLInput()
         html_path = self._generate_html()
         mi = Metadata(self.ebook_title, [self.ebook_author])

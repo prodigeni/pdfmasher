@@ -39,6 +39,6 @@ class PyBuildPane(PyGUIObject):
     def viewHTML(self):
         self.model.view_html()
     
-    def createEbookAtPath_(self, path: str):
-        self.model.create_ebook(path)
+    def createEbook(self):
+        self.model.create_ebook()
     

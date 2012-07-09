@@ -64,16 +64,7 @@ http://www.hardcoded.net/licenses/gplv3_license
 
 - (void)loadPDF
 {
-    NSOpenPanel *op = [NSOpenPanel openPanel];
-    [op setCanChooseFiles:YES];
-    [op setCanChooseDirectories:NO];
-    [op setCanCreateDirectories:NO];
-    [op setAllowsMultipleSelection:NO];
-    [op setTitle:@"Select a PDF to work with"];
-    if ([op runModal] == NSOKButton) {
-        NSString *filename = [[op filenames] objectAtIndex:0];
-        [app loadPDF:filename];
-    }
+    [app loadPDF];
 }
 
 /* Notifications */

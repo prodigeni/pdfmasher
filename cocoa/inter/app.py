@@ -11,12 +11,16 @@ import logging
 from objp.util import pyref, dontwrap
 import cocoa
 from cocoa import proxy
-from cocoa.inter import PyFairware
+from cocoa.inter import PyFairware, FairwareView
 from jobprogress import job
 
 from core.app import JOBID2TITLE
 
 from core.app import App
+
+class PdfMasherView(FairwareView):
+    def queryLoadPathWithPrompt_(self, prompt: str) -> str: pass
+    def querySavePathWithPrompt_allowedExts_(self, prompt: str, allowedExts: list) -> str: pass
 
 class PyPdfMasher(PyFairware):
     FOLLOW_PROTOCOLS = ['Worker']
@@ -49,8 +53,8 @@ class PyPdfMasher(PyFairware):
     def changeStateOfSelected_(self, newstate: str):
         self.model.change_state_of_selected(newstate)
     
-    def loadPDF_(self, path: str):
-        self.model.load_pdf(path)
+    def loadPDF(self):
+        self.model.load_pdf()
     
     def hideIgnored(self) -> bool:
         return self.model.hide_ignored
@@ -100,4 +104,12 @@ class PyPdfMasher(PyFairware):
         else:
             ud = {'desc': JOBID2TITLE[jobid], 'jobid':jobid}
             proxy.postNotification_userInfo_('JobStarted', ud)
+    
+    @dontwrap
+    def query_load_path(self, prompt):
+        return self.callback.queryLoadPathWithPrompt_(prompt)
+    
+    @dontwrap
+    def query_save_path(self, prompt, allowed_exts):
+        return self.callback.querySavePathWithPrompt_allowedExts_(prompt, allowed_exts)
     
