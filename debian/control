@@ -7,6 +7,6 @@ Standards-Version: 3.8.1
 Homepage: http://www.hardcoded.net
 
 Package: pdfmasher
-Architecture: any
-Depends: python3 (>= 3.2), libqtgui4, python3-lxml
+Architecture: all
+Depends: python3 (>= 3.2), python3-pyqt4, python3-lxml
 Description: PdfMasher

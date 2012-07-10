@@ -81,15 +81,6 @@ def package_debian():
     os.makedirs(srcpath)
     shutil.copy('run.py', op.join(srcpath, 'run.py'))
     copy_packages(['qt', 'ebooks', 'hscommon', 'core', 'qtlib', 'pdfminer', 'ply', 'jobprogress', 'markdown', 'cssutils', 'encutils'], srcpath)
-    import sip, PyQt4
-    shutil.copy(sip.__file__, srcpath)
-    qtsrcpath = op.dirname(PyQt4.__file__)
-    qtdestpath = op.join(srcpath, 'PyQt4')
-    os.makedirs(qtdestpath)
-    shutil.copy(op.join(qtsrcpath, '__init__.py'), qtdestpath)
-    shutil.copy(op.join(qtsrcpath, 'Qt.so'), qtdestpath)
-    shutil.copy(op.join(qtsrcpath, 'QtCore.so'), qtdestpath)
-    shutil.copy(op.join(qtsrcpath, 'QtGui.so'), qtdestpath)
     shutil.copytree('debian', op.join(destpath, 'debian'))
     build_debian_changelog(op.join('help', 'changelog'), op.join(destpath, 'debian', 'changelog'),
         'pdfmasher', from_version='0.1.0')
