@@ -20,6 +20,8 @@ appMenu.addSeparator()
 appMenu.addItem("Quit PdfMasher", Action(NSApp, 'terminate:'), 'cmd+q')
 
 fileMenu.addItem("Load PDF", Action(owner.mainWindow, 'loadPDF'), 'cmd+o')
+fileMenu.addItem("Load Project", Action(owner.model, 'loadProject'), 'cmd+shift+o')
+fileMenu.addItem("Save Project", Action(owner.model, 'saveProject'), 'cmd+s')
 fileMenu.addItem("Close", Action(None, 'performClose:'), 'cmd+w')
 
 editMenu.addItem("Cut", Action(None, 'cut:'), 'cmd+x')

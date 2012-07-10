@@ -38,10 +38,10 @@ class PdfMasher(ApplicationBase):
         logging.basicConfig(filename=op.join(appdata, 'debug.log'), level=logging.WARNING,
             format='%(asctime)s - %(levelname)s - %(message)s')
         ApplicationBase.__init__(self)
-        self._setupActions()
         self.prefs = Preferences()
         self.prefs.load()
         self.model = App(view=self)
+        self._setupActions()
         self.mainWindow = MainWindow(app=self)
         self.aboutBox = AboutBox(self.mainWindow, self)
         self.reg = Registration(self.model)
@@ -58,8 +58,8 @@ class PdfMasher(ApplicationBase):
     #--- Private
     def _setupActions(self):
         ACTIONS = [
-            ('actionLoadProject', 'Ctrl+Shift+O', '', tr("Load Project"), self.loadProjectTriggered),
-            ('actionSaveProject', 'Ctrl+S', '', tr("Save Project"), self.saveProjectTriggered),
+            ('actionLoadProject', 'Ctrl+Shift+O', '', tr("Load Project"), self.model.load_project),
+            ('actionSaveProject', 'Ctrl+S', '', tr("Save Project"), self.model.save_project),
             ('actionQuit', 'Ctrl+Q', '', tr("Quit"), self.quitTriggered),
             ('actionShowHelp', 'F1', '', tr("PDfMasher Help"), self.showHelpTriggered),
             ('actionAbout', '', '', tr("About dupeGuru"), self.showAboutBoxTriggered),
@@ -82,12 +82,6 @@ class PdfMasher(ApplicationBase):
     
     def jobFinished(self, jobid):
         self.model._job_completed(jobid)
-    
-    def loadProjectTriggered(self):
-        self.model.load_project("/Users/hsoft/Desktop/pdfmashertest.masherproj")
-    
-    def saveProjectTriggered(self):
-        self.model.save_project("/Users/hsoft/Desktop/pdfmashertest.masherproj")
     
     def checkForUpdateTriggered(self):
         QProcess.execute('updater.exe', ['/checknow'])
@@ -159,13 +153,13 @@ class PdfMasher(ApplicationBase):
         reg = Registration(self.model)
         reg.show_demo_nag(prompt)
     
-    def query_load_path(self, prompt):
-        # XXX Eventually, the line below won't be hardcoded
-        files = ';;'.join(["PDF file (*.pdf)", "All Files (*.*)"])
+    def query_load_path(self, prompt, allowed_exts):
+        myfilters = ["{} file (*.{})".format(ext.upper(), ext) for ext in allowed_exts]
+        files = ';;'.join(myfilters + ["All Files (*.*)"])
         return QFileDialog.getOpenFileName(self.mainWindow, prompt, '', files)
     
     def query_save_path(self, prompt, allowed_exts):
-        myfilters = ["{0} file (*.{0})".format(ext) for ext in allowed_exts]
-        files = ';;'.join(myfilters+ ["All Files (*.*)"])
+        myfilters = ["{} file (*.{})".format(ext.upper(), ext) for ext in allowed_exts]
+        files = ';;'.join(myfilters + ["All Files (*.*)"])
         return QFileDialog.getSaveFileName(self.mainWindow, prompt, '', files)
     

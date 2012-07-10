@@ -56,6 +56,12 @@ class PyPdfMasher(PyFairware):
     def loadPDF(self):
         self.model.load_pdf()
     
+    def loadProject(self):
+        self.model.load_project()
+    
+    def saveProject(self):
+        self.model.save_project()
+    
     def hideIgnored(self) -> bool:
         return self.model.hide_ignored
     
@@ -106,7 +112,8 @@ class PyPdfMasher(PyFairware):
             proxy.postNotification_userInfo_('JobStarted', ud)
     
     @dontwrap
-    def query_load_path(self, prompt):
+    def query_load_path(self, prompt, allowed_exts):
+        # allowed_exts is, for now, ignored on Cocoa
         return self.callback.queryLoadPathWithPrompt_(prompt)
     
     @dontwrap

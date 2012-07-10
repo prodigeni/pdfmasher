@@ -37,7 +37,7 @@ class App(Broadcaster, RegistrableApplication):
     # reveal_path(path)
     # setup_as_registered()
     # start_job(j, *args)
-    # query_load_path(prompt) --> str_path
+    # query_load_path(prompt, allowed_exts) --> str_path
     # query_save_path(prompt, allowed_exts) --> str_path
     
     PROMPT_NAME = __appname__
@@ -101,7 +101,7 @@ class App(Broadcaster, RegistrableApplication):
         self.notify('elements_changed')
     
     def load_pdf(self):
-        path = self.view.query_load_path("Select a PDF to work with")
+        path = self.view.query_load_path("Select a PDF to work with", ['pdf'])
         if not path:
             return
         
@@ -115,7 +115,11 @@ class App(Broadcaster, RegistrableApplication):
         
         self.view.start_job(JobType.LoadPDF, do)
     
-    def load_project(self, path):
+    def load_project(self):
+        path = self.view.query_load_path("Select a PdfMasher project to load", ['masherproj'])
+        if not path:
+            return
+        
         def str2rect(s):
             elems = s.split(' ')
             assert len(elems) == 4
@@ -146,6 +150,10 @@ class App(Broadcaster, RegistrableApplication):
         self.notify('elements_changed')
         
     def save_project(self, path):
+        path = self.view.query_save_path("Select a PdfMasher project to save to", ['masherproj'])
+        if not path:
+            return
+        
         def rect2str(r):
             return "{} {} {} {}".format(*r)
         
