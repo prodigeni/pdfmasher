@@ -1,3 +1,10 @@
+=== 0.7.0 (2012-07-10)
+
+* Added the ability to save and load PdfMasher projects. (#15)
+* Tweaked Fairware reminders.
+* Improved Debian packaging. [Linux]
+* Upgraded minimum requirements to Ubuntu 12.04.
+
 === 0.6.3 (2011-10-07)
 
 * Fixed bugs preventing some PDFs to be read.
