@@ -61,9 +61,9 @@ class PdfMasher(ApplicationBase):
             ('actionLoadProject', 'Ctrl+Shift+O', '', tr("Load Project"), self.model.load_project),
             ('actionSaveProject', 'Ctrl+S', '', tr("Save Project"), self.model.save_project),
             ('actionQuit', 'Ctrl+Q', '', tr("Quit"), self.quitTriggered),
-            ('actionShowHelp', 'F1', '', tr("PDfMasher Help"), self.showHelpTriggered),
-            ('actionAbout', '', '', tr("About dupeGuru"), self.showAboutBoxTriggered),
-            ('actionRegister', '', '', tr("Register dupeGuru"), self.registerTriggered),
+            ('actionShowHelp', 'F1', '', tr("PdfMasher Help"), self.showHelpTriggered),
+            ('actionAbout', '', '', tr("About PdfMasher"), self.showAboutBoxTriggered),
+            ('actionRegister', '', '', tr("Register PdfMasher"), self.registerTriggered),
             ('actionCheckForUpdate', '', '', tr("Check for Update"), self.checkForUpdateTriggered),
             ('actionOpenDebugLog', '', '', tr("Open Debug Log"), self.openDebugLogTriggered),
         ]
