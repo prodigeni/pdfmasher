@@ -36,6 +36,7 @@ Contents:
    page_repr
    edit_pane
    build_pane
+   save_load
    changelog
 
 
