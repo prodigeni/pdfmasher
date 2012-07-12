@@ -15,12 +15,14 @@ import json
 from argparse import ArgumentParser
 
 from hscommon.build import (copy_packages, build_debian_changelog, copy_qt_plugins, print_and_do,
-    get_module_version, setup_package_argparser, package_cocoa_app_in_dmg)
+    get_module_version, setup_package_argparser, package_cocoa_app_in_dmg, move)
 from hscommon.plat import ISLINUX, ISWINDOWS
 
 def parse_args():
     parser = ArgumentParser()
     setup_package_argparser(parser)
+    parser.add_argument('--source', action='store_true', dest='source_pkg',
+        help="Build only a source debian package (Linux only).")
     return parser.parse_args()
 
 def package_windows(dev):
@@ -72,7 +74,7 @@ def package_windows(dev):
         os.remove('installer_tmp.aip')
     
 
-def package_debian():
+def package_debian(source_pkg):
     app_version = get_module_version('core')
     destpath = op.join('build', 'pdfmasher-{}'.format(app_version))
     if op.exists(destpath):
@@ -82,13 +84,17 @@ def package_debian():
     shutil.copy('run.py', op.join(srcpath, 'run.py'))
     copy_packages(['qt', 'ebooks', 'hscommon', 'core', 'qtlib', 'pdfminer', 'ply', 'jobprogress', 'markdown', 'cssutils', 'encutils'], srcpath)
     shutil.copytree('debian', op.join(destpath, 'debian'))
+    move(op.join(destpath, 'debian', 'Makefile'), op.join(destpath, 'Makefile'))
     build_debian_changelog(op.join('help', 'changelog'), op.join(destpath, 'debian', 'changelog'),
         'pdfmasher', from_version='0.1.0')
     shutil.copytree(op.join('build', 'help'), op.join(srcpath, 'help'))
     shutil.copy(op.join('images', 'logo_small.png'), srcpath)
     compileall.compile_dir(srcpath)
     os.chdir(destpath)
-    os.system("dpkg-buildpackage")
+    cmd = "dpkg-buildpackage"
+    if source_pkg:
+        cmd += " -S"
+    os.system(cmd)
 
 def main():
     args = parse_args()
@@ -102,7 +108,7 @@ def main():
         if ISWINDOWS:
             package_windows(dev)
         elif ISLINUX:
-            package_debian()
+            package_debian(args.source_pkg)
         else:
             print("Qt packaging only works under Windows or Linux.")
 
