@@ -40,7 +40,7 @@ def build(ctx):
     cocoalib_uses = ['HSGeometry', 'Dialogs', 'HSAboutBox', 'HSFairwareReminder', 'NSEventAdditions',
         'Utils', 'HSPyUtil', 'ProgressController', 'views/HSTableView', 'controllers/HSColumns',
         'controllers/HSGUIController', 'controllers/HSTable', 'controllers/HSTextField']
-    cocoalib_src = [cocoalib_node.find_node(usename + '.m') for usename in cocoalib_uses]
+    cocoalib_src = [cocoalib_node.find_node(usename + '.m') for usename in cocoalib_uses] + cocoalib_node.ant_glob('autogen/*.m')
     project_folders = ['autogen', 'controllers', 'views']
     project_src = sum([ctx.srcnode.ant_glob('%s/*.m' % folder) for folder in project_folders], ctx.srcnode.ant_glob('*.m'))
     

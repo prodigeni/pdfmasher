@@ -40,17 +40,17 @@ def build_xibless():
         os.mkdir('cocoalib/autogen')
     if not op.exists('cocoa/autogen'):
         os.mkdir('cocoa/autogen')
-    xibless.generate('cocoalib/ui/progress.py', 'cocoalib/autogen/ProgressController_UI.h')
-    xibless.generate('cocoalib/ui/about.py', 'cocoalib/autogen/HSAboutBox_UI.h')
-    xibless.generate('cocoalib/ui/fairware_reminder.py', 'cocoalib/autogen/HSFairwareReminder_UI.h')
-    xibless.generate('cocoalib/ui/demo_reminder.py', 'cocoalib/autogen/HSDemoReminder_UI.h')
-    xibless.generate('cocoalib/ui/enter_code.py', 'cocoalib/autogen/HSEnterCode_UI.h')
-    xibless.generate('cocoalib/ui/error_report.py', 'cocoalib/autogen/HSErrorReportWindow_UI.h')
-    xibless.generate('cocoa/ui/edit_pane.py', 'cocoa/autogen/PMEditPane_UI.h')
-    xibless.generate('cocoa/ui/build_pane.py', 'cocoa/autogen/PMBuildPane_UI.h')
-    xibless.generate('cocoa/ui/page_pane.py', 'cocoa/autogen/PMPageController_UI.h')
-    xibless.generate('cocoa/ui/main_window.py', 'cocoa/autogen/PMMainWindow_UI.h')
-    xibless.generate('cocoa/ui/main_menu.py', 'cocoa/autogen/PMMainMenu_UI.h')
+    xibless.generate('cocoalib/ui/progress.py', 'cocoalib/autogen/ProgressController_UI')
+    xibless.generate('cocoalib/ui/about.py', 'cocoalib/autogen/HSAboutBox_UI')
+    xibless.generate('cocoalib/ui/fairware_reminder.py', 'cocoalib/autogen/HSFairwareReminder_UI')
+    xibless.generate('cocoalib/ui/demo_reminder.py', 'cocoalib/autogen/HSDemoReminder_UI')
+    xibless.generate('cocoalib/ui/enter_code.py', 'cocoalib/autogen/HSEnterCode_UI')
+    xibless.generate('cocoalib/ui/error_report.py', 'cocoalib/autogen/HSErrorReportWindow_UI')
+    xibless.generate('cocoa/ui/edit_pane.py', 'cocoa/autogen/PMEditPane_UI')
+    xibless.generate('cocoa/ui/build_pane.py', 'cocoa/autogen/PMBuildPane_UI')
+    xibless.generate('cocoa/ui/page_pane.py', 'cocoa/autogen/PMPageController_UI')
+    xibless.generate('cocoa/ui/main_window.py', 'cocoa/autogen/PMMainWindow_UI')
+    xibless.generate('cocoa/ui/main_menu.py', 'cocoa/autogen/PMMainMenu_UI')
 
 def build_cocoa(dev):
     print("Building the cocoa layer")
@@ -102,7 +102,7 @@ def build_cocoa_proxy_module():
     objp.p2o.generate_python_proxy_code('cocoalib/cocoa/CocoaProxy.h', 'build/CocoaProxy.m')
     build_cocoa_ext("CocoaProxy", 'cocoalib/cocoa',
         ['cocoalib/cocoa/CocoaProxy.m', 'build/CocoaProxy.m', 'build/ObjP.m',
-            'cocoalib/HSErrorReportWindow.m'],
+            'cocoalib/HSErrorReportWindow.m', 'cocoalib/autogen/HSErrorReportWindow_UI.m'],
         ['AppKit', 'CoreServices'],
         ['cocoalib', 'cocoalib/autogen'])
 
