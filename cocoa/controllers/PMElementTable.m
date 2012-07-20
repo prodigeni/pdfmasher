@@ -47,6 +47,7 @@ http://www.hardcoded.net/licenses/gplv3_license
         nil
     };
     [[self columns] initializeColumns:defs];
+    [[self columns] setColumnsAsReadOnly];
 }
 
 /* Delegate */
