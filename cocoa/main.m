@@ -46,5 +46,6 @@ int main(int argc, char *argv[])
     [[appDelegate mainWindow] showWindow:nil];
     [pool release];
     [NSApp run];
+    Py_Finalize();
     return 0;
 }
