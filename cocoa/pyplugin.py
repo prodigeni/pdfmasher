@@ -16,3 +16,6 @@ from inter.page_controller import PyPageController
 
 # py2plugin workarounds
 import lxml._elementpath
+# When built under virtualenv, the dependency collector misses this module, so we have to force it
+# to see the module.
+import distutils.sysconfig
