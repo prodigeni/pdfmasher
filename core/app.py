@@ -157,7 +157,7 @@ class App(Broadcaster, RegistrableApplication):
         self.opened_file_label.refresh()
         self.notify('elements_changed')
         
-    def save_project(self, path):
+    def save_project(self):
         path = self.view.query_save_path("Select a PdfMasher project to save to", ['masherproj'])
         if not path:
             return
