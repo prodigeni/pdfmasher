@@ -13,15 +13,16 @@ import os.path as op
 import shutil
 import json
 from argparse import ArgumentParser
+import compileall
 
 from setuptools import setup, Extension
 
 from hscommon import sphinxgen
 from hscommon.build import (print_and_do, copy_packages, get_module_version, filereplace, move,
-    add_to_pythonpath, copy, copy_sysconfig_files_for_embed, create_osx_app_structure,
-    build_cocoalib_xibless)
+    add_to_pythonpath, copy, copy_sysconfig_files_for_embed, OSXAppStructure,
+    build_cocoalib_xibless, copy_all, copy_embeddable_python_dylib, collect_stdlib_dependencies)
 from hscommon.plat import ISOSX
-from hscommon.util import ensure_folder
+from hscommon.util import ensure_folder, delete_files_with_pattern
 
 def parse_args():
     parser = ArgumentParser()
@@ -46,37 +47,45 @@ def build_xibless():
     xibless.generate('cocoa/ui/main_menu.py', 'cocoa/autogen/PMMainMenu_UI')
 
 def build_cocoa(dev):
+    app = OSXAppStructure('build/PdfMasher.app')
+    print('Generating Info.plist')
+    app_version = get_module_version('core')
+    filereplace('cocoa/InfoTemplate.plist', 'cocoa/Info.plist', version=app_version)    
+    app.create('cocoa/Info.plist')
     print("Building the cocoa layer")
     build_cocoalib_xibless()
     build_xibless()
-    if not op.exists('build/py'):
-        os.mkdir('build/py')
+    pydep_folder = op.join(app.resources, 'py')
+    if not op.exists(pydep_folder):
+        os.mkdir(pydep_folder)
     build_cocoa_proxy_module()
     build_cocoa_bridging_interfaces()
-    from pluginbuilder import copy_embeddable_python_dylib, collect_dependencies
     copy_embeddable_python_dylib('build')
-    tocopy = ['core', 'ebooks', 'hscommon', 'cocoa/inter', 'cocoalib/cocoa']
-    copy_packages(tocopy, 'build')
+    tocopy = ['core', 'ebooks', 'hscommon', 'cocoa/inter', 'cocoalib/cocoa', 'jobprogress', 'objp',
+        'cssutils', 'pdfminer', 'lxml', 'ply', 'markdown', 'encutils']
+    copy_packages(tocopy, pydep_folder, create_links=dev)
     copy('cocoa/pyplugin.py', 'build/pyplugin.py')
-    os.chdir('build')
-    collect_dependencies('pyplugin.py', 'py', excludes=['PyQt4'])
-    os.chdir('..')
-    if dev:
-        copy_packages(tocopy, 'build/py', create_links=True)
-    copy_sysconfig_files_for_embed('build/py')
+    sys.path.insert(0, 'build')
+    collect_stdlib_dependencies('build/pyplugin.py', pydep_folder)
+    del sys.path[0]
+    # Views are not referenced by python code, so they're not found by the collector.
+    copy_all('build/inter/*.so', op.join(pydep_folder, 'inter'))
+    copy_sysconfig_files_for_embed(pydep_folder)
+    if not dev:
+        # Important: Don't ever run delete_files_with_pattern('*.py') on dev builds because you'll
+        # be deleting all py files in symlinked folders.
+        compileall.compile_dir(pydep_folder, force=True, legacy=True)
+        delete_files_with_pattern(pydep_folder, '*.py')
+        delete_files_with_pattern(pydep_folder, '__pycache__')
     os.chdir('cocoa')
-    print('Generating Info.plist')
-    app_version = get_module_version('core')
-    filereplace('InfoTemplate.plist', 'Info.plist', version=app_version)
     print("Compiling with WAF")
     os.system('{0} waf configure && {0} waf'.format(sys.executable))
     os.chdir('..')
     print("Creating the .app folder")
-    resources = ['images/main_icon.icns', 'cocoa/dsa_pub.pem', 'build/pyplugin.py',
-        'build/py', 'build/help']
-    frameworks = ['build/Python', 'cocoalib/Sparkle.framework']
-    create_osx_app_structure('build/PdfMasher.app', 'cocoa/build/PdfMasher', 'cocoa/Info.plist',
-        resources, frameworks, symlink_resources=dev)
+    app.copy_executable('cocoa/build/PdfMasher')
+    resources = ['images/main_icon.icns', 'cocoa/dsa_pub.pem', 'build/pyplugin.py', 'build/help']
+    app.copy_resources(*resources, use_symlinks=dev)
+    app.copy_frameworks('build/Python', 'cocoalib/Sparkle.framework')
     print("Creating the run.py file")
     copy('cocoa/runtemplate.py', 'run.py')
 
@@ -122,7 +131,7 @@ def build_cocoa_bridging_interfaces():
         PageControllerView, PageReprView, PdfMasherView]
     clsspecs = [objp.o2p.spec_from_python_class(class_) for class_ in allclasses]
     objp.p2o.generate_python_proxy_code_from_clsspec(clsspecs, 'build/CocoaViews.m')
-    build_cocoa_ext('CocoaViews', 'build/py', ['build/CocoaViews.m', 'build/ObjP.m'])
+    build_cocoa_ext('CocoaViews', 'cocoa/inter', ['build/CocoaViews.m', 'build/ObjP.m'])
 
 def build_qt():
     print("Building resource file")

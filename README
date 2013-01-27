@@ -37,7 +37,6 @@ OS X prerequisites
 
 - XCode's Command Line Tools
 - ObjP 1.2.1 (http://bitbucket.org/hsoft/objp)
-- pluginbuilder 1.1.0 (http://bitbucket.org/hsoft/pluginbuilder)
 - xibless 0.3.0 (https://bitbucket.org/hsoft/xibless)
 
 Windows prerequisites

@@ -17,7 +17,6 @@ http://www.hardcoded.net/licenses/bsd_license
 int main(int argc, char *argv[])
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    setCocoaViewsModuleName(@"CocoaViews");
     /* We have to set the locate to UTF8 for mbstowcs() to correctly convert non-ascii chars in paths */
     setlocale(LC_ALL, "en_US.UTF-8");
     NSString *respath = [[NSBundle mainBundle] resourcePath];
