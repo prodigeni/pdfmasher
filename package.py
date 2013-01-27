@@ -88,6 +88,7 @@ def package_debian_distribution(distribution):
         'pdfmasher', from_version='0.1.0', distribution=distribution)
     shutil.copytree(op.join('build', 'help'), op.join(srcpath, 'help'))
     shutil.copy(op.join('images', 'logo_small.png'), srcpath)
+    shutil.copy(op.join('images', 'logo_big.png'), srcpath)
     compileall.compile_dir(srcpath)
     os.chdir(destpath)
     cmd = "dpkg-buildpackage -S"
