@@ -59,7 +59,7 @@ def build_cocoa(dev):
     build_cocoa_bridging_interfaces()
     from pluginbuilder import copy_embeddable_python_dylib, collect_dependencies
     copy_embeddable_python_dylib('build')
-    tocopy = ['core', 'hscommon', 'cocoa/inter', 'cocoalib/cocoa']
+    tocopy = ['core', 'ebooks', 'hscommon', 'cocoa/inter', 'cocoalib/cocoa']
     copy_packages(tocopy, 'build')
     copy('cocoa/pyplugin.py', 'build/pyplugin.py')
     os.chdir('build')
