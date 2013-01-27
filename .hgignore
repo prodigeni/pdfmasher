@@ -1,6 +1,7 @@
 syntax: glob
 
 __pycache__
+env
 .DS_Store
 run.py
 conf.json
