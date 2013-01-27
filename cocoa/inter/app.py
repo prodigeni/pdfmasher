@@ -28,6 +28,7 @@ class PyPdfMasher(PyFairware):
     def __init__(self):
         logging.basicConfig(level=logging.WARNING, format='%(levelname)s %(message)s')
         cocoa.install_exception_hook()
+        cocoa.install_cocoa_logger()
         self.progress = cocoa.ThreadedJobPerformer()
         model = App(self)
         PyFairware.__init__(self, model)
