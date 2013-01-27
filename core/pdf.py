@@ -14,7 +14,7 @@ from pdfminer.layout import LAParams, LTChar, LTTextBoxHorizontal
 from pdfminer.converter import PDFPageAggregator
 
 from hscommon.geometry import Rect, Line
-from hscommon.util import extract
+from hscommon.util import extract, remove_invalid_xml
 from jobprogress.job import nulljob
 
 from .const import ElementState
@@ -154,6 +154,10 @@ def merge_oneletter_elems(elements):
 RE_MULTIPLE_SPACES = re.compile(r' {2,}')
 RE_NEWLINE_AND_SPACE = re.compile(r' \n |\n | \n')
 def fix_text(text):
+    # If we don't remove invalid XML characters, we'll get crashes on ebook creation and reloading
+    # of masherproj files.
+    text = remove_invalid_xml(text)
+    
     # This search/replace function is based on heuristic discoveries from sample pdf I've received.
     # &dquo; comes from a pdf file with quotes in it. dquo is weird because it looks like an html
     # escape but it isn't. Anyway, just replace it with quotes.
