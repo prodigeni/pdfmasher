@@ -18,8 +18,10 @@ from setuptools import setup, Extension
 
 from hscommon import sphinxgen
 from hscommon.build import (print_and_do, copy_packages, get_module_version, filereplace, move,
-    add_to_pythonpath, copy, copy_sysconfig_files_for_embed, create_osx_app_structure)
+    add_to_pythonpath, copy, copy_sysconfig_files_for_embed, create_osx_app_structure,
+    build_cocoalib_xibless)
 from hscommon.plat import ISOSX
+from hscommon.util import ensure_folder
 
 def parse_args():
     parser = ArgumentParser()
@@ -36,14 +38,7 @@ def parse_args():
 
 def build_xibless():
     import xibless
-    if not op.exists('cocoa/autogen'):
-        os.mkdir('cocoa/autogen')
-    xibless.generate('cocoalib/ui/progress.py', 'cocoa/autogen/ProgressController_UI')
-    xibless.generate('cocoalib/ui/about.py', 'cocoa/autogen/HSAboutBox_UI')
-    xibless.generate('cocoalib/ui/fairware_reminder.py', 'cocoa/autogen/HSFairwareReminder_UI')
-    xibless.generate('cocoalib/ui/demo_reminder.py', 'cocoa/autogen/HSDemoReminder_UI')
-    xibless.generate('cocoalib/ui/enter_code.py', 'cocoa/autogen/HSEnterCode_UI')
-    xibless.generate('cocoalib/ui/error_report.py', 'cocoa/autogen/HSErrorReportWindow_UI')
+    ensure_folder('cocoa/autogen')
     xibless.generate('cocoa/ui/edit_pane.py', 'cocoa/autogen/PMEditPane_UI')
     xibless.generate('cocoa/ui/build_pane.py', 'cocoa/autogen/PMBuildPane_UI')
     xibless.generate('cocoa/ui/page_pane.py', 'cocoa/autogen/PMPageController_UI')
@@ -52,6 +47,7 @@ def build_xibless():
 
 def build_cocoa(dev):
     print("Building the cocoa layer")
+    build_cocoalib_xibless()
     build_xibless()
     if not op.exists('build/py'):
         os.mkdir('build/py')
