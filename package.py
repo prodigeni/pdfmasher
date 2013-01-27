@@ -21,8 +21,6 @@ from hscommon.plat import ISLINUX, ISWINDOWS
 def parse_args():
     parser = ArgumentParser()
     setup_package_argparser(parser)
-    parser.add_argument('--source', action='store_true', dest='source_pkg',
-        help="Build only a source debian package (Linux only).")
     return parser.parse_args()
 
 def package_windows(dev):
@@ -74,9 +72,10 @@ def package_windows(dev):
         os.remove('installer_tmp.aip')
     
 
-def package_debian(source_pkg):
+def package_debian_distribution(distribution):
     app_version = get_module_version('core')
-    destpath = op.join('build', 'pdfmasher-{}'.format(app_version))
+    version = '{}~{}'.format(app_version, distribution)
+    destpath = op.join('build', 'pdfmasher-{}'.format(version))
     if op.exists(destpath):
         shutil.rmtree(destpath)
     srcpath = op.join(destpath, 'src')
@@ -86,15 +85,18 @@ def package_debian(source_pkg):
     shutil.copytree('debian', op.join(destpath, 'debian'))
     move(op.join(destpath, 'debian', 'Makefile'), op.join(destpath, 'Makefile'))
     build_debian_changelog(op.join('help', 'changelog'), op.join(destpath, 'debian', 'changelog'),
-        'pdfmasher', from_version='0.1.0')
+        'pdfmasher', from_version='0.1.0', distribution=distribution)
     shutil.copytree(op.join('build', 'help'), op.join(srcpath, 'help'))
     shutil.copy(op.join('images', 'logo_small.png'), srcpath)
     compileall.compile_dir(srcpath)
     os.chdir(destpath)
-    cmd = "dpkg-buildpackage"
-    if source_pkg:
-        cmd += " -S"
+    cmd = "dpkg-buildpackage -S"
     os.system(cmd)
+    os.chdir('../..')
+
+def package_debian():
+    for distribution in ['precise', 'quantal']:
+        package_debian_distribution(distribution)
 
 def main():
     args = parse_args()
@@ -108,7 +110,7 @@ def main():
         if ISWINDOWS:
             package_windows(dev)
         elif ISLINUX:
-            package_debian(args.source_pkg)
+            package_debian()
         else:
             print("Qt packaging only works under Windows or Linux.")
 
