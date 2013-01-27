@@ -6,9 +6,7 @@
 # which should be included with this package. The terms are also available at 
 # http://www.hardcoded.net/licenses/gplv3_license
 
-import os
 import os.path as op
-import logging
 
 from PyQt4.QtCore import SIGNAL, QUrl, QCoreApplication, QProcess
 from PyQt4.QtGui import QDesktopServices, QMessageBox, QFileDialog
@@ -20,7 +18,7 @@ from jobprogress.qt import Progress
 from qtlib.about_box import AboutBox
 from qtlib.app import Application as ApplicationBase
 from qtlib.reg import Registration
-from qtlib.util import createActions
+from qtlib.util import createActions, getAppData
 
 from core.app import App, JOBID2TITLE
 from .main_window import MainWindow
@@ -31,12 +29,6 @@ class PdfMasher(ApplicationBase):
     LOGO_NAME = 'logo'
     
     def __init__(self):
-        appdata = str(QDesktopServices.storageLocation(QDesktopServices.DataLocation))
-        if not op.exists(appdata):
-            os.makedirs(appdata)
-        # For basicConfig() to work, we have to be sure that no logging has taken place before this call.
-        logging.basicConfig(filename=op.join(appdata, 'debug.log'), level=logging.WARNING,
-            format='%(asctime)s - %(levelname)s - %(message)s')
         ApplicationBase.__init__(self)
         self.prefs = Preferences()
         self.prefs.load()
@@ -87,7 +79,7 @@ class PdfMasher(ApplicationBase):
         QProcess.execute('updater.exe', ['/checknow'])
     
     def openDebugLogTriggered(self):
-        appdata = QDesktopServices.storageLocation(QDesktopServices.DataLocation)
+        appdata = getAppData()
         debugLogPath = op.join(appdata, 'debug.log')
         url = QUrl.fromLocalFile(debugLogPath)
         QDesktopServices.openUrl(url)

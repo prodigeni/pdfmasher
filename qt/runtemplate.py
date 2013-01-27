@@ -13,6 +13,7 @@ import gc
 from PyQt4.QtGui import QApplication, QIcon, QPixmap
 
 from qtlib.error_report_dialog import install_excepthook
+from qtlib.util import setupQtLogging
 from hscommon.trans import install_qt_trans
 from hscommon.plat import ISWINDOWS
 from core import __appname__, __version__
@@ -27,6 +28,7 @@ def main(argv):
     app.setOrganizationName("Hardcoded Software")
     app.setApplicationName(__appname__)
     app.setApplicationVersion(__version__)
+    setupQtLogging()
     install_qt_trans('en')
     from qt.app import PdfMasher
     pmapp = PdfMasher()
