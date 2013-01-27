@@ -15,11 +15,9 @@ import json
 from argparse import ArgumentParser
 import compileall
 
-from setuptools import setup, Extension
-
 from hscommon import sphinxgen
-from hscommon.build import (print_and_do, copy_packages, get_module_version, filereplace, move,
-    add_to_pythonpath, copy, copy_sysconfig_files_for_embed, OSXAppStructure,
+from hscommon.build import (print_and_do, copy_packages, get_module_version, filereplace,
+    add_to_pythonpath, copy, copy_sysconfig_files_for_embed, OSXAppStructure, build_cocoa_ext,
     build_cocoalib_xibless, copy_all, copy_embeddable_python_dylib, collect_stdlib_dependencies)
 from hscommon.plat import ISOSX
 from hscommon.util import ensure_folder, delete_files_with_pattern
@@ -88,16 +86,6 @@ def build_cocoa(dev):
     app.copy_frameworks('build/Python', 'cocoalib/Sparkle.framework')
     print("Creating the run.py file")
     copy('cocoa/runtemplate.py', 'run.py')
-
-def build_cocoa_ext(extname, dest, source_files, extra_frameworks=(), extra_includes=()):
-    extra_link_args = ["-framework", "CoreFoundation", "-framework", "Foundation"]
-    for extra in extra_frameworks:
-        extra_link_args += ['-framework', extra]
-    ext = Extension(extname, source_files, extra_link_args=extra_link_args, include_dirs=extra_includes)
-    setup(script_args=['build_ext', '--inplace'], ext_modules=[ext])
-    fn = extname + '.so'
-    assert op.exists(fn)
-    move(fn, op.join(dest, fn))
 
 def build_cocoa_proxy_module():
     print("Building Cocoa Proxy")
