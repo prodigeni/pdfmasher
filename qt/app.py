@@ -17,7 +17,6 @@ from jobprogress import job
 from jobprogress.qt import Progress
 from qtlib.about_box import AboutBox
 from qtlib.app import Application as ApplicationBase
-from qtlib.reg import Registration
 from qtlib.util import createActions, getAppData
 
 from core.app import App, JOBID2TITLE
@@ -35,8 +34,7 @@ class PdfMasher(ApplicationBase):
         self.model = App(view=self)
         self._setupActions()
         self.mainWindow = MainWindow(app=self)
-        self.aboutBox = AboutBox(self.mainWindow, self)
-        self.reg = Registration(self.model)
+        self.aboutBox = AboutBox(self.mainWindow, self, withreg=False)
         self._progress = Progress(self.mainWindow)
         
         self.connect(self, SIGNAL('applicationFinishedLaunching()'), self.applicationFinishedLaunching)
@@ -66,7 +64,6 @@ class PdfMasher(ApplicationBase):
     
     #--- Event Handling
     def applicationFinishedLaunching(self):
-        self.model.initial_registration_setup()
         self.mainWindow.show()
     
     def applicationWillTerminate(self):
@@ -111,13 +108,6 @@ class PdfMasher(ApplicationBase):
         url = QUrl(url)
         QDesktopServices.openUrl(url)
     
-    def setup_as_registered(self):
-        self.prefs.registration_code = self.model.registration_code
-        self.prefs.registration_email = self.model.registration_email
-        # self.mainWindow.actionRegister.setVisible(False)
-        self.aboutBox.registerButton.hide()
-        self.aboutBox.registeredEmailLabel.setText(self.prefs.registration_email)
-    
     def show_message(self, msg):
         QMessageBox.information(self.mainWindow, '', msg)
     
@@ -136,14 +126,6 @@ class PdfMasher(ApplicationBase):
     
     def set_default(self, key, value):
         self.prefs.set_value(key, value)
-    
-    def show_fairware_nag(self, prompt):
-        reg = Registration(self.model)
-        reg.show_fairware_nag(prompt)
-    
-    def show_demo_nag(self, prompt):
-        reg = Registration(self.model)
-        reg.show_demo_nag(prompt)
     
     def query_load_path(self, prompt, allowed_exts):
         myfilters = ["{} file (*.{})".format(ext.upper(), ext) for ext in allowed_exts]

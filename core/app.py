@@ -31,11 +31,10 @@ JOBID2TITLE = {
     JobType.LoadPDF: tr("Reading PDF"),
 }
 
-class App(Broadcaster, RegistrableApplication):
+class App(Broadcaster):
     #--- model -> view calls:
     # open_path(path)
     # reveal_path(path)
-    # setup_as_registered()
     # start_job(j, *args)
     # query_load_path(prompt, allowed_exts) --> str_path
     # query_save_path(prompt, allowed_exts) --> str_path
@@ -46,7 +45,7 @@ class App(Broadcaster, RegistrableApplication):
     
     def __init__(self, view):
         Broadcaster.__init__(self)
-        RegistrableApplication.__init__(self, view, appid=6)
+        self.view = view
         self.current_path = None
         self._hide_ignored = False
         self.selected_elements = set()
@@ -60,10 +59,6 @@ class App(Broadcaster, RegistrableApplication):
         self.build_pane = BuildPane(self)
         self.edit_pane = EditPane(self)
     
-    #--- Overrides
-    def _setup_as_registered(self):
-        self.view.setup_as_registered()
-    
     #--- Protected
     def _job_completed(self, jobid):
         # Must be called by subclasses when they detect that an async job is completed.
@@ -72,12 +67,6 @@ class App(Broadcaster, RegistrableApplication):
                 self.notify('file_opened')
                 self.opened_file_label.refresh()
                 self.notify('elements_changed')
-                if self.should_apply_demo_limitation and len(self.pages) == 10:
-                    # Yes, I know, the message is mistakenly displayed when the PDF read contains
-                    # excactly 10 pages, but the alternative is to significantly complicate
-                    # our code only for this case. It's not worth it.
-                    msg = "PdfMasher being in demo mode, only the first 10 pages of the PDF were read."
-                    self.view.show_message(msg)
             else:
                 self.view.show_message("This file is not a PDF.")
     
@@ -111,12 +100,11 @@ class App(Broadcaster, RegistrableApplication):
         path = self.view.query_load_path("Select a PDF to work with", ['pdf'])
         if not path:
             return
-        demo_mode = self.should_apply_demo_limitation
         
         def do(j):
             self.last_file_was_invalid = False
             try:
-                self.pages, self.elements = extract_text_elements_from_pdf(path, demo_mode, j)
+                self.pages, self.elements = extract_text_elements_from_pdf(path, j)
                 self.current_path = path
             except PDFSyntaxError:
                 self.last_file_was_invalid = True

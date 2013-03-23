@@ -69,7 +69,7 @@ class Page:
         self.height = height
     
     
-def extract_text_elements_from_pdf(path, demo_mode, j=nulljob):
+def extract_text_elements_from_pdf(path, j=nulljob):
     """Opens a PDF and extract every element that is text based (LTText).
     """
     fp = open(path, 'rb')
@@ -85,8 +85,6 @@ def extract_text_elements_from_pdf(path, demo_mode, j=nulljob):
     pages = []
     all_elements = []
     enumerated_pages = list(enumerate(doc.get_pages()))
-    if demo_mode:
-        enumerated_pages = enumerated_pages[:10]
     progress_msg = "Reading page %i of %i"
     for pageno, page in j.iter_with_progress(enumerated_pages, progress_msg):
         interpreter.process_page(page)
