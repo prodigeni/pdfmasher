@@ -11,18 +11,18 @@ import logging
 from objp.util import pyref, dontwrap
 import cocoa
 from cocoa import proxy
-from cocoa.inter import PyFairware, FairwareView
+from cocoa.inter import PyBaseApp, BaseAppView
 from jobprogress import job
 
 from core.app import JOBID2TITLE
 
 from core.app import App
 
-class PdfMasherView(FairwareView):
+class PdfMasherView(BaseAppView):
     def queryLoadPathWithPrompt_(self, prompt: str) -> str: pass
     def querySavePathWithPrompt_allowedExts_(self, prompt: str, allowedExts: list) -> str: pass
 
-class PyPdfMasher(PyFairware):
+class PyPdfMasher(PyBaseApp):
     FOLLOW_PROTOCOLS = ['Worker']
     
     def __init__(self):
@@ -31,7 +31,7 @@ class PyPdfMasher(PyFairware):
         cocoa.install_cocoa_logger()
         self.progress = cocoa.ThreadedJobPerformer()
         model = App(self)
-        PyFairware.__init__(self, model)
+        PyBaseApp.__init__(self, model)
     
     def elementTable(self) -> pyref:
         return self.model.element_table

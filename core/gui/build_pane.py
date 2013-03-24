@@ -22,28 +22,6 @@ class EbookType:
     MOBI = 1
     EPUB = 2
 
-FAIRWARE_NOTICE = """
-Fairware Notice
-===
-
-This document was generated with an unregistered version of PdfMasher at a moment when development
-hours invested in it were not fully funded.
-
-Although PdfMasher is open source, it's also [fairware](http://open.hardcoded.net/about/) and
-contributions are *expected* when there are development hours to compensate. I'm sorry to have to
-nag you like this, but despite high usage of PdfMasher, I can't seem to get adequate funding for it.
-I'm not a volunteer, I expect my development time to be paid. Without funding, PdfMasher development
-and support will stop.
-
-If you're just trying PdfMasher to see if it works for you, no problem, go ahead. However, if
-PdfMasher is useful to you, please [contribute](http://open.hardcoded.net/contribute/). If you can't
-afford to contribute, [let me know](mailto:hsoft@hardcoded.net), I'll send you a key.
-
-This message doesn't show up when you have a valid contribution key or when there are no development
-hours to compensate.
-
-"""
-
 class BuildPane(GUIObject):
     #--- model -> view calls:
     # refresh() (for generation label and post processing buttons)
@@ -70,8 +48,6 @@ class BuildPane(GUIObject):
         md_path = self._current_path('txt')
         with open(md_path, 'rt', encoding='utf-8') as fp:
             md_contents = fp.read()
-        if not self.app.registered and self.app.unpaid_hours >= 1:
-            md_contents = FAIRWARE_NOTICE + md_contents
         html_body = markdown.markdown(md_contents)
         dest_path = self._current_path('htm')
         with open(dest_path, 'wt', encoding='utf-8') as fp:

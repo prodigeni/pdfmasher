@@ -10,7 +10,6 @@ http://www.hardcoded.net/licenses/gplv3_license
 #import "Utils.h"
 #import "HSPyUtil.h"
 #import "Dialogs.h"
-#import "HSFairwareReminder.h"
 #import "ProgressController.h"
 
 @implementation PMAppDelegate
@@ -60,31 +59,10 @@ http://www.hardcoded.net/licenses/gplv3_license
     [[aboutBox window] makeKeyAndOrderFront:nil];
 }
 
-/* Delegate */
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
-{
-    [[self model] initialRegistrationSetup];
-}
-
 /* Python --> Cocoa */
-- (void)setupAsRegistered
-{
-    // Nothing to do.
-}
-
 - (void)showMessage:(NSString *)msg
 {
     [Dialogs showMessage:msg];
-}
-
-- (void)showFairwareNagWithPrompt:(NSString *)prompt
-{
-    [HSFairwareReminder showFairwareNagWithApp:[self model] prompt:prompt];
-}
-
-- (void)showDemoNagWithPrompt:(NSString *)prompt
-{
-    [HSFairwareReminder showDemoNagWithApp:[self model] prompt:prompt];
 }
 
 - (NSString *)queryLoadPathWithPrompt:(NSString *)prompt

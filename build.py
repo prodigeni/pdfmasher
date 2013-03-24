@@ -51,7 +51,7 @@ def build_cocoa(dev):
     filereplace('cocoa/InfoTemplate.plist', 'cocoa/Info.plist', version=app_version)    
     app.create('cocoa/Info.plist')
     print("Building the cocoa layer")
-    build_cocoalib_xibless()
+    build_cocoalib_xibless(withfairware=False)
     build_xibless()
     pydep_folder = op.join(app.resources, 'py')
     if not op.exists(pydep_folder):
@@ -104,18 +104,18 @@ def build_cocoa_bridging_interfaces():
     add_to_pythonpath('cocoa')
     add_to_pythonpath('cocoalib')
     from cocoa.inter import (PyGUIObject, GUIObjectView, PyTable, TableView, PyColumns,
-        ColumnsView, PyFairware, FairwareView, PyTextField)
+        ColumnsView, PyBaseApp, BaseAppView, PyTextField)
     from inter.app import PyPdfMasher, PdfMasherView
     from inter.build_pane import PyBuildPane
     from inter.edit_pane import PyEditPane, EditPaneView
     from inter.element_table import PyElementTable
     from inter.page_controller import PyPageController, PageControllerView
     from inter.page_repr import PyPageRepr, PageReprView
-    allclasses = [PyGUIObject, PyTable, PyColumns, PyFairware, PyTextField, PyPdfMasher,
+    allclasses = [PyGUIObject, PyTable, PyColumns, PyBaseApp, PyTextField, PyPdfMasher,
         PyBuildPane, PyEditPane, PyElementTable, PyPageController, PyPageRepr]
     for class_ in allclasses:
         objp.o2p.generate_objc_code(class_, 'cocoa/autogen', inherit=True)
-    allclasses = [GUIObjectView, TableView, ColumnsView, FairwareView, EditPaneView,
+    allclasses = [GUIObjectView, TableView, ColumnsView, BaseAppView, EditPaneView,
         PageControllerView, PageReprView, PdfMasherView]
     clsspecs = [objp.o2p.spec_from_python_class(class_) for class_ in allclasses]
     objp.p2o.generate_python_proxy_code_from_clsspec(clsspecs, 'build/CocoaViews.m')
