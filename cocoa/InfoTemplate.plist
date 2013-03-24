@@ -21,7 +21,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>{version}</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>© Hardcoded Software, 2011</string>
+	<string>© Hardcoded Software, 2013</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>10.6.0</string>
 	<key>CFBundleVersion</key>
