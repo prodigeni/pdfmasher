@@ -60,7 +60,7 @@ def build_cocoa(dev):
     build_cocoa_bridging_interfaces()
     copy_embeddable_python_dylib('build')
     tocopy = ['core', 'ebooks', 'hscommon', 'cocoa/inter', 'cocoalib/cocoa', 'jobprogress', 'objp',
-        'cssutils', 'pdfminer', 'lxml', 'ply', 'markdown', 'encutils']
+        'cssutils', 'cssselect', 'pdfminer', 'lxml', 'ply', 'markdown', 'encutils']
     copy_packages(tocopy, pydep_folder, create_links=dev)
     copy('cocoa/pyplugin.py', 'build/pyplugin.py')
     sys.path.insert(0, 'build')
