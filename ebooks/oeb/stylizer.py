@@ -15,10 +15,12 @@ from cssutils.css import PropertyValue as CSSValueList
 from cssutils import (profile as cssprofiles, parseString, parseStyle, log as
         cssutils_log, CSSParser, profiles)
 from lxml import etree
-from lxml.cssselect import css_to_xpath, ExpressionError, SelectorSyntaxError
+from cssselect import HTMLTranslator, ExpressionError, SelectorSyntaxError
 from .base import XHTML, XHTML_NS, CSS_MIME, OEB_STYLES
 from .base import XPNSMAP, xpath, urlnormalize
 from .htmlcss import HTML_CSS
+
+css_to_xpath = HTMLTranslator().css_to_xpath
 
 cssutils_log.setLevel(logging.WARN)
 

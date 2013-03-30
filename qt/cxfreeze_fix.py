@@ -2,7 +2,6 @@
 # This modules explicitly import those problematic modules.
 
 import os
-import markdown.etree_loader
 import lxml._elementpath
 
 # Normally, cmap files are directly in pdfminer/cmap, but
