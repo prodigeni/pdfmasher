@@ -13,10 +13,12 @@ import compileall
 import shutil
 import json
 from argparse import ArgumentParser
+import platform
 
 from hscommon.build import (copy_packages, build_debian_changelog, copy_qt_plugins, print_and_do,
     get_module_version, setup_package_argparser, package_cocoa_app_in_dmg, move)
 from hscommon.plat import ISLINUX, ISWINDOWS
+from hscommon.util import find_in_path
 
 def parse_args():
     parser = ArgumentParser()
@@ -29,6 +31,7 @@ def package_windows(dev):
     if op.exists('dist'):
         shutil.rmtree('dist')
     
+    is64bit = platform.architecture()[0] == '64bit'
     exe = Executable(
         targetName = 'PdfMasher.exe',
         script = 'run.py',
@@ -55,18 +58,25 @@ def package_windows(dev):
         copy_qt_plugins(plugin_names, plugin_dest)
         
         # Compress with UPX 
-        libs = [name for name in os.listdir('dist') if op.splitext(name)[1] in ('.pyd', '.dll', '.exe')]
-        for lib in libs:
-            print_and_do("upx --best \"dist\\{0}\"".format(lib))
+        if not is64bit: # UPX doesn't work on 64 bit
+            libs = [name for name in os.listdir('dist') if op.splitext(name)[1] in ('.pyd', '.dll', '.exe')]
+            for lib in libs:
+                print_and_do("upx --best \"dist\\{0}\"".format(lib))
     
     help_path = 'build\\help'
     print("Copying {0} to dist\\help".format(help_path))
     shutil.copytree(help_path, 'dist\\help')
+    if is64bit:
+        # In 64bit mode, we don't install the VC redist as a prerequisite. We just bundle the
+        # appropriate dlls.
+        shutil.copy(find_in_path('msvcr100.dll'), 'dist')
+        shutil.copy(find_in_path('msvcp100.dll'), 'dist')
     
     if not dev:
         # AdvancedInstaller.com has to be in your PATH
         # this is so we don'a have to re-commit installer.aip at every version change
-        shutil.copy('qt\\installer.aip', 'installer_tmp.aip')
+        installer_file = 'qt\\installer64.aip' if is64bit else 'qt\\installer.aip'
+        shutil.copy(installer_file, 'installer_tmp.aip')
         print_and_do('AdvancedInstaller.com /edit installer_tmp.aip /SetVersion {}'.format(app_version))
         print_and_do('AdvancedInstaller.com /build installer_tmp.aip -force')
         os.remove('installer_tmp.aip')
