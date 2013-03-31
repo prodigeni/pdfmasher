@@ -53,7 +53,6 @@ class PdfMasher(ApplicationBase):
             ('actionQuit', 'Ctrl+Q', '', tr("Quit"), self.quitTriggered),
             ('actionShowHelp', 'F1', '', tr("PdfMasher Help"), self.showHelpTriggered),
             ('actionAbout', '', '', tr("About PdfMasher"), self.showAboutBoxTriggered),
-            ('actionRegister', '', '', tr("Register PdfMasher"), self.registerTriggered),
             ('actionCheckForUpdate', '', '', tr("Check for Update"), self.checkForUpdateTriggered),
             ('actionOpenDebugLog', '', '', tr("Open Debug Log"), self.openDebugLogTriggered),
         ]
@@ -83,9 +82,6 @@ class PdfMasher(ApplicationBase):
     
     def quitTriggered(self):
         self.mainWindow.close()
-    
-    def registerTriggered(self):
-        self.reg.ask_for_code()
     
     def showAboutBoxTriggered(self):
         self.aboutBox.show()
