@@ -91,7 +91,8 @@ def package_debian_distribution(distribution):
     srcpath = op.join(destpath, 'src')
     os.makedirs(srcpath)
     shutil.copy('run.py', op.join(srcpath, 'run.py'))
-    copy_packages(['qt', 'ebooks', 'hscommon', 'core', 'qtlib', 'pdfminer', 'ply', 'jobprogress', 'markdown', 'cssutils', 'encutils'], srcpath)
+    copy_packages(['qt', 'ebooks', 'hscommon', 'core', 'qtlib', 'pdfminer', 'ply', 'jobprogress',
+        'markdown', 'cssutils', 'cssselect', 'encutils'], srcpath)
     shutil.copytree('debian', op.join(destpath, 'debian'))
     move(op.join(destpath, 'debian', 'Makefile'), op.join(destpath, 'Makefile'))
     build_debian_changelog(op.join('help', 'changelog'), op.join(destpath, 'debian', 'changelog'),
