@@ -82,33 +82,47 @@ def package_windows(dev):
         os.remove('installer_tmp.aip')
     
 
+def copy_cource_files(destpath, packages):
+    if op.exists(destpath):
+        shutil.rmtree(destpath)
+    os.makedirs(destpath)
+    shutil.copy('run.py', op.join(destpath, 'run.py'))
+    copy_packages(packages, destpath)
+    shutil.copytree(op.join('build', 'help'), op.join(destpath, 'help'))
+    shutil.copy(op.join('images', 'logo_small.png'), destpath)
+    shutil.copy(op.join('images', 'logo_big.png'), destpath)
+    compileall.compile_dir(destpath)
+    
 def package_debian_distribution(distribution):
     app_version = get_module_version('core')
     version = '{}~{}'.format(app_version, distribution)
     destpath = op.join('build', 'pdfmasher-{}'.format(version))
-    if op.exists(destpath):
-        shutil.rmtree(destpath)
     srcpath = op.join(destpath, 'src')
-    os.makedirs(srcpath)
-    shutil.copy('run.py', op.join(srcpath, 'run.py'))
-    copy_packages(['qt', 'ebooks', 'hscommon', 'core', 'qtlib', 'pdfminer', 'ply', 'jobprogress',
-        'markdown', 'cssutils', 'cssselect', 'encutils'], srcpath)
+    copy_cource_files(srcpath, ['qt', 'ebooks', 'hscommon', 'core', 'qtlib', 'pdfminer', 'ply',
+        'jobprogress', 'markdown', 'cssutils', 'cssselect', 'encutils'])
     shutil.copytree('debian', op.join(destpath, 'debian'))
     move(op.join(destpath, 'debian', 'Makefile'), op.join(destpath, 'Makefile'))
     build_debian_changelog(op.join('help', 'changelog'), op.join(destpath, 'debian', 'changelog'),
         'pdfmasher', from_version='0.1.0', distribution=distribution)
     shutil.copytree(op.join('build', 'help'), op.join(srcpath, 'help'))
-    shutil.copy(op.join('images', 'logo_small.png'), srcpath)
-    shutil.copy(op.join('images', 'logo_big.png'), srcpath)
-    compileall.compile_dir(srcpath)
     os.chdir(destpath)
     cmd = "dpkg-buildpackage -S"
     os.system(cmd)
     os.chdir('../..')
 
 def package_debian():
+    print("Packaging for Ubuntu")
     for distribution in ['precise', 'quantal']:
         package_debian_distribution(distribution)
+
+def package_arch():
+    # For now, package_arch() will only copy the source files into build/. It copies less packages
+    # than package_debian because there are more python packages available in Arch (so we don't
+    # need to include them).
+    print("Packaging for Arch")
+    srcpath = op.join('build', 'pdfmasher-arch')
+    copy_cource_files(srcpath, ['qt', 'ebooks', 'hscommon', 'core', 'qtlib', 'pdfminer', 'ply',
+        'jobprogress'])
 
 def main():
     args = parse_args()
@@ -122,7 +136,11 @@ def main():
         if ISWINDOWS:
             package_windows(dev)
         elif ISLINUX:
-            package_debian()
+            distname, _, _ = platform.dist()
+            if distname == 'arch':
+                package_arch()
+            else:
+                package_debian()
         else:
             print("Qt packaging only works under Windows or Linux.")
 
