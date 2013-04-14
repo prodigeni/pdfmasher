@@ -48,7 +48,6 @@ class MainWindow(QMainWindow):
         self.menuFile.addAction(self.app.actionSaveProject)
         self.menuFile.addAction(self.app.actionQuit)
         self.menuHelp.addAction(self.app.actionShowHelp)
-        self.menuHelp.addAction(self.app.actionRegister)
         self.menuHelp.addAction(self.app.actionCheckForUpdate)
         self.menuHelp.addAction(self.app.actionOpenDebugLog)
         self.menuHelp.addAction(self.app.actionAbout)
