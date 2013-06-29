@@ -1,0 +1,24 @@
+#! /usr/bin/env python
+
+APPNAME = 'pdfmasher'
+
+top = '.'
+out = 'build'
+
+def options(opt):
+    opt.load('compiler_c')
+
+def configure(conf):
+    conf.load('compiler_c vala')
+    conf.check_cfg(package='gtk+-3.0', uselib_store='gtk+', args='--cflags --libs')
+    conf.check_cfg(package='gio-2.0', uselib_store='gio', args='--cflags --libs')
+
+def build(bld):
+    bld(
+        features='c cprogram',
+        packages = ['gtk+-3.0', 'gio-2.0'],
+        source = bld.path.ant_glob('*.vala'),
+        target = APPNAME,
+        uselib = ['gtk+', 'gio'],
+        vala_target_glib = '2.36',
+    )
