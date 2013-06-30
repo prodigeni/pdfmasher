@@ -2,7 +2,7 @@ using Gtk;
 
 public class EditPane : Box {
     public EditPane() {
-        const int PADDING = 2;
+        const int PADDING = 5;
         Object(orientation: Orientation.VERTICAL, spacing: PADDING);
         
         this.margin = 10;
