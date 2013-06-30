@@ -34,10 +34,9 @@ public class MainWindow : Window {
         hbox.pack_start(mainNotebook, true, true, PADDING);
         
         var toolsNotebook = new Notebook();
-        toolsNotebook.set_size_request(300, 100);
-        var editBox = new Box(Orientation.VERTICAL, PADDING);
-        var editLabel = new Label("Edit");
-        toolsNotebook.append_page(editBox, editLabel);
+        toolsNotebook.width_request = 300;
+        var editPane = new EditPane();
+        toolsNotebook.append_page(editPane, new Label("Edit"));
         var buildBox = new Box(Orientation.VERTICAL, PADDING);
         var buildLabel = new Label("Build");
         toolsNotebook.append_page(buildBox, buildLabel);
