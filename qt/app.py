@@ -13,13 +13,12 @@ from PyQt4.QtGui import QDesktopServices, QMessageBox, QFileDialog
 
 from hscommon.trans import tr
 from hscommon.plat import ISLINUX
-from jobprogress import job
-from jobprogress.qt import Progress
 from qtlib.about_box import AboutBox
 from qtlib.app import Application as ApplicationBase
 from qtlib.util import createActions, getAppData
+from qtlib.progress_window import ProgressWindow
 
-from core.app import App, JOBID2TITLE
+from core.app import App
 from .main_window import MainWindow
 from .preferences import Preferences
 from .plat import HELP_PATH
@@ -35,15 +34,10 @@ class PdfMasher(ApplicationBase):
         self._setupActions()
         self.mainWindow = MainWindow(app=self)
         self.aboutBox = AboutBox(self.mainWindow, self, withreg=False)
-        self._progress = Progress(self.mainWindow)
+        self.progress_window = ProgressWindow(self.mainWindow, self.model.progress_window)
         
         self.connect(self, SIGNAL('applicationFinishedLaunching()'), self.applicationFinishedLaunching)
         self.connect(QCoreApplication.instance(), SIGNAL('aboutToQuit()'), self.applicationWillTerminate)
-        self._progress.finished.connect(self.jobFinished)
-    
-    #--- Public
-    def askForRegCode(self):
-        self.reg.ask_for_code()
     
     #--- Private
     def _setupActions(self):
@@ -67,9 +61,6 @@ class PdfMasher(ApplicationBase):
     
     def applicationWillTerminate(self):
         self.prefs.save()
-    
-    def jobFinished(self, jobid):
-        self.model._job_completed(jobid)
     
     def checkForUpdateTriggered(self):
         QProcess.execute('updater.exe', ['/checknow'])
@@ -106,16 +97,6 @@ class PdfMasher(ApplicationBase):
     
     def show_message(self, msg):
         QMessageBox.information(self.mainWindow, '', msg)
-    
-    def start_job(self, jobid, func, *args):
-        title = JOBID2TITLE[jobid]
-        try:
-            j = self._progress.create_job()
-            args = tuple([j] + list(args))
-            self._progress.run(jobid, title, func, args=args)
-        except job.JobInProgressError:
-            msg = "A previous action is still hanging in there. You can't start a new one yet. Wait a few seconds, then try again."
-            QMessageBox.information(self.mainWindow, "Action in progress", msg)
     
     def get_default(self, key):
         return self.prefs.get_value(key)

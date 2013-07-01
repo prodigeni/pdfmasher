@@ -9,10 +9,11 @@
 from xml.etree import ElementTree as ET
 from pdfminer.pdfparser import PDFSyntaxError
 
-from hscommon.reg import RegistrableApplication
+from jobprogress import job
 from hscommon.notify import Broadcaster
 from hscommon.geometry import Rect
 from hscommon.trans import tr
+from hscommon.gui.progress_window import ProgressWindow
 
 from .const import ElementState
 from .pdf import extract_text_elements_from_pdf, Page, TextElement
@@ -27,21 +28,15 @@ class JobType:
     LoadPDF = 'job_load_pdf'
 
 
-JOBID2TITLE = {
-    JobType.LoadPDF: tr("Reading PDF"),
-}
-
 class App(Broadcaster):
     #--- model -> view calls:
     # open_path(path)
     # reveal_path(path)
-    # start_job(j, *args)
     # query_load_path(prompt, allowed_exts) --> str_path
     # query_save_path(prompt, allowed_exts) --> str_path
     
     PROMPT_NAME = __appname__
     NAME = PROMPT_NAME
-    DEMO_LIMITATION = "will only be able load the 10 first pages of a PDF"
     
     def __init__(self, view):
         Broadcaster.__init__(self)
@@ -58,6 +53,7 @@ class App(Broadcaster):
         self.page_controller = PageController(self)
         self.build_pane = BuildPane(self)
         self.edit_pane = EditPane(self)
+        self.progress_window = ProgressWindow(self._job_completed)
     
     #--- Protected
     def _job_completed(self, jobid):
@@ -69,6 +65,13 @@ class App(Broadcaster):
                 self.notify('elements_changed')
             else:
                 self.view.show_message("This file is not a PDF.")
+    
+    def _start_job(self, jobid, title, func):
+        try:
+            self.progress_window.run(jobid, title, func)
+        except job.JobInProgressError:
+            msg = "A previous action is still hanging in there. You can't start a new one yet. Wait a few seconds, then try again."
+            self.view.show_message(msg)
     
     #--- Public (Internal)
     def select_elements(self, elements):
@@ -113,7 +116,7 @@ class App(Broadcaster):
             except PDFSyntaxError:
                 self.last_file_was_invalid = True
         
-        self.view.start_job(JobType.LoadPDF, do)
+        self._start_job(JobType.LoadPDF, tr("Reading PDF"), do)
     
     def load_project(self):
         path = self.view.query_load_path("Select a PdfMasher project to load", ['masherproj'])
