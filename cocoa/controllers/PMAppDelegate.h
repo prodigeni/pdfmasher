@@ -9,6 +9,7 @@ http://www.hardcoded.net/licenses/gplv3_license
 #import <Cocoa/Cocoa.h>
 #import <Sparkle/SUUpdater.h>
 #import "HSAboutBox.h"
+#import "HSProgressWindow.h"
 #import "PyPdfMasher.h"
 #import "PMMainWindow.h"
 
@@ -16,6 +17,7 @@ http://www.hardcoded.net/licenses/gplv3_license
 {
     PyPdfMasher *model;
     PMMainWindow *mainWindow;
+    HSProgressWindow *progressWindow;
     HSAboutBox *aboutBox;
     SUUpdater *updater;
 }

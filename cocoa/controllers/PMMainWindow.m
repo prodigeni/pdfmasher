@@ -46,9 +46,6 @@ http://www.hardcoded.net/licenses/gplv3_license
     [topTabView addTabViewItem:item];
     [item release];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(jobStarted:) name:JobStarted object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(jobInProgress:) name:JobInProgress object:nil];
-    
     return self;
 }
 
@@ -65,22 +62,5 @@ http://www.hardcoded.net/licenses/gplv3_license
 - (void)loadPDF
 {
     [app loadPDF];
-}
-
-/* Notifications */
-- (void)jobInProgress:(NSNotification *)aNotification
-{
-    [Dialogs showMessage:@"A previous action is still hanging in there. You can't start a new one yet. Wait a few seconds, then try again."];
-}
-
-- (void)jobStarted:(NSNotification *)aNotification
-{
-    [[self window] makeKeyAndOrderFront:nil];
-    NSDictionary *ui = [aNotification userInfo];
-    NSString *desc = [ui valueForKey:@"desc"];
-    [[ProgressController mainProgressController] setJobDesc:desc];
-    NSString *jobid = [ui valueForKey:@"jobid"];
-    [[ProgressController mainProgressController] setJobId:jobid];
-    [[ProgressController mainProgressController] showSheetForParent:[self window]];
 }
 @end
