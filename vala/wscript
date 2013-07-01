@@ -16,9 +16,9 @@ def configure(conf):
 def build(bld):
     bld(
         features='c cprogram',
-        packages = ['gtk+-3.0', 'gio-2.0'],
+        packages = ['gtk+-3.0', 'gio-2.0', 'posix'],
         source = bld.path.ant_glob('*.vala'),
         target = APPNAME,
-        uselib = ['gtk+', 'gio'],
+        uselib = ['gtk+', 'gio', 'posix'],
         vala_target_glib = '2.36',
     )

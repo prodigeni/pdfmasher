@@ -1,0 +1,1 @@
+PROGID = 'org.hardcodedsoftware.pdfmasher'

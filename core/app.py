@@ -97,6 +97,10 @@ class App(Broadcaster):
         self.notify('elements_changed')
     
     def load_pdf(self):
+        # The 3 lines below are there temporarily to test the vala-dbus interface.
+        self.current_path = '/foo/bar'
+        self.opened_file_label.refresh()
+        return
         path = self.view.query_load_path("Select a PDF to work with", ['pdf'])
         if not path:
             return

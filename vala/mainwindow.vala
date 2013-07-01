@@ -1,8 +1,12 @@
 using Gtk;
 
 public class MainWindow : Window {
-    public MainWindow(string proxy_path) {
+    private DApp model;
+    private LabelController openedFileLabel;
+    
+    public MainWindow(string proxy_path) throws IOError {
         const int PADDING = 5;
+        this.model = Bus.get_proxy_sync(BusType.SESSION, DBUS_PROGID, proxy_path);
         this.title = "PdfMasher";
         this.window_position = WindowPosition.CENTER;
         this.border_width = 8;
@@ -17,8 +21,9 @@ public class MainWindow : Window {
         var openFileButton = new Button.with_label("Open File");
         openFileBox.pack_start(openFileButton, false);
         
-        var openedFileLabel = left_aligned_label("Label");
-        openFileBox.pack_start(openedFileLabel, true);
+        var openedFileLabelView = left_aligned_label("Label");
+        openedFileLabel = new LabelController(this.model.opened_file_label_path(), openedFileLabelView);
+        openFileBox.pack_start(openedFileLabelView, true);
         
         vbox.pack_start(openFileBox, false);
         
@@ -42,5 +47,13 @@ public class MainWindow : Window {
         hbox.pack_start(toolsNotebook, false);
         
         vbox.pack_start(hbox, true);
+        
+        openFileButton.clicked.connect(this.load_pdf);
+    }
+    
+    private void load_pdf() {
+        try {
+            this.model.load_pdf();
+        } catch (IOError e) {}
     }
 }
