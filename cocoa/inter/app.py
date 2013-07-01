@@ -14,8 +14,6 @@ from cocoa import proxy
 from cocoa.inter import PyBaseApp, BaseAppView
 from jobprogress import job
 
-from core.app import JOBID2TITLE
-
 from core.app import App
 
 class PdfMasherView(BaseAppView):
@@ -23,8 +21,6 @@ class PdfMasherView(BaseAppView):
     def querySavePathWithPrompt_allowedExts_(self, prompt: str, allowedExts: list) -> str: pass
 
 class PyPdfMasher(PyBaseApp):
-    FOLLOW_PROTOCOLS = ['Worker']
-    
     def __init__(self):
         logging.basicConfig(level=logging.WARNING, format='%(levelname)s %(message)s')
         cocoa.install_exception_hook()
@@ -48,6 +44,9 @@ class PyPdfMasher(PyBaseApp):
     def editPane(self) -> pyref:
         return self.model.edit_pane
     
+    def progressWindow(self) -> pyref:
+        return self.model.progress_window
+    
     def buildHtml(self):
         return self.model.build_html()
     
@@ -69,28 +68,6 @@ class PyPdfMasher(PyBaseApp):
     def setHideIgnored_(self, value: bool):
         self.model.hide_ignored = value
     
-    #--- Worker. Mixin classes don't work with NSObject so we can't use them for interfaces
-    def getJobProgress(self) -> object:
-        try:
-            return self.progress.last_progress
-        except AttributeError:
-            # See dupeguru ticket #106
-            return -1
-    
-    def getJobDesc(self) -> str:
-        try:
-            return self.progress.last_desc
-        except AttributeError:
-            # see getJobProgress
-            return ''
-    
-    def cancelJob(self):
-        self.progress.job_cancelled = True
-    
-    def jobCompleted_(self, jobid: str):
-        self.progress.reraise_if_error()
-        self.model._job_completed(jobid)
-    
     #--- Python --> cocoa
     @dontwrap
     def open_path(self, path):
@@ -99,18 +76,6 @@ class PyPdfMasher(PyBaseApp):
     @dontwrap
     def reveal_path(self, path):
         proxy.revealPath_(path)
-    
-    @dontwrap
-    def start_job(self, jobid, func, args=()):
-        try:
-            j = self.progress.create_job()
-            args = tuple([j] + list(args))
-            self.progress.run_threaded(func, args=args)
-        except job.JobInProgressError:
-            proxy.postNotification_userInfo_('JobInProgress', None)
-        else:
-            ud = {'desc': JOBID2TITLE[jobid], 'jobid':jobid}
-            proxy.postNotification_userInfo_('JobStarted', ud)
     
     @dontwrap
     def query_load_path(self, prompt, allowed_exts):

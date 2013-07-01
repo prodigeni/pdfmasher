@@ -104,7 +104,7 @@ def build_cocoa_bridging_interfaces():
     add_to_pythonpath('cocoa')
     add_to_pythonpath('cocoalib')
     from cocoa.inter import (PyGUIObject, GUIObjectView, PyTable, TableView, PyColumns,
-        ColumnsView, PyBaseApp, BaseAppView, PyTextField)
+        ColumnsView, PyBaseApp, BaseAppView, PyTextField, ProgressWindowView, PyProgressWindow)
     from inter.app import PyPdfMasher, PdfMasherView
     from inter.build_pane import PyBuildPane
     from inter.edit_pane import PyEditPane, EditPaneView
@@ -112,11 +112,11 @@ def build_cocoa_bridging_interfaces():
     from inter.page_controller import PyPageController, PageControllerView
     from inter.page_repr import PyPageRepr, PageReprView
     allclasses = [PyGUIObject, PyTable, PyColumns, PyBaseApp, PyTextField, PyPdfMasher,
-        PyBuildPane, PyEditPane, PyElementTable, PyPageController, PyPageRepr]
+        PyBuildPane, PyEditPane, PyElementTable, PyPageController, PyPageRepr, PyProgressWindow]
     for class_ in allclasses:
         objp.o2p.generate_objc_code(class_, 'cocoa/autogen', inherit=True)
     allclasses = [GUIObjectView, TableView, ColumnsView, BaseAppView, EditPaneView,
-        PageControllerView, PageReprView, PdfMasherView]
+        PageControllerView, PageReprView, ProgressWindowView, PdfMasherView]
     clsspecs = [objp.o2p.spec_from_python_class(class_) for class_ in allclasses]
     objp.p2o.generate_python_proxy_code_from_clsspec(clsspecs, 'build/CocoaViews.m')
     build_cocoa_ext('CocoaViews', 'cocoa/inter', ['build/CocoaViews.m', 'build/ObjP.m'])

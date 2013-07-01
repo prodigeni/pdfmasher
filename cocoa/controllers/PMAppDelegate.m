@@ -24,7 +24,7 @@ http://www.hardcoded.net/licenses/gplv3_license
     
     [self setModel:[[[PyPdfMasher alloc] init] autorelease]];
     [[self model] bindCallback:createCallback(@"PdfMasherView", self)];
-    [[ProgressController mainProgressController] setWorker:[self model]];
+    progressWindow = [[HSProgressWindow alloc] initWithPyRef:[[self model] progressWindow] view:nil];
     [self setUpdater:[[[SUUpdater alloc] init] autorelease]];
     [self setMainWindow:[[[PMMainWindow alloc] initWithAppDelegate:self] autorelease]];
     aboutBox = nil; // Lazily loaded
@@ -35,6 +35,7 @@ http://www.hardcoded.net/licenses/gplv3_license
 - (void)dealloc
 {
     [aboutBox release];
+    [progressWindow release];
     [super dealloc];
 }
 
