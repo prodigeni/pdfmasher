@@ -3,10 +3,11 @@ using Gtk;
 public class MainWindow : Window {
     private DApp model;
     private LabelController openedFileLabel;
+    private ProgressWindow progress_window;
     
-    public MainWindow(string proxy_path) throws IOError {
+    public MainWindow(DApp aApp) throws IOError {
         const int PADDING = 5;
-        this.model = Bus.get_proxy_sync(BusType.SESSION, DBUS_PROGID, proxy_path);
+        this.model = aApp;
         this.title = "PdfMasher";
         this.window_position = WindowPosition.CENTER;
         this.border_width = 8;
@@ -48,12 +49,30 @@ public class MainWindow : Window {
         
         vbox.pack_start(hbox, true);
         
+        progress_window = new ProgressWindow(this.model.progress_window_path());
+        
         openFileButton.clicked.connect(this.load_pdf);
+        this.model.needs_load_path.connect(this.needs_load_path);
     }
     
     private void load_pdf() {
         try {
             this.model.load_pdf();
         } catch (IOError e) {}
+    }
+    
+    private void needs_load_path(string prompt) {
+        string result = "";
+        var file_chooser = new FileChooserDialog (prompt, this,
+            FileChooserAction.OPEN,
+            Stock.CANCEL, ResponseType.CANCEL,
+            Stock.OPEN, ResponseType.ACCEPT
+        );
+        if (file_chooser.run() == ResponseType.ACCEPT) {
+            result = file_chooser.get_filename();
+        }
+        file_chooser.destroy();
+        print(result);
+        this.model.answer_to_query_load_path(result);
     }
 }

@@ -1,8 +1,7 @@
 import dbus.service
 import dbus
 
-from core.app import App
-from .const import PROGID
+from .const import PROGID, INSTANCE_ID
 
 class DTextField(dbus.service.Object):
     IFACE_NAME = PROGID + '.TextField'
