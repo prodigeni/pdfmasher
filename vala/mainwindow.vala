@@ -2,6 +2,7 @@ using Gtk;
 
 public class MainWindow : Window {
     private DApp model;
+    private TableController elementTable;
     private LabelController openedFileLabel;
     private ProgressWindow progress_window;
     
@@ -31,9 +32,10 @@ public class MainWindow : Window {
         var hbox = new Box(Orientation.HORIZONTAL, PADDING);
         
         var mainNotebook = new Notebook();
-        var tableBox = new Box(Orientation.VERTICAL, PADDING);
+        var elementTableView = new TreeView();
+        this.elementTable = new TableController(this.model.element_table_path(), elementTableView);
         var tableLabel = new Label("Table");
-        mainNotebook.append_page(tableBox, tableLabel);
+        mainNotebook.append_page(elementTableView, tableLabel);
         var pageBox = new Box(Orientation.VERTICAL, PADDING);
         var pageLabel = new Label("Page");
         mainNotebook.append_page(pageBox, pageLabel);

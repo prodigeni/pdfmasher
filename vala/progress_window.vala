@@ -11,7 +11,7 @@ public class ProgressWindow : Window {
         this.title = "Progress";
         this.border_width = 10;
         this.window_position = WindowPosition.CENTER;
-        this.model = Bus.get_proxy_sync(BusType.SESSION, DBUS_PROGID, proxy_path);
+        this.model = Bus.get_proxy_sync(BusType.SESSION, get_dbus_server_name(), proxy_path);
         set_default_size(350, 100);
         create_widgets();
     }

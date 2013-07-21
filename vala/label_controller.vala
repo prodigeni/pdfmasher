@@ -7,7 +7,7 @@ public class LabelController {
     
     public LabelController(string proxy_path, Label labelView) throws IOError {
         this.labelView = labelView;
-        this.model = Bus.get_proxy_sync(BusType.SESSION, DBUS_PROGID, proxy_path);
+        this.model = Bus.get_proxy_sync(BusType.SESSION, get_dbus_server_name(), proxy_path);
         this.model.refresh.connect(() => {
             try {
                 this.labelView.set_text(this.model.text());

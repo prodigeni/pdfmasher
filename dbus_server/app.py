@@ -6,6 +6,8 @@ import dbus
 
 from .const import PROGID, INSTANCE_ID
 from .text_field import DTextField
+from .table import DTable
+from .page_repr import DPageRepr
 from .progress_window import DProgressWindow
 
 class DApp(dbus.service.Object):
@@ -29,6 +31,13 @@ class DApp(dbus.service.Object):
         self.model = App(view=self)
         self.opened_file_label = DTextField(self.model.opened_file_label, self.object_path + 'opened_file_label')
         self.progress_window = DProgressWindow(self.model.progress_window, self.object_path + 'progress_window')
+        self.element_table = DTable(self.model.element_table, self.object_path + 'element_table')
+        # All the code below is dirty placeholder code to avoid callback exception upon loading.
+        # Nothing of this is working or correct.
+        self.page_controller = DPageRepr(self.model.page_controller, self.object_path + 'page_controller')
+        self.page_repr = DPageRepr(self.model.page_controller.page_repr, self.object_path + 'page_repr')
+        self.build_pane = DPageRepr(self.model.build_pane, self.object_path + 'build_pane')
+        self.edit_pane = DPageRepr(self.model.edit_pane, self.object_path + 'edit_pane')
     
     @dbus.service.method(IFACE_NAME)
     def Exit(self):
@@ -41,6 +50,10 @@ class DApp(dbus.service.Object):
     @dbus.service.method(IFACE_NAME, out_signature='s')
     def ProgressWindowPath(self):
         return self.progress_window.object_path
+    
+    @dbus.service.method(IFACE_NAME, out_signature='s')
+    def ElementTablePath(self):
+        return self.element_table.object_path
     
     @dbus.service.method(IFACE_NAME)
     def LoadPdf(self):

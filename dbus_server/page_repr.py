@@ -3,8 +3,8 @@ import dbus
 
 from .const import PROGID, INSTANCE_ID
 
-class DTextField(dbus.service.Object):
-    IFACE_NAME = PROGID + '.TextField'
+class DPageRepr(dbus.service.Object):
+    IFACE_NAME = PROGID + '.PageRepr'
     def __init__(self, model, object_path):
         session_bus = dbus.SessionBus()
         name = dbus.service.BusName(INSTANCE_ID, session_bus)
@@ -12,14 +12,6 @@ class DTextField(dbus.service.Object):
         self.object_path = object_path
         self.model = model
         model.view = self
-    
-    @dbus.service.method(IFACE_NAME, out_signature='s')
-    def Text(self):
-        return self.model.text
-    
-    @dbus.service.method(IFACE_NAME, in_signature='s')
-    def SetText(self, text):
-        self.model.text = text
     
     #--- Signals
     @dbus.service.signal(IFACE_NAME)
@@ -30,3 +22,8 @@ class DTextField(dbus.service.Object):
     def refresh(self):
         self.Refresh()
     
+    def refresh_page_label(self):
+        pass
+        
+    def refresh_edit_text(self):
+        pass

@@ -12,9 +12,9 @@ int main (string[] args) {
         null,
         out child_pid
     );
-    string dbus_name = "%s.pid%d".printf(DBUS_PROGID, child_pid);
+    DBUS_SERVER_PID = child_pid;
     try {
-        DApp app = Bus.get_proxy_sync(BusType.SESSION, dbus_name, "/");
+        DApp app = Bus.get_proxy_sync(BusType.SESSION, get_dbus_server_name(), "/");
         // The server is very probably not up yet. What we do is that we repeatedly try to start
         // the server until it works, for a maximum of 10 seconds.
         for (int i=0; i<100; i++) {

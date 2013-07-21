@@ -1,11 +1,17 @@
 const string DBUS_PROGID = "org.hardcodedsoftware.pdfmasher";
+int DBUS_SERVER_PID = 0;
 
+string get_dbus_server_name() {
+    return "%s.pid%d".printf(DBUS_PROGID, DBUS_SERVER_PID);
+}
+    
 [DBus (name = "org.hardcodedsoftware.pdfmasher.App")]
 public interface DApp : Object {
     public abstract void start() throws IOError;
     public abstract void exit() throws IOError;
     public abstract string opened_file_label_path() throws IOError;
     public abstract string progress_window_path() throws IOError;
+    public abstract string element_table_path() throws IOError;
     public abstract void load_pdf() throws IOError;
     public abstract void answer_to_query_load_path(string load_path) throws IOError;
     
@@ -28,6 +34,23 @@ interface DProgressWindow : Object {
 interface DTextField : Object {
     public abstract string text() throws IOError;
     public abstract void set_text(string s) throws IOError;
+    
+    public signal void refresh();
+}
+
+[DBus (name = "org.hardcodedsoftware.pdfmasher.Columns")]
+public interface DColumns : Object {
+    public abstract int count() throws IOError;
+    public abstract string attrname_at_index(int index) throws IOError;
+    public abstract string display_at_index(int index) throws IOError;
+}
+
+[DBus (name = "org.hardcodedsoftware.pdfmasher.Table")]
+interface DTable : Object {
+    public abstract int row_count() throws IOError;
+    public abstract string get_cell_value(int row, string attrname) throws IOError;
+    
+    public abstract string columns_path() throws IOError;
     
     public signal void refresh();
 }
