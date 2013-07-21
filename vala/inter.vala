@@ -40,13 +40,18 @@ interface DTextField : Object {
 
 [DBus (name = "org.hardcodedsoftware.pdfmasher.Columns")]
 public interface DColumns : Object {
+    public abstract void initial_config(int[] default_widths) throws IOError;
     public abstract int count() throws IOError;
     public abstract string attrname_at_index(int index) throws IOError;
-    public abstract string display_at_index(int index) throws IOError;
+    public abstract string display(string attrname) throws IOError;
+    public abstract int width(string attrname) throws IOError;
+    
+    public signal void restore_columns();
+    public signal void set_column_visible();
 }
 
 [DBus (name = "org.hardcodedsoftware.pdfmasher.Table")]
-interface DTable : Object {
+public interface DTable : Object {
     public abstract int row_count() throws IOError;
     public abstract string get_cell_value(int row, string attrname) throws IOError;
     

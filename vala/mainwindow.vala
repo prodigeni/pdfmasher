@@ -32,10 +32,13 @@ public class MainWindow : Window {
         var hbox = new Box(Orientation.HORIZONTAL, PADDING);
         
         var mainNotebook = new Notebook();
+        var elementTableViewWrapper = new ScrolledWindow(null, null);
+        elementTableViewWrapper.shadow_type = ShadowType.OUT;
         var elementTableView = new TreeView();
-        this.elementTable = new TableController(this.model.element_table_path(), elementTableView);
+        elementTableViewWrapper.add(elementTableView);
+        this.elementTable = new ElementTable(this.model.element_table_path(), elementTableView);
         var tableLabel = new Label("Table");
-        mainNotebook.append_page(elementTableView, tableLabel);
+        mainNotebook.append_page(elementTableViewWrapper, tableLabel);
         var pageBox = new Box(Orientation.VERTICAL, PADDING);
         var pageLabel = new Label("Page");
         mainNotebook.append_page(pageBox, pageLabel);
